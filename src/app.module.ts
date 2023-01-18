@@ -1,16 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserController } from './user/user.controller';
-import { UserService } from './user/user.service';
 import * as process from 'process';
 import * as dotenv from 'dotenv';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { ConfigEnum } from '../config/config.enum';
+import { ConfigEnum } from '../enum/config.enum';
 import * as Joi from 'joi';
 import { User } from './user/user.entity';
 import { Profile } from './user/profile.entity';
 import { Logs } from './logs/logs.entity';
 import { Roles } from './roles/roles.entity';
+import { UserModule } from './user/user.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -42,8 +41,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 					logging: ['error'],
 				} as TypeOrmModuleOptions),
 		}),
+		UserModule,
 	],
-	controllers: [UserController],
-	providers: [UserService],
 })
 export class AppModule {}

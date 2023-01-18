@@ -21,7 +21,7 @@ export class Profile {
 	@Column()
 	address: string;
 
-	@OneToOne(() => User)
+	@OneToOne(() => User, (user) => user.profile)
 	@JoinColumn()
 	user: User;
 }

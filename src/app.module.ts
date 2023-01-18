@@ -18,6 +18,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
+			// 下面两个配置中，如果有重复的变量，第一个优先
 			envFilePath,
 			load: [() => dotenv.config({ path: '.env' })],
 			validationSchema: Joi.object({

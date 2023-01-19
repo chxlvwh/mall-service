@@ -15,6 +15,6 @@ export class LogsService {
 			.createQueryBuilder('logs')
 			.leftJoinAndSelect('logs.user', 'user')
 			.where('logs.userId=:id', { id: 1 })
-			.getOne();
+			.getMany();
 	}
 }

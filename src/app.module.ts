@@ -1,17 +1,13 @@
 import { Module, Logger, Global } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import * as process from 'process';
 import * as dotenv from 'dotenv';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { DBConfigEnum } from '../enum/config.enum';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
-import { User } from './user/user.entity';
-import { Profile } from './user/profile.entity';
-import { Logs } from './logs/logs.entity';
-import { Roles } from './roles/roles.entity';
 import { UserModule } from './user/user.module';
 import { LogsModule } from './logs/logs.module';
 import { RolesModule } from './roles/roles.module';
+import ormconfig from '../ormconfig';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -27,23 +23,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 				DB_TYPE: Joi.string().valid('mysql', 'postgres'),
 			}),
 		}),
-		TypeOrmModule.forRootAsync({
-			imports: [ConfigModule],
-			inject: [ConfigService],
-			useFactory: (configService: ConfigService) =>
-				({
-					type: configService.get(DBConfigEnum.DB_TYPE),
-					host: configService.get(DBConfigEnum.DB_HOST),
-					port: configService.get(DBConfigEnum.DB_PORT),
-					username: configService.get(DBConfigEnum.DB_USERNAME),
-					password: configService.get(DBConfigEnum.DB_PASSWORD),
-					database: configService.get(DBConfigEnum.DB_DATABASE),
-					entities: [User, Profile, Logs, Roles],
-					// 同步本地的schema与数据库 -> 初始化的时候去使用
-					synchronize: configService.get(DBConfigEnum.DB_SYNC),
-					logging: ['error'],
-				} as TypeOrmModuleOptions),
-		}),
+		TypeOrmModule.forRoot(ormconfig),
 		UserModule,
 		LogsModule,
 		RolesModule,

@@ -7,3 +7,12 @@ export enum DBConfigEnum {
 	DB_DATABASE = 'DB_DATABASE',
 	DB_SYNC = 'DB_SYNC',
 }
+
+export enum LogConfigEnum {
+	LOG_LEVEL = 'LOG_LEVEL',
+	LOG_ON = 'LOG_ON',
+}
+
+export enum AppConfigEnum {
+	APP_PORT = 'APP_PORT',
+}

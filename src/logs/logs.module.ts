@@ -33,27 +33,30 @@ const dailyRotateFileConfig = {
 						utilities.format.nestLike(),
 					),
 				});
-
-				const dailyTransports = new winston.transports.DailyRotateFile({
-					level: 'warn',
-					filename: 'warn-%DATE%.log',
-					...dailyRotateFileConfig,
-				});
-
-				const dailyInfoTransports =
-					new winston.transports.DailyRotateFile({
-						filename: 'info-%DATE%.log',
+				function createDailyTransports(
+					level: string,
+					filename: string,
+				) {
+					return new winston.transports.DailyRotateFile({
+						level,
+						filename: `${filename}-%DATE%.log`,
 						...dailyRotateFileConfig,
-						level: configService.get(
-							configService.get(LogConfigEnum.LOG_LEVEL),
-						),
 					});
+				}
 				return {
 					transports: [
 						// 控制台日志
 						consoleTransports,
 						...(configService.get(LogConfigEnum.LOG_ON)
-							? [dailyTransports, dailyInfoTransports]
+							? [
+									createDailyTransports(
+										configService.get(
+											LogConfigEnum.LOG_LEVEL,
+										),
+										'application',
+									),
+									createDailyTransports('warn', 'error'),
+							  ]
 							: []),
 					],
 				};

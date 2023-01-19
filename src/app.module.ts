@@ -11,6 +11,7 @@ import { Logs } from './logs/logs.entity';
 import { Roles } from './roles/roles.entity';
 import { UserModule } from './user/user.module';
 import { LogsModule } from './logs/logs.module';
+import { RolesModule } from './roles/roles.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -45,6 +46,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		}),
 		UserModule,
 		LogsModule,
+		RolesModule,
 	],
 	providers: [Logger],
 	exports: [Logger],

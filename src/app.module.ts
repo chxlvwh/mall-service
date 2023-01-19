@@ -10,6 +10,7 @@ import { Profile } from './user/profile.entity';
 import { Logs } from './logs/logs.entity';
 import { Roles } from './roles/roles.entity';
 import { UserModule } from './user/user.module';
+import { LogsModule } from './logs/logs.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -42,6 +43,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 				} as TypeOrmModuleOptions),
 		}),
 		UserModule,
+		LogsModule,
 	],
 })
 export class AppModule {}

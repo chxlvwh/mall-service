@@ -17,12 +17,12 @@ export class UserController {
 	constructor(private userService: UserService) {}
 
 	@Get()
-	listUser(): any {
+	getList(): any {
 		return this.userService.findAll();
 	}
 
 	@Get()
-	get(@Query() query): any {
+	getByUsername(@Query() query): any {
 		return this.userService.find(query.username);
 	}
 

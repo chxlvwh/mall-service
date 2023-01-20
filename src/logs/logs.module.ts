@@ -52,7 +52,13 @@ const dailyRotateFileConfig = {
 									createDailyTransports(
 										configService.get(
 											LogConfigEnum.LOG_LEVEL,
-										),
+										)
+											? configService
+													.get(
+														LogConfigEnum.LOG_LEVEL,
+													)
+													.toLowerCase()
+											: 'info',
 										'application',
 									),
 									createDailyTransports('warn', 'error'),

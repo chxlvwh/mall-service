@@ -35,7 +35,8 @@ function buildConnectionOptions() {
 		synchronize:
 			config[DBConfigEnum.DB_SYNC] &&
 			config[DBConfigEnum.DB_SYNC].toUpperCase() === 'TRUE',
-		logging: ['error'],
+		logging: process.env.NODE_ENV === 'development',
+		// logging: ['error'],
 	} as TypeOrmModuleOptions;
 }
 

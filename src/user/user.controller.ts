@@ -11,14 +11,16 @@ import {
 } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserService } from './user.service';
+import { getUserDto } from './dto/get-users.dto';
 
 @Controller('user')
 export class UserController {
 	constructor(private userService: UserService) {}
 
 	@Get()
-	getList(): any {
-		return this.userService.findAll();
+	getUsers(@Query() query: getUserDto): any {
+		console.log('~log message:~line29', query);
+		return this.userService.findAll(query);
 	}
 
 	@Get()

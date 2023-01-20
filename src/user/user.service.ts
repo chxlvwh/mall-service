@@ -65,7 +65,7 @@ export class UserService {
 
 	async create(user: User) {
 		const userTmp = await this.userRepository.create(user);
-		return this.userRepository.save(userTmp);
+		return await this.userRepository.save(userTmp);
 	}
 
 	async update(id: number, user: Partial<User>) {

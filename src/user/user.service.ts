@@ -4,6 +4,7 @@ import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { getUserDto } from './dto/get-users.dto';
 import { conditionUtils } from '../utils/db.helper';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
@@ -59,12 +60,14 @@ export class UserService {
 		 */
 	}
 
-	find(username: string) {
-		return this.userRepository.findOne({ where: { username } });
+	findOne(id: number) {
+		return this.userRepository.findOne({ where: { id } });
 	}
 
-	async create(user: User) {
-		const userTmp = await this.userRepository.create(user);
+	async create(createUserDto: CreateUserDto) {
+		//  Creates a new instance of User. Optionally accepts an object literal
+		//  with user properties which will be written into newly created user object
+		const userTmp = await this.userRepository.create(createUserDto);
 		return await this.userRepository.save(userTmp);
 	}
 
@@ -72,11 +75,12 @@ export class UserService {
 		return this.userRepository.update(id, user);
 	}
 
-	remove(id: number) {
-		return this.userRepository.delete(id);
+	async remove(id: number) {
+		const user = await this.findOne(id);
+		return this.userRepository.remove(user);
 	}
 
-	findProfile(id: number) {
+	findProfile(id: number): Promise<User> {
 		return this.userRepository.findOne({
 			where: { id },
 			relations: { profile: true },

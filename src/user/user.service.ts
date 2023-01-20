@@ -5,6 +5,7 @@ import { In, Repository } from 'typeorm';
 import { getUserDto } from './dto/get-users.dto';
 import { conditionUtils } from '../utils/db.helper';
 import { Roles } from '../roles/roles.entity';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
@@ -66,14 +67,15 @@ export class UserService {
 		return this.userRepository.findOne({ where: { id } });
 	}
 
-	async create(user: Partial<User>) {
+	async create(user: CreateUserDto) {
 		let roles: Roles[] = [];
 		if (user.roles instanceof Array && typeof user.roles[0] === 'number') {
 			roles = await this.rolesRepository.find({
 				where: {
-					id: In(user.roles),
+					id: In(user.roles as number[]),
 				},
 			});
+			// 默认给一个 普通用户 的角色
 		} else if (!user.roles || !user.roles.length) {
 			roles[0] = await this.rolesRepository.findOne({
 				where: {

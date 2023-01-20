@@ -5,6 +5,7 @@ import {
 	Get,
 	HttpCode,
 	Param,
+	ParseIntPipe,
 	Post,
 	Put,
 	Query,
@@ -14,6 +15,7 @@ import { User } from './user.entity';
 import { UserService } from './user.service';
 import { getUserDto } from './dto/get-users.dto';
 import { TypeormFilter } from '../filters/typeorm.filter';
+import { CreateUserPipe } from './pipes/create-user.pipe';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('user')
@@ -32,8 +34,9 @@ export class UserController {
 	}
 
 	@Post()
-	createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
-		return this.userService.create(createUserDto);
+	createUser(@Body(CreateUserPipe) dto: CreateUserDto): Promise<User> {
+		const user = dto as User;
+		return this.userService.create(user);
 	}
 
 	@Put(':id')
@@ -51,8 +54,8 @@ export class UserController {
 	}
 
 	@Get(':id/profile')
-	async getUserProfile(@Param() params): Promise<User> {
-		const res = await this.userService.findProfile(Number(params.id));
+	async getUserProfile(@Param('id', ParseIntPipe) id: any): Promise<User> {
+		const res = await this.userService.findProfile(id);
 		if (res) {
 			Reflect.deleteProperty(res, 'password');
 		}

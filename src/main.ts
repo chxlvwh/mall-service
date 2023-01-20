@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { AllExceptionFilter } from './filters/all-exception.filter';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import * as process from 'process';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
@@ -13,6 +14,12 @@ async function bootstrap() {
 
 	const httpAdapter = app.get(HttpAdapterHost);
 	app.useGlobalFilters(new AllExceptionFilter(httpAdapter));
+	app.useGlobalPipes(
+		new ValidationPipe({
+			// 去除在类上不存做的字段
+			// whitelist: true,
+		}),
+	);
 	await app.listen(process.env.APP_PORT);
 }
 bootstrap();

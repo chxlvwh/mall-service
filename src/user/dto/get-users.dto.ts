@@ -1,4 +1,4 @@
-export interface getUserDto {
+export class getUserDto {
 	page: number;
 	limit?: number;
 	username?: string;

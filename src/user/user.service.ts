@@ -71,8 +71,10 @@ export class UserService {
 		return await this.userRepository.save(userTmp);
 	}
 
-	async update(id: number, user: Partial<User>) {
-		return this.userRepository.update(id, user);
+	async update(id: number, dto: any) {
+		const userTemp = await this.findProfile(id);
+		const newUser = this.userRepository.merge(userTemp, dto);
+		return this.userRepository.save(newUser);
 	}
 
 	async remove(id: number) {

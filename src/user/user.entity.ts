@@ -29,6 +29,6 @@ export class User {
 	@JoinTable({ name: 'users_roles' })
 	roles: Roles;
 
-	@OneToOne(() => Profile, (profile) => profile.user)
+	@OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
 	profile: Profile;
 }

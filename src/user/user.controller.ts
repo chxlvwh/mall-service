@@ -37,12 +37,11 @@ export class UserController {
 	}
 
 	@Put(':id')
-	updateUser(@Param() params, @Body() user: User): any {
-		const newUser = {
-			username: user.username,
-			password: user.password,
-		} as User;
-		return this.userService.update(params.id, newUser);
+	updateUser(@Param('id') id: number, @Body() dto: any): any {
+		// 权限1：判断用户是否是自己
+		// 权限2：判断用户是否有更新user的权限
+		// 返回数据：不能包含敏感的password等信息
+		return this.userService.update(id, dto);
 	}
 
 	@Delete(':id')

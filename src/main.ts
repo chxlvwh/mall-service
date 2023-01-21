@@ -19,7 +19,7 @@ async function bootstrap() {
 	app.useGlobalPipes(
 		new ValidationPipe({
 			// 去除在类上不存做的字段
-			// whitelist: true,
+			whitelist: true,
 			forbidUnknownValues: false,
 		}),
 	);

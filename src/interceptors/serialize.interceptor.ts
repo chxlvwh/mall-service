@@ -10,12 +10,11 @@ import { map, Observable } from 'rxjs';
 @Injectable()
 export class SerializeInterceptor implements NestInterceptor {
 	intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-		const req = context.switchToHttp().getRequest();
-		console.log(
-			'======[serialize.interceptor.ts：intercept：]======',
-			req.params,
-		);
+		// 在请求处理之前
+		// const req = context.switchToHttp().getRequest();
+		// console.log('======[serialize.interceptor.ts：intercept：]======', req);
 		return next.handle().pipe(
+			// 在请求处理之后
 			map((data) => {
 				console.log('======[serialize.interceptor.ts：：]======', data);
 				return data;

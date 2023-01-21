@@ -11,6 +11,7 @@ import {
 	Query,
 	UseFilters,
 	UseGuards,
+	UseInterceptors,
 } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserService } from './user.service';
@@ -20,11 +21,13 @@ import { CreateUserPipe } from './pipes/create-user.pipe';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AdminGuard } from '../guards/admin.guard';
 import { JwtGuard } from '../guards/jwt.guard';
+import { SerializeInterceptor } from '../interceptors/serialize.interceptor';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 @UseFilters(new TypeormFilter())
 @UseGuards(JwtGuard)
-// @UseInterceptors(ClassSerializerInterceptor)
+@UseInterceptors(SerializeInterceptor)
 export class UserController {
 	constructor(private userService: UserService) {}
 
@@ -46,11 +49,14 @@ export class UserController {
 	}
 
 	@Put(':id')
-	updateUser(@Param('id') id: number, @Body() dto: any): any {
+	updateUser(
+		@Param('id') id: number,
+		@Body() updateUserDto: UpdateUserDto,
+	): any {
 		// 权限1：判断用户是否是自己
 		// 权限2：判断用户是否有更新user的权限
 		// 返回数据：不能包含敏感的password等信息
-		return this.userService.update(id, dto);
+		return this.userService.update(id, updateUserDto);
 	}
 
 	@Delete(':id')

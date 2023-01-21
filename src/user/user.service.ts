@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { In, Repository } from 'typeorm';
-import { getUserDto } from './dto/get-users.dto';
+import { GetUserDto } from './dto/get-users.dto';
 import { conditionUtils } from '../utils/db.helper';
 import { Roles } from '../roles/roles.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,7 +16,7 @@ export class UserService {
 		private readonly rolesRepository: Repository<Roles>,
 	) {}
 
-	findAll(query: getUserDto) {
+	findAll(query: GetUserDto) {
 		const { limit, page, username, gender, role } = query;
 		const take = limit || 10;
 		const skip = ((page || 1) - 1) * take;
@@ -61,6 +61,15 @@ export class UserService {
 		 * 			skip,
 		 * 		});
 		 */
+	}
+
+	find(username: string) {
+		return this.userRepository.findOne({
+			where: { username },
+			relations: {
+				roles: true,
+			},
+		});
 	}
 
 	findOne(id: number) {

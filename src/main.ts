@@ -18,6 +18,7 @@ async function bootstrap() {
 		new ValidationPipe({
 			// 去除在类上不存做的字段
 			// whitelist: true,
+			forbidUnknownValues: false,
 		}),
 	);
 	await app.listen(process.env.APP_PORT);

@@ -29,17 +29,30 @@ export class AllExceptionFilter implements ExceptionFilter {
 				: HttpStatus.INTERNAL_SERVER_ERROR;
 
 		const responseBody = {
+			exception: exception['name'],
+			error:
+				exception['response'] ||
+				exception['message'] ||
+				'Internal Server Error',
 			headers: request.headers,
 			query: request.query,
 			body: request.body,
 			params: request.params,
 			timestamp: new Date().toISOString(),
 			ip: requestIp.getClientIp(request),
-			exception: exception['name'],
-			error: exception['response'] || 'Internal Server Error',
 		};
 
-		this.logger.error('[GlobalException]', responseBody);
+		const getErrorMessage = () => {
+			if (responseBody.error && responseBody.error.message) {
+				return responseBody.error.message;
+			}
+			return responseBody.error;
+		};
+
+		this.logger.error(
+			`[GlobalException] ${getErrorMessage()}`,
+			responseBody,
+		);
 		httpAdapter.reply(response, responseBody, httpStatus);
 	}
 }

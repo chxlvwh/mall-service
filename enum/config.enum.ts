@@ -15,4 +15,5 @@ export enum LogConfigEnum {
 
 export enum AppConfigEnum {
 	APP_PORT = 'APP_PORT',
+	SECRET = 'SECRET',
 }

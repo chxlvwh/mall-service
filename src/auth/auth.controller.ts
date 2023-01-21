@@ -1,9 +1,11 @@
 import {
 	BadRequestException,
 	Body,
+	ClassSerializerInterceptor,
 	Controller,
 	Post,
 	UseFilters,
+	UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { TypeormFilter } from '../filters/typeorm.filter';
@@ -11,6 +13,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 
 @Controller('auth')
 @UseFilters(new TypeormFilter())
+@UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
 	constructor(private authService: AuthService) {}
 	@Post('login')

@@ -1,5 +1,6 @@
 import {
 	Body,
+	ClassSerializerInterceptor,
 	Controller,
 	Delete,
 	Get,
@@ -11,6 +12,7 @@ import {
 	Query,
 	UseFilters,
 	UseGuards,
+	UseInterceptors,
 } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserService } from './user.service';
@@ -24,6 +26,7 @@ import { JwtGuard } from '../guards/jwt.guard';
 @Controller('user')
 @UseFilters(new TypeormFilter())
 @UseGuards(JwtGuard)
+@UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
 	constructor(private userService: UserService) {}
 
@@ -65,10 +68,6 @@ export class UserController {
 		// PassportModule来添加的
 		// @Req() req,
 	): Promise<User> {
-		const res = await this.userService.findProfile(id);
-		if (res) {
-			Reflect.deleteProperty(res, 'password');
-		}
-		return res;
+		return await this.userService.findProfile(id);
 	}
 }

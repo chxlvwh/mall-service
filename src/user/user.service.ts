@@ -6,6 +6,7 @@ import { GetUserDto } from './dto/get-users.dto';
 import { conditionUtils } from '../utils/db.helper';
 import { Roles } from '../roles/roles.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class UserService {
@@ -95,6 +96,7 @@ export class UserService {
 		//  Creates a new instance of User. Optionally accepts an object literal
 		//  with user properties which will be written into newly created user object
 		const userTmp = await this.userRepository.create({ ...user, roles });
+		userTmp.password = await argon2.hash(userTmp.password);
 		return await this.userRepository.save(userTmp);
 	}
 

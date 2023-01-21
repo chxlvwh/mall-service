@@ -18,16 +18,17 @@ import { GetUserDto } from './dto/get-users.dto';
 import { TypeormFilter } from '../filters/typeorm.filter';
 import { CreateUserPipe } from './pipes/create-user.pipe';
 import { CreateUserDto } from './dto/create-user.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { AdminGuard } from '../guards/admin.guard';
+import { JwtGuard } from '../guards/jwt.guard';
 
 @Controller('user')
 @UseFilters(new TypeormFilter())
+@UseGuards(JwtGuard)
 export class UserController {
 	constructor(private userService: UserService) {}
 
 	@Get()
-	@UseGuards(AuthGuard('jwt'), AdminGuard)
+	@UseGuards(AdminGuard)
 	getAllUsers(@Query() query: GetUserDto): any {
 		return this.userService.findAll(query);
 	}
@@ -58,7 +59,6 @@ export class UserController {
 	}
 
 	@Get(':id/profile')
-	@UseGuards(AuthGuard('jwt'))
 	async getUserProfile(
 		@Param('id', ParseIntPipe) id: any,
 		// 这里的req中的user是通过AuthGuard('jwt')中的validate方法返回的

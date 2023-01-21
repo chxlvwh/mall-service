@@ -9,10 +9,7 @@ export class AdminGuard implements CanActivate {
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest();
 		if (req.user) {
-			console.log(
-				'======[admin.guard.ts：line9：]======',
-				req.user.username,
-			);
+			console.log('======[admin.guard.ts：line9：]======', req.user);
 			const user = await this.userService.find(req.user.username);
 			// 普通用户才能往下进行
 			if (user.roles.find((r) => r.id === 3)) return true;

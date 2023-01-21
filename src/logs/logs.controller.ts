@@ -1,7 +1,10 @@
-import { Controller, Get, Logger } from '@nestjs/common';
+import { Controller, Get, Logger, UseGuards } from '@nestjs/common';
 import { LogsService } from './logs.service';
+import { JwtGuard } from '../guards/jwt.guard';
+import { AdminGuard } from '../guards/admin.guard';
 
 @Controller('logs')
+@UseGuards(JwtGuard, AdminGuard)
 export class LogsController {
 	constructor(
 		private logsService: LogsService,

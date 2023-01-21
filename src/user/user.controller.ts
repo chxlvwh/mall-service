@@ -1,6 +1,5 @@
 import {
 	Body,
-	ClassSerializerInterceptor,
 	Controller,
 	Delete,
 	Get,
@@ -12,7 +11,6 @@ import {
 	Query,
 	UseFilters,
 	UseGuards,
-	UseInterceptors,
 } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserService } from './user.service';
@@ -26,7 +24,7 @@ import { JwtGuard } from '../guards/jwt.guard';
 @Controller('user')
 @UseFilters(new TypeormFilter())
 @UseGuards(JwtGuard)
-@UseInterceptors(ClassSerializerInterceptor)
+// @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
 	constructor(private userService: UserService) {}
 

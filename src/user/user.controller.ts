@@ -1,6 +1,5 @@
 import {
 	Body,
-	ClassSerializerInterceptor,
 	Controller,
 	Delete,
 	Get,
@@ -27,7 +26,7 @@ import { TypeORMFilter } from '../decorators/TypeORMFilter';
 @Controller('user')
 @TypeORMFilter()
 @UseGuards(JwtGuard)
-@UseInterceptors(SerializeInterceptor, ClassSerializerInterceptor)
+@UseInterceptors(SerializeInterceptor)
 export class UserController {
 	constructor(private userService: UserService) {}
 
@@ -43,9 +42,10 @@ export class UserController {
 	}
 
 	@Post()
-	createUser(@Body(CreateUserPipe) dto: CreateUserDto): Promise<User> {
-		const user = dto as User;
-		return this.userService.create(user);
+	createUser(
+		@Body(CreateUserPipe) createUserDto: CreateUserDto,
+	): Promise<User> {
+		return this.userService.create(createUserDto);
 	}
 
 	@Put(':id')

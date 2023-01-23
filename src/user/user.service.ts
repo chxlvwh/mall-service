@@ -86,7 +86,7 @@ export class UserService {
 				},
 			});
 			// 默认给一个 普通用户 的角色
-		} else if (!user.roles || !user.roles.length) {
+		} else {
 			roles[0] = await this.rolesRepository.findOne({
 				where: {
 					id: 3,

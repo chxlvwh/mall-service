@@ -8,7 +8,7 @@ export class LoginUserDto {
 		// $property	当前属性名
 		// $target		当前类
 		// $constraint1	最小长度以此类推
-		message: `用户名长度必须在$constraint1和$constraint2之间`,
+		// message: `用户名长度必须在$constraint1和$constraint2之间`,
 	})
 	username: string;
 

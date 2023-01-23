@@ -1,4 +1,9 @@
-import { Module, Logger, Global } from '@nestjs/common';
+import {
+	Module,
+	Logger,
+	Global,
+	ClassSerializerInterceptor,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as process from 'process';
 import * as dotenv from 'dotenv';
@@ -9,6 +14,7 @@ import { LogsModule } from './logs/logs.module';
 import { RolesModule } from './roles/roles.module';
 import { connectionParams } from '../ormconfig';
 import { AuthModule } from './auth/auth.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -39,11 +45,11 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 	],
 	providers: [
 		Logger,
-		// 全局拦截器，主要对数据脱敏
-		// {
-		// provide: APP_INTERCEPTOR,
-		// useClass: ClassSerializerInterceptor,
-		// },
+		// 全局拦截器，主要对数据脱敏和参数的序列化
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: ClassSerializerInterceptor,
+		},
 		// 全局使用 guard
 		// {
 		// 	provide: APP_GUARD,

@@ -7,7 +7,7 @@ import {
 	Logger,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import * as requestIp from 'request-ip';
+// import * as requestIp from 'request-ip';
 
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
@@ -20,7 +20,6 @@ export class AllExceptionFilter implements ExceptionFilter {
 	catch(exception: unknown, host: ArgumentsHost): any {
 		const { httpAdapter } = this.httpAdapterHost;
 		const ctx = host.switchToHttp();
-		const request = ctx.getRequest();
 		const response = ctx.getResponse();
 
 		const httpStatus =
@@ -34,12 +33,12 @@ export class AllExceptionFilter implements ExceptionFilter {
 				exception['response'] ||
 				exception['message'] ||
 				'Internal Server Error',
-			headers: request.headers,
-			query: request.query,
-			body: request.body,
-			params: request.params,
+			// headers: request.headers,
+			// query: request.query,
+			// body: request.body,
+			// params: request.params,
 			timestamp: new Date().toISOString(),
-			ip: requestIp.getClientIp(request),
+			// ip: requestIp.getClientIp(request),
 		};
 
 		const getErrorMessage = () => {

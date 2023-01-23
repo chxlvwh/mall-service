@@ -1,5 +1,6 @@
 import {
 	Body,
+	ClassSerializerInterceptor,
 	Controller,
 	Delete,
 	Get,
@@ -9,25 +10,24 @@ import {
 	Post,
 	Put,
 	Query,
-	UseFilters,
 	UseGuards,
 	UseInterceptors,
 } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 import { GetUserDto } from './dto/get-users.dto';
-import { TypeormFilter } from '../filters/typeorm.filter';
 import { CreateUserPipe } from './pipes/create-user.pipe';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AdminGuard } from '../guards/admin.guard';
 import { JwtGuard } from '../guards/jwt.guard';
 import { SerializeInterceptor } from '../interceptors/serialize.interceptor';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { TypeORMFilter } from '../decorators/TypeORMFilter';
 
 @Controller('user')
-@UseFilters(new TypeormFilter())
+@TypeORMFilter()
 @UseGuards(JwtGuard)
-@UseInterceptors(SerializeInterceptor)
+@UseInterceptors(SerializeInterceptor, ClassSerializerInterceptor)
 export class UserController {
 	constructor(private userService: UserService) {}
 

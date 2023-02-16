@@ -1,6 +1,11 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 
+/**
+ * 主要功能：
+ * 转换：将输入数据转换为所需的形式（例如，从字符串到整数）
+ * 验证：评估输入数据，如果有效，则简单地通过它；否则抛出异常
+ */
 @Injectable()
 export class CreateUserPipe implements PipeTransform {
 	transform(value: CreateUserDto) {

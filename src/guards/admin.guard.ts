@@ -1,7 +1,13 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 
-// 在这个类中可以进行权限的验证
+/**
+ * Guard 唯一的功能是进行权限的验证
+ *
+ * 执行顺序：
+ * Request => 中间件middleware => 守卫guard => 拦截器interceptor => 管道pipe
+ * => 控制器controller => 服务service => 拦截器interceptor => 过滤器filter => Response
+ */
 @Injectable()
 export class AdminGuard implements CanActivate {
 	// 在使用AdminGuard 的时候要导入 UserModule，因为里面使用了 UserService

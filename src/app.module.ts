@@ -1,3 +1,6 @@
+import * as process from 'process';
+import * as dotenv from 'dotenv';
+import * as Joi from 'joi';
 import {
 	Module,
 	Logger,
@@ -5,16 +8,14 @@ import {
 	ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import * as process from 'process';
-import * as dotenv from 'dotenv';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as Joi from 'joi';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { connectionParams } from '../ormconfig';
 import { UserModule } from './user/user.module';
 import { LogsModule } from './logs/logs.module';
 import { RolesModule } from './roles/roles.module';
-import { connectionParams } from '../ormconfig';
+import { MenusModule } from './menus/menus.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -42,6 +43,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		LogsModule,
 		RolesModule,
 		AuthModule,
+		MenusModule,
 	],
 	providers: [
 		Logger,

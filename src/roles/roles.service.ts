@@ -26,6 +26,9 @@ export class RolesService {
 			where: {
 				id,
 			},
+			relations: {
+				menus: true,
+			},
 		});
 	}
 

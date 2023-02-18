@@ -10,6 +10,7 @@ import { Roles } from '../roles/roles.entity';
 	imports: [TypeOrmModule.forFeature([User, Roles])],
 	controllers: [UserController],
 	providers: [UserService],
+	// 导出到global，其他module不需要再专门引用
 	exports: [UserService],
 })
 export class UserModule {}

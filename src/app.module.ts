@@ -1,12 +1,7 @@
 import * as process from 'process';
 import * as dotenv from 'dotenv';
 import * as Joi from 'joi';
-import {
-	Module,
-	Logger,
-	Global,
-	ClassSerializerInterceptor,
-} from '@nestjs/common';
+import { Module, Logger, Global, ClassSerializerInterceptor } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -29,10 +24,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 			load: [() => dotenv.config({ path: '.env' })],
 			validationSchema: Joi.object({
 				DB_TYPE: Joi.string().valid('mysql', 'postgres'),
-				DB_HOST: Joi.alternatives().try(
-					Joi.string().ip(),
-					Joi.string().domain(),
-				),
+				DB_HOST: Joi.alternatives().try(Joi.string().ip(), Joi.string().domain()),
 				DB_PORT: Joi.number().default(3306),
 				DB_SYNC: Joi.boolean().default(false),
 				LOG_ON: Joi.boolean().default(false),

@@ -15,6 +15,6 @@ export enum LogConfigEnum {
 
 export enum AppConfigEnum {
 	APP_PORT = 'APP_PORT',
-	SECRET = 'SECRET',
+	SECRET = 'JWT_SECRET',
 	APP_URL_PREFIX = 'APP_URL_PREFIX',
 }

@@ -19,9 +19,7 @@ function buildConnectionOptions() {
 	const config = { ...defaultConfig, ...envConfig };
 
 	const entitiesDir =
-		process.env.NODE_ENV === 'test'
-			? [__dirname + '/**/*.entity.ts']
-			: [__dirname + '/**/*.entity{.js,.ts}'];
+		process.env.NODE_ENV === 'test' ? [__dirname + '/**/*.entity.ts'] : [__dirname + '/**/*.entity{.js,.ts}'];
 
 	return {
 		type: config[DBConfigEnum.DB_TYPE],
@@ -32,9 +30,7 @@ function buildConnectionOptions() {
 		database: config[DBConfigEnum.DB_DATABASE],
 		entities: entitiesDir,
 		// 同步本地的schema与数据库 -> 初始化的时候去使用
-		synchronize:
-			config[DBConfigEnum.DB_SYNC] &&
-			config[DBConfigEnum.DB_SYNC].toUpperCase() === 'TRUE',
+		synchronize: config[DBConfigEnum.DB_SYNC] && config[DBConfigEnum.DB_SYNC].toUpperCase() === 'TRUE',
 		logging: process.env.NODE_ENV === 'development',
 		// logging: ['error'],
 	} as TypeOrmModuleOptions;

@@ -7,16 +7,21 @@ services:
     image: mysql
     # 这里一定要把port暴露出来才能从docker外部（本地）连接！！
     ports:
-      - "3308:3306"
+      - "12000:3306"
     # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
     # (this is just an example, not intended to be a production configuration)
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_ROOT_PASSWORD: 0ZA5H7wkdjrwpcGSY4uSW6SZSsXwJuUO
+      MYSQL_DATABASE: nestjs-backend
+      MYSQL_USER: lenny
+      MYSQL_PASSWORD: gTUNtfGXpYi3IJtd07rh6dI3sIcm2lCV
+    volumes:
+      - /home/mysql/db:/var/lib/mysql
 
   adminer:
     image: adminer
     restart: always
     ports:
-      - "8088:8080"
+      - "12005:8080"

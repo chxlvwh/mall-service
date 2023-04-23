@@ -9,6 +9,7 @@ import {
 import { HttpAdapterHost } from '@nestjs/core';
 // import * as requestIp from 'request-ip';
 
+/** Filter主要进行错误拦截 */
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
 	private logger = new Logger();

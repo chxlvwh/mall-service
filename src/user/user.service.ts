@@ -32,10 +32,7 @@ export class UserService {
 			'roles.id': role,
 		};
 
-		return conditionUtils(queryBuilder, obj)
-			.take(take)
-			.skip(skip)
-			.getMany();
+		return conditionUtils(queryBuilder, obj).take(take).skip(skip).getMany();
 		/**
 		 * return this.userRepository.find({
 		 * 			select: {
@@ -68,7 +65,9 @@ export class UserService {
 		return this.userRepository.findOne({
 			where: { username },
 			relations: {
-				roles: true,
+				roles: {
+					menus: true,
+				},
 			},
 		});
 	}

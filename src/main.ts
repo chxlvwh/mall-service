@@ -18,7 +18,7 @@ async function bootstrap() {
 	// 全局管道，主要用来做数据的验证和类型转换
 	app.useGlobalPipes(
 		new ValidationPipe({
-			// 去除在类上不存做的字段
+			// 去除在类上不存在的字段
 			whitelist: true,
 			forbidUnknownValues: false,
 		}),

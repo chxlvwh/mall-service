@@ -1,11 +1,4 @@
-import {
-	ArgumentsHost,
-	Catch,
-	ExceptionFilter,
-	HttpException,
-	HttpStatus,
-	Logger,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 // import * as requestIp from 'request-ip';
 
@@ -24,16 +17,11 @@ export class AllExceptionFilter implements ExceptionFilter {
 		const response = ctx.getResponse();
 
 		const httpStatus =
-			exception instanceof HttpException
-				? exception.getStatus()
-				: HttpStatus.INTERNAL_SERVER_ERROR;
+			exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
 		const responseBody = {
 			exception: exception['name'],
-			error:
-				exception['response'] ||
-				exception['message'] ||
-				'Internal Server Error',
+			error: exception['response'] || exception['message'] || 'Internal Server Error',
 			// headers: request.headers,
 			// query: request.query,
 			// body: request.body,
@@ -49,10 +37,7 @@ export class AllExceptionFilter implements ExceptionFilter {
 			return responseBody.error;
 		};
 
-		this.logger.error(
-			`[GlobalException] ${getErrorMessage()}`,
-			responseBody,
-		);
+		this.logger.error(`[GlobalException] ${getErrorMessage()}`, responseBody);
 		httpAdapter.reply(response, responseBody, httpStatus);
 	}
 }

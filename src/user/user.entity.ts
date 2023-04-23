@@ -1,12 +1,4 @@
-import {
-	Column,
-	Entity,
-	JoinTable,
-	ManyToMany,
-	OneToMany,
-	OneToOne,
-	PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Logs } from '../logs/logs.entity';
 import { Roles } from '../roles/roles.entity';
 import { Profile } from './profile.entity';

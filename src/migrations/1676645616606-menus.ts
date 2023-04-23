@@ -28,18 +28,10 @@ export class menus1676645616606 implements MigrationInterface {
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {
-		await queryRunner.query(
-			`ALTER TABLE \`role_menus\` DROP FOREIGN KEY \`FK_135e41fb3c98312c5f171fe9f1c\``,
-		);
-		await queryRunner.query(
-			`ALTER TABLE \`role_menus\` DROP FOREIGN KEY \`FK_cf82e501e9b61eab5d815ae3b0a\``,
-		);
-		await queryRunner.query(
-			`DROP INDEX \`IDX_135e41fb3c98312c5f171fe9f1\` ON \`role_menus\``,
-		);
-		await queryRunner.query(
-			`DROP INDEX \`IDX_cf82e501e9b61eab5d815ae3b0\` ON \`role_menus\``,
-		);
+		await queryRunner.query(`ALTER TABLE \`role_menus\` DROP FOREIGN KEY \`FK_135e41fb3c98312c5f171fe9f1c\``);
+		await queryRunner.query(`ALTER TABLE \`role_menus\` DROP FOREIGN KEY \`FK_cf82e501e9b61eab5d815ae3b0a\``);
+		await queryRunner.query(`DROP INDEX \`IDX_135e41fb3c98312c5f171fe9f1\` ON \`role_menus\``);
+		await queryRunner.query(`DROP INDEX \`IDX_cf82e501e9b61eab5d815ae3b0\` ON \`role_menus\``);
 		await queryRunner.query(`DROP TABLE \`role_menus\``);
 		await queryRunner.query(`DROP TABLE \`menus\``);
 	}

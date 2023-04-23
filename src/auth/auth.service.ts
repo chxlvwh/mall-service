@@ -6,10 +6,7 @@ import * as argon2 from 'argon2';
 
 @Injectable()
 export class AuthService {
-	constructor(
-		private userService: UserService,
-		private jwtService: JwtService,
-	) {}
+	constructor(private userService: UserService, private jwtService: JwtService) {}
 	async login(loginUserDto: LoginUserDto) {
 		const { username, password } = loginUserDto;
 		const user = await this.userService.find(username);

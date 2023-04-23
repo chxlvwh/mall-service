@@ -15,7 +15,7 @@ async function bootstrap() {
 	const httpAdapter = app.get(HttpAdapterHost);
 	// 全局过滤器，主要做异常处理
 	app.useGlobalFilters(new AllExceptionFilter(httpAdapter));
-	// 全局通道，主要用来做数据的验证和类型转换
+	// 全局管道，主要用来做数据的验证和类型转换
 	app.useGlobalPipes(
 		new ValidationPipe({
 			// 去除在类上不存做的字段

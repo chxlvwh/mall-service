@@ -9,6 +9,7 @@ import { JwtGuard } from '../guards/jwt.guard';
 
 @Controller('roles')
 @Roles(RolesEnum.Admin)
+// 执行顺序：从前往后
 @UseGuards(JwtGuard, RoleGuard)
 export class RolesController {
 	constructor(private rolesService: RolesService) {}

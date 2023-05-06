@@ -14,6 +14,7 @@ export class AdminGuard implements CanActivate {
 	constructor(private userService: UserService) {}
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest();
+		// 这里的 user 是从 AuthStrategy 的 validate 方法中流转过来的
 		if (req.user) {
 			console.log('======[admin.guard.ts：line9：]======', req.user);
 			const user = await this.userService.find(req.user.username);

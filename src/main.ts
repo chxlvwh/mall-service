@@ -19,6 +19,10 @@ async function bootstrap() {
 	app.useGlobalPipes(
 		new ValidationPipe({
 			// 去除在类上不存在的字段
+			/**
+			 * If set to true validator will strip validated object of any properties that do not have any decorators.
+			 * Tip: if no other decorator is suitable for your property use @Allow decorator.
+			 */
 			whitelist: true,
 			forbidUnknownValues: false,
 		}),

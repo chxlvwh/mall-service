@@ -41,6 +41,9 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		MenusModule,
 	],
 	// 模块中所有用到的功能类，模块内共享使用
+	/**
+	 * 跟app.useGlobalInterceptors()的区别是，用provider的方式可以注入依赖
+	 */
 	providers: [
 		Logger,
 		// 全局拦截器，主要对数据脱敏和参数的序列化

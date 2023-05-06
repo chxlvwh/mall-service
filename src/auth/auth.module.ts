@@ -18,6 +18,7 @@ import { CaslAbilityService } from './casl-ability.service';
 			imports: [ConfigModule],
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService) => {
+				// 生成token的额外配置
 				return {
 					secret: configService.get(AppConfigEnum.SECRET),
 					signOptions: {

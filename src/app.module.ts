@@ -16,7 +16,9 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
 @Global()
 @Module({
+	// 导入其他模块中导出的Providers，以实现共享
 	imports: [
+		// 设置配置文件地址和作用域已经加载方式
 		ConfigModule.forRoot({
 			isGlobal: true,
 			// 下面两个配置中，如果有重复的变量，第一个优先
@@ -30,6 +32,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 				LOG_ON: Joi.boolean().default(false),
 			}),
 		}),
+		// 加载数据库配置
 		TypeOrmModule.forRoot(connectionParams),
 		UserModule,
 		LogsModule,
@@ -37,6 +40,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		AuthModule,
 		MenusModule,
 	],
+	// 模块中所有用到的功能类，模块内共享使用
 	providers: [
 		Logger,
 		// 全局拦截器，主要对数据脱敏和参数的序列化
@@ -50,6 +54,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		// 	useClass: AdminGuard,
 		// },
 	],
+	// 导出其他模块需要共享的Providers
 	exports: [Logger],
 })
 export class AppModule {}

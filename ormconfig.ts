@@ -31,8 +31,9 @@ function buildConnectionOptions() {
 		entities: entitiesDir,
 		// 同步本地的schema与数据库 -> 初始化的时候去使用
 		synchronize: config[DBConfigEnum.DB_SYNC] && config[DBConfigEnum.DB_SYNC].toUpperCase() === 'TRUE',
-		logging: process.env.NODE_ENV === 'development',
-		// logging: ['error'],
+		// 是否在控制台打印数据库访问日志
+		// logging: process.env.NODE_ENV === 'development',
+		logging: ['error'],
 	} as TypeOrmModuleOptions;
 }
 

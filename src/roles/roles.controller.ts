@@ -8,7 +8,8 @@ import { RoleGuard } from '../guards/role.guard';
 import { JwtGuard } from '../guards/jwt.guard';
 
 @Controller('roles')
-@Roles(RolesEnum.Admin)
+// 配置元数据，这样可以在 guard 中使用reflector拿到这个数据
+@Roles(RolesEnum.Admin, RolesEnum.User)
 // 执行顺序：从前往后
 @UseGuards(JwtGuard, RoleGuard)
 export class RolesController {

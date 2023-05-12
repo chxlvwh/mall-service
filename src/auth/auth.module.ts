@@ -12,7 +12,6 @@ import { CaslAbilityService } from './casl-ability.service';
 @Global()
 @Module({
 	imports: [
-		UserModule,
 		PassportModule,
 		JwtModule.registerAsync({
 			imports: [ConfigModule],

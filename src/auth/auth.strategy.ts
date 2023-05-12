@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AppConfigEnum } from '../../enum/config.enum';
 
+// passport-jwt包的作用是实现jwt策略，这样就可以使用@UseGuards(AuthGuard('jwt'))
 // 通过扩展PassportStrategy配置passport 策略
 @Injectable()
 export class AuthStrategy extends PassportStrategy(Strategy) {
@@ -22,7 +23,8 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
 	}
 
 	async validate(payload: any) {
-		// 这里的 payload 是在 authService 中生成 access_token 的时候假如的参数。
+		console.log({ userId: payload.sub, username: payload.username });
+		// 这里的 payload 是在 authService 中生成 access_token 的时候加入的参数。
 		return { userId: payload.sub, username: payload.username };
 	}
 }

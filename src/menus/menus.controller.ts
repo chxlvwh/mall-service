@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards } from '@nestjs/common';
 import { MenusService } from './menus.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
+import { JwtGuard } from '../guards/jwt.guard';
 
+@UseGuards(JwtGuard)
 @Controller('menus')
 export class MenusController {
 	constructor(private readonly menusService: MenusService) {}

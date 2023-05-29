@@ -12,24 +12,24 @@ import {
 	UseGuards,
 	UseInterceptors,
 } from '@nestjs/common';
-import { User } from './user.entity';
-import { UserService } from './user.service';
-import { GetUserDto } from './dto/get-users.dto';
-import { CreateUserPipe } from './pipes/create-user.pipe';
-import { CreateUserDto } from './dto/create-user.dto';
-import { AdminGuard } from '../guards/admin.guard';
-import { JwtGuard } from '../guards/jwt.guard';
-import { SerializeInterceptor } from '../interceptors/serialize.interceptor';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { TypeORMFilter } from '../decorators/TypeORMFilter';
+import { User } from '../user.entity';
+import { UserService } from '../user.service';
+import { GetUserDto } from '../dto/get-users.dto';
+import { CreateUserPipe } from '../pipes/create-user.pipe';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { AdminGuard } from '../../guards/admin.guard';
+import { JwtGuard } from '../../guards/jwt.guard';
+import { SerializeInterceptor } from '../../interceptors/serialize.interceptor';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { TypeORMFilter } from '../../decorators/TypeORMFilter';
 
-@Controller('user')
+@Controller('public/user')
 @TypeORMFilter()
 // 这里等同于 @UseGuards(AuthGuard('jwt')), JwtGuard 只不过做了一层封装
 // controller 中 guard 的优先级大于方法中的。
 @UseGuards(JwtGuard)
 @UseInterceptors(SerializeInterceptor)
-export class UserController {
+export class UserPublicController {
 	constructor(private userService: UserService) {}
 
 	@Get()

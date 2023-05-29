@@ -8,6 +8,7 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 	app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+	// app.enableCors();
 	app.setGlobalPrefix('api/v1');
 	// 全局的 filter 只能有一个
 	// app.useGlobalFilters(new HttpExceptionFilter());

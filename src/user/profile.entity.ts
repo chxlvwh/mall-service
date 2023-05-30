@@ -22,7 +22,7 @@ export class Profile {
 
 	@Column({ name: 'nick_name' })
 	@IsOptional()
-	nickName: number;
+	nickName: string;
 
 	@Column()
 	@IsOptional()

@@ -3,5 +3,5 @@ import { Profile } from '../profile.entity';
 
 export class UpdateUserDto {
 	@Allow()
-	profile?: Profile;
+	profile: Profile;
 }

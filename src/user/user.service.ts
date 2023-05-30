@@ -8,7 +8,7 @@ import { Roles } from '../roles/roles.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as argon2 from 'argon2';
 import { Profile } from './profile.entity';
-import { use } from 'passport';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -101,7 +101,10 @@ export class UserService {
 		return await this.dataSource.transaction(async (manager) => {
 			// 先存主表
 			// save方法保存后返回的是一个 User 对象
-			const newUser = await manager.save(User, { ...user, roles });
+			const newUser = await manager.save(User, {
+				...{ ...user, password: await argon2.hash(user.password) },
+				roles,
+			});
 			const profile = new Profile();
 			if (user.profile) {
 				profile.gender = user.profile.gender;
@@ -116,10 +119,15 @@ export class UserService {
 		});
 	}
 
-	async update(id: number, dto: any) {
+	async update(id: number, updateUserDto: UpdateUserDto) {
 		const userTemp = await this.findProfile(id);
-		const newUser = this.userRepository.merge(userTemp, dto);
-		return this.userRepository.save(newUser);
+		return await this.dataSource.transaction(async (manager) => {
+			// 先存主表
+			// save方法保存后返回的是一个 User 对象
+			await manager.update(User, id, { ...userTemp, ...updateUserDto });
+			const profile = { ...userTemp.profile, ...updateUserDto.profile };
+			return await manager.update(Profile, profile.id, profile);
+		});
 	}
 
 	async remove(id: number) {

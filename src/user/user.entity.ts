@@ -37,13 +37,10 @@ export class User {
 	@OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
 	profile: Profile;
 
-	@Column({ name: 'login_time' })
-	loginTime: Date;
-
-	@UpdateDateColumn({ name: 'create_at' })
+	@CreateDateColumn({ name: 'create_at' })
 	createAt: Date;
 
-	@CreateDateColumn({ name: 'last_modified' })
+	@UpdateDateColumn({ name: 'last_modified' })
 	lastModifiedAt: Date;
 
 	@DeleteDateColumn({ name: 'delete_at' })

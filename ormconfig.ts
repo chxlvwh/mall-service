@@ -30,6 +30,7 @@ function buildConnectionOptions() {
 		database: config[DBConfigEnum.DB_DATABASE],
 		entities: entitiesDir,
 		// 同步本地的schema与数据库 -> 初始化的时候去使用
+		// 如果是 true，那么在连接数据库时，typeorm 会自动根据 entity 目录来修改数据表
 		synchronize: config[DBConfigEnum.DB_SYNC] && config[DBConfigEnum.DB_SYNC].toUpperCase() === 'TRUE',
 		// 是否在控制台打印数据库访问日志
 		// logging: process.env.NODE_ENV === 'development',

@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { In, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { GetUserDto } from './dto/get-users.dto';
 import { conditionUtils } from '../utils/db.helper';
 import { Roles } from '../roles/roles.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as argon2 from 'argon2';
+import { Profile } from './profile.entity';
+import { use } from 'passport';
 
 @Injectable()
 export class UserService {
@@ -15,6 +17,7 @@ export class UserService {
 		private readonly userRepository: Repository<User>,
 		@InjectRepository(Roles)
 		private readonly rolesRepository: Repository<Roles>,
+		private dataSource: DataSource,
 	) {}
 
 	findAll(query: GetUserDto) {
@@ -92,11 +95,25 @@ export class UserService {
 				},
 			});
 		}
-		//  Creates a new instance of User. Optionally accepts an object literal
-		//  with user properties which will be written into newly created user object
-		const userTmp = await this.userRepository.create({ ...user, roles });
-		userTmp.password = await argon2.hash(userTmp.password);
-		return await this.userRepository.save(userTmp);
+		// Creates a new instance of User. Optionally accepts an object literal
+		// with user properties which will be written into newly created user object
+		// 创建事务
+		return await this.dataSource.transaction(async (manager) => {
+			// 先存主表
+			// save方法保存后返回的是一个 User 对象
+			const newUser = await manager.save(User, { ...user, roles });
+			const profile = new Profile();
+			if (user.profile) {
+				profile.gender = user.profile.gender;
+				profile.address = user.profile.address;
+				profile.avatar = user.profile.avatar;
+				profile.email = user.profile.email;
+				profile.nickName = user.profile.nickName;
+			}
+			profile.user = newUser;
+			await manager.insert(Profile, profile);
+			return await this.findOne(newUser.id);
+		});
 	}
 
 	async update(id: number, dto: any) {
@@ -129,4 +146,8 @@ export class UserService {
 			relations: { profile: true },
 		});
 	}
+
+	// updateProfile(profile: Partial<Profile>): Profile<Profile> {
+	// 	return this.userRepository
+	// }
 }

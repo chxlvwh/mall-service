@@ -1,10 +1,7 @@
-import { IsOptional, IsString } from 'class-validator';
+import { Allow } from 'class-validator';
 import { Profile } from '../profile.entity';
 
 export class UpdateUserDto {
-	@IsString()
-	username: string;
-
-	@IsOptional()
+	@Allow()
 	profile?: Profile;
 }

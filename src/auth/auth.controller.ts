@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, Res, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { TypeORMFilter } from '../decorators/TypeORMFilter';

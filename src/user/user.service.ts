@@ -106,8 +106,21 @@ export class UserService {
 	}
 
 	async remove(id: number) {
-		const user = await this.findOne(id);
-		return this.userRepository.remove(user);
+		try {
+			await this.userRepository.softDelete(id);
+		} catch (e) {
+			console.info('UserService caught an error when remove user.', e);
+		}
+	}
+
+	async restore(id: number) {
+		try {
+			await this.userRepository.restore(id);
+			// console.log('[user.service.ts:] ', await this.findOne(id));
+			return await this.findOne(id);
+		} catch (e) {
+			console.info('UserService caught an error when restore user.', e);
+		}
 	}
 
 	findProfile(id: number): Promise<User> {

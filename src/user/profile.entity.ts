@@ -10,7 +10,7 @@ export class Profile {
 	gender: number;
 
 	@Column()
-	photo: string;
+	avatar: string;
 
 	@Column()
 	address: string;

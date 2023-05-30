@@ -23,11 +23,11 @@ import { SerializeInterceptor } from '../../interceptors/serialize.interceptor';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { TypeORMFilter } from '../../decorators/TypeORMFilter';
 
-@Controller('user')
+@Controller('admin/user')
 @TypeORMFilter()
 // 这里等同于 @UseGuards(AuthGuard('jwt')), JwtGuard 只不过做了一层封装
 // controller 中 guard 的优先级大于方法中的。
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, AdminGuard)
 @UseInterceptors(SerializeInterceptor)
 export class UserAdminController {
 	constructor(private userService: UserService) {}
@@ -46,6 +46,12 @@ export class UserAdminController {
 	@Post()
 	createUser(@Body(CreateUserPipe) createUserDto: CreateUserDto): Promise<User> {
 		return this.userService.create(createUserDto);
+	}
+
+	@Put(':id/restore')
+	@HttpCode(204)
+	async restoreUser(@Param() params): Promise<any> {
+		return await this.userService.restore(params.id);
 	}
 
 	@Put(':id')

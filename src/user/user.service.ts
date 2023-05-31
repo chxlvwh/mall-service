@@ -76,7 +76,7 @@ export class UserService {
 	}
 
 	findOne(id: number) {
-		return this.userRepository.findOne({ where: { id } });
+		return this.userRepository.findOne({ where: { id }, relations: { profile: true } });
 	}
 
 	async create(user: CreateUserDto) {
@@ -122,11 +122,13 @@ export class UserService {
 	async update(id: number, updateUserDto: UpdateUserDto) {
 		const userTemp = await this.findProfile(id);
 		return await this.dataSource.transaction(async (manager) => {
-			// 先存主表
-			// save方法保存后返回的是一个 User 对象
-			await manager.update(User, id, { ...userTemp, ...updateUserDto });
+			const user = new User();
+			user.username = updateUserDto.username || userTemp.username;
+			// 先更新主表
+			await manager.update(User, id, user);
 			const profile = { ...userTemp.profile, ...updateUserDto.profile };
-			return await manager.update(Profile, profile.id, profile);
+			await manager.update(Profile, profile.id, profile);
+			return manager.findOne(User, { where: { id }, relations: { profile: true } });
 		});
 	}
 

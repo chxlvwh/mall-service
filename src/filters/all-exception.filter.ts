@@ -27,6 +27,7 @@ export class AllExceptionFilter implements ExceptionFilter {
 			// body: request.body,
 			// params: request.params,
 			timestamp: new Date().toISOString(),
+			stack: exception['stack'],
 			// ip: requestIp.getClientIp(request),
 		};
 

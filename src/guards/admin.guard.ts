@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { BadRequestException, CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 
 /**
@@ -18,6 +18,9 @@ export class AdminGuard implements CanActivate {
 		if (req.user) {
 			console.log('======[admin.guard.ts：line9：]======', req.user);
 			const user = await this.userService.find(req.user.username);
+			if (!user) {
+				throw new BadRequestException('当前用户不存在');
+			}
 			// 普通用户才能往下进行
 			if (user.roles.find((r) => r.id === 3)) return true;
 		}

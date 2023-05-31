@@ -115,7 +115,7 @@ export class UserService {
 			}
 			profile.user = newUser;
 			await manager.insert(Profile, profile);
-			return await this.findOne(newUser.id);
+			return manager.findOne(User, { where: { id: newUser.id }, relations: { profile: true } });
 		});
 	}
 

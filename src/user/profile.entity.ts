@@ -1,38 +1,29 @@
-import {
-	Column,
-	CreateDateColumn,
-	DeleteDateColumn,
-	Entity,
-	JoinColumn,
-	OneToOne,
-	PrimaryGeneratedColumn,
-	UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsOptional } from 'class-validator';
 
 @Entity()
 export class Profile {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@Column()
+	@Column({ nullable: true })
 	@IsOptional()
 	gender: number;
 
-	@Column({ name: 'nick_name' })
+	@Column({ name: 'nick_name', nullable: true })
 	@IsOptional()
 	nickName: string;
 
-	@Column()
+	@Column({ nullable: true })
 	@IsOptional()
 	email: string;
 
-	@Column()
+	@Column({ nullable: true })
 	@IsOptional()
 	avatar: string;
 
-	@Column()
+	@Column({ nullable: true })
 	@IsOptional()
 	address: string;
 

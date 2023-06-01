@@ -20,22 +20,31 @@ export class UserService {
 		private dataSource: DataSource,
 	) {}
 
-	findAll(query: GetUserDto) {
-		const { limit, page, username, gender, role } = query;
-		const take = limit || 10;
-		const skip = ((page || 1) - 1) * take;
+	async findAll(query: GetUserDto) {
+		const { pageSize, current, username, gender, role, nickname, email } = query;
+		const take = pageSize || 10;
+		const skip = ((current || 1) - 1) * take;
 		const queryBuilder = this.userRepository
 			.createQueryBuilder('user')
 			.leftJoinAndSelect('user.profile', 'profile')
 			.leftJoinAndSelect('user.roles', 'roles');
 
 		const obj = {
-			'user.username': username,
-			'profile.gender': gender,
-			'roles.id': role,
+			'user.username': { value: username, isLike: true },
+			'profile.gender': { value: gender, isLike: true },
+			'profile.nickname': { value: nickname },
+			'profile.email': { value: email },
+			'roles.id': { value: role },
 		};
 
-		return conditionUtils(queryBuilder, obj).take(take).skip(skip).getMany();
+		const queryResult = await conditionUtils(queryBuilder, obj).take(take).skip(skip).getManyAndCount();
+
+		return {
+			elements: queryResult[0],
+			total: queryResult[1],
+			current,
+			pageSize,
+		};
 		/**
 		 * return this.userRepository.find({
 		 * 			select: {
@@ -111,7 +120,7 @@ export class UserService {
 				profile.address = user.profile.address;
 				profile.avatar = user.profile.avatar;
 				profile.email = user.profile.email;
-				profile.nickName = user.profile.nickName;
+				profile.nickname = user.profile.nickname;
 			}
 			profile.user = newUser;
 			await manager.insert(Profile, profile);

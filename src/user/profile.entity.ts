@@ -11,9 +11,9 @@ export class Profile {
 	@IsOptional()
 	gender: number;
 
-	@Column({ name: 'nick_name', nullable: true })
+	@Column({ nullable: true })
 	@IsOptional()
-	nickName: string;
+	nickname: string;
 
 	@Column({ nullable: true })
 	@IsOptional()

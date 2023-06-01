@@ -25,6 +25,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { TypeORMFilter } from '../../decorators/TypeORMFilter';
 
 @Controller('admin/user')
+@UseGuards(AdminGuard)
 @TypeORMFilter()
 // 这里等同于 @UseGuards(AuthGuard('jwt')), JwtGuard 只不过做了一层封装
 // controller 中 guard 的优先级大于方法中的。
@@ -33,10 +34,9 @@ import { TypeORMFilter } from '../../decorators/TypeORMFilter';
 export class UserAdminController {
 	constructor(private userService: UserService) {}
 
-	@Get()
-	@UseGuards(AdminGuard)
-	getAllUsers(@Query() query: GetUserDto): any {
-		return this.userService.findAll(query);
+	@Get('list')
+	getAllUsers(@Query() query: GetUserDto, @Req() request): any {
+		return this.userService.findAll(request.query);
 	}
 
 	@Get('info')

@@ -1,7 +1,9 @@
 export class GetUserDto {
-	page: number;
-	limit?: number;
+	current: number;
+	pageSize?: number;
 	username?: string;
 	role?: number;
 	gender?: number;
+	nickname?: string;
+	email?: string;
 }

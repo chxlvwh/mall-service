@@ -38,7 +38,7 @@ export class User {
 	profile: Profile;
 
 	@CreateDateColumn({ name: 'create_at' })
-	createAt: Date;
+	createdAt: Date;
 
 	@UpdateDateColumn({ name: 'last_modified' })
 	lastModifiedAt: Date;

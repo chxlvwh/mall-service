@@ -2,8 +2,8 @@ import { SelectQueryBuilder } from 'typeorm';
 
 export function conditionUtils<T>(queryBuilder: SelectQueryBuilder<T>, obj) {
 	(Reflect.ownKeys(obj) as string[]).forEach((key) => {
-		queryBuilder.andWhere(obj[key] ? `${key}=:${key}` : '1=1', {
-			[key]: obj[key],
+		queryBuilder.andWhere(obj[key].value ? (obj[key].isLike ? `${key} LIKE :${key}` : `${key}=:${key}`) : '1=1', {
+			[key]: obj[key].isLike ? `%${obj[key].value}%` : obj[key].value,
 		});
 	});
 

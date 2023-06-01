@@ -9,6 +9,7 @@ import {
 	Post,
 	Put,
 	Query,
+	Req,
 	UseGuards,
 	UseInterceptors,
 } from '@nestjs/common';
@@ -36,6 +37,11 @@ export class UserPublicController {
 	@UseGuards(AdminGuard)
 	getAllUsers(@Query() query: GetUserDto): any {
 		return this.userService.findAll(query);
+	}
+
+	@Get('info')
+	getSelfInfo(@Req() request): Promise<User> {
+		return this.userService.findOne(request.user.userId);
 	}
 
 	@Get(':id')

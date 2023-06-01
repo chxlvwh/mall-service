@@ -76,7 +76,7 @@ export class UserService {
 	}
 
 	findOne(id: number) {
-		return this.userRepository.findOne({ where: { id }, relations: { profile: true } });
+		return this.userRepository.findOne({ where: { id }, relations: { profile: true, roles: true } });
 	}
 
 	async create(user: CreateUserDto) {

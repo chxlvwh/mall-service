@@ -20,8 +20,7 @@ export class SerializeInterceptor implements NestInterceptor {
 		return next.handle().pipe(
 			// 在请求处理之后
 			map((data) => {
-				console.log('======[serialize.interceptor.ts：：]======', data);
-				return data;
+				return { code: 200, data, message: 'success' };
 			}),
 		);
 	}

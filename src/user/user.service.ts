@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, In, IsNull, Not, Repository } from 'typeorm';
 import { GetUserDto } from './dto/get-users.dto';
 import { conditionUtils } from '../utils/db.helper';
 import { Roles } from '../roles/roles.entity';
@@ -21,13 +21,23 @@ export class UserService {
 	) {}
 
 	async findAll(query: GetUserDto) {
-		const { pageSize, current, username, gender, role, nickname, email } = query;
+		const { pageSize, current, username, gender, role, nickname, email, isDeleted } = query;
+		let deletedObj = {};
+		if (isDeleted === 'true')
+			deletedObj = {
+				deletedAt: IsNull(),
+			};
+		if (isDeleted === 'false')
+			deletedObj = {
+				deletedAt: Not(IsNull()),
+			};
 		const take = pageSize || 10;
 		const skip = ((current || 1) - 1) * take;
 		const queryBuilder = this.userRepository
 			.createQueryBuilder('user')
 			.leftJoinAndSelect('user.profile', 'profile')
-			.leftJoinAndSelect('user.roles', 'roles');
+			.leftJoinAndSelect('user.roles', 'roles')
+			.where(deletedObj);
 
 		const obj = {
 			'user.username': { value: username, isLike: true },

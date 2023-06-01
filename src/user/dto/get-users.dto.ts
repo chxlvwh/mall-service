@@ -6,4 +6,5 @@ export class GetUserDto {
 	gender?: number;
 	nickname?: string;
 	email?: string;
+	isDeleted?: string;
 }

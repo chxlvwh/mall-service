@@ -1,5 +1,4 @@
 import { Allow, IsOptional } from 'class-validator';
-import { Profile } from '../profile.entity';
 import { Roles } from '../../roles/roles.entity';
 
 export class UpdateUserDto {

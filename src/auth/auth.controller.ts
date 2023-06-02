@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { TypeORMFilter } from '../decorators/TypeORMFilter';
@@ -21,5 +21,10 @@ export class AuthController {
 	@Post('signup')
 	signup(@Body() loginUserDto: LoginUserDto) {
 		return this.authService.signup(loginUserDto);
+	}
+
+	@Post('logout')
+	logout(@Req() request) {
+		return this.authService.logout(request.user);
 	}
 }

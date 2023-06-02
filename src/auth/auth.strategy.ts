@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -22,6 +22,7 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
 		});
 	}
 
+	// 配置jwtGuard的地方会走这里
 	async validate(payload: any) {
 		console.log({ userId: payload.sub, username: payload.username });
 		// 这里的 payload 是在 authService 中生成 access_token 的时候加入的参数。

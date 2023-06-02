@@ -1,7 +1,7 @@
 import * as process from 'process';
 import * as dotenv from 'dotenv';
 import * as Joi from 'joi';
-import { Module, Logger, Global, ClassSerializerInterceptor } from '@nestjs/common';
+import { Module, Logger, Global, ClassSerializerInterceptor, CacheModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -32,6 +32,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 				LOG_ON: Joi.boolean().default(false),
 			}),
 		}),
+		CacheModule.register(),
 		// 加载数据库配置
 		TypeOrmModule.forRoot(connectionParams),
 		UserModule,
@@ -57,7 +58,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		// 	useClass: AdminGuard,
 		// },
 	],
-	// 导出其他模块需要共享的Providers
-	exports: [Logger],
+	// 导出其他模块需要依赖的Providers
+	exports: [Logger, CacheModule],
 })
 export class AppModule {}

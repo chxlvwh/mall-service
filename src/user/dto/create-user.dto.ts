@@ -1,6 +1,5 @@
 import { Roles } from '../../roles/roles.entity';
-import { Allow, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
-import { Profile } from '../profile.entity';
+import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
 
 export class CreateUserDto {
 	@IsString()

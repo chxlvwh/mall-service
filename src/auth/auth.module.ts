@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { CacheModule, Global, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
@@ -13,7 +13,7 @@ import { CaslAbilityService } from './casl-ability.service';
 	imports: [
 		PassportModule,
 		JwtModule.registerAsync({
-			imports: [ConfigModule],
+			imports: [ConfigModule, AuthModule],
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService) => {
 				// 生成token的额外配置
@@ -25,6 +25,8 @@ import { CaslAbilityService } from './casl-ability.service';
 				};
 			},
 		}),
+		// 加载缓存配置
+		CacheModule.register(),
 	],
 	providers: [AuthService, AuthStrategy, CaslAbilityService],
 	controllers: [AuthController],

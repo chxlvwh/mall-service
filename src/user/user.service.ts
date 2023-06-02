@@ -22,22 +22,17 @@ export class UserService {
 
 	async findAll(query: GetUserDto) {
 		const { pageSize, current, username, gender, role, nickname, email, isDeleted } = query;
-		let deletedObj = {};
-		if (isDeleted === 'true')
-			deletedObj = {
-				deletedAt: IsNull(),
-			};
-		if (isDeleted === 'false')
-			deletedObj = {
-				deletedAt: Not(IsNull()),
-			};
 		const take = pageSize || 10;
 		const skip = ((current || 1) - 1) * take;
-		const queryBuilder = this.userRepository
+		let queryBuilder = this.userRepository
 			.createQueryBuilder('user')
 			.leftJoinAndSelect('user.profile', 'profile')
-			.leftJoinAndSelect('user.roles', 'roles')
-			.where(deletedObj);
+			.leftJoinAndSelect('user.roles', 'roles');
+		if (!isDeleted) {
+			queryBuilder = queryBuilder.withDeleted();
+		} else if (isDeleted === '1') {
+			queryBuilder = queryBuilder.withDeleted().where({ deletedAt: Not(IsNull()) });
+		}
 
 		const obj = {
 			'user.username': { value: username, isLike: true },
@@ -51,9 +46,11 @@ export class UserService {
 
 		return {
 			elements: queryResult[0],
-			total: queryResult[1],
-			current,
-			pageSize,
+			paging: {
+				current,
+				pageSize,
+				total: queryResult[1],
+			},
 		};
 		/**
 		 * return this.userRepository.find({

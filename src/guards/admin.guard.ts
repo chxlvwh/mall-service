@@ -1,14 +1,5 @@
-import {
-	BadRequestException,
-	CanActivate,
-	ExecutionContext,
-	Inject,
-	Injectable,
-	UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
 
 /**
  * Guard 唯一的功能是进行权限的验证
@@ -20,11 +11,11 @@ import { Cache } from 'cache-manager';
 @Injectable()
 export class AdminGuard implements CanActivate {
 	// 在使用AdminGuard 的时候要导入 UserModule，因为里面使用了 UserService
-	constructor(private userService: UserService, @Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+	constructor(private userService: UserService) {}
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest();
 		// 这里的 user 是从 AuthStrategy 的 validate 方法中流转过来的
-		if (req.user && (await this.cacheManager.get(`token-${req.user.userId}`))) {
+		if (req.user) {
 			console.log('======[admin.guard.ts：line9：]======', req.user);
 			const user = await this.userService.find(req.user.username);
 			if (!user) {
@@ -33,10 +24,8 @@ export class AdminGuard implements CanActivate {
 			// 管理员才能往下进行
 			if (user.roles.find((r) => r.id === 1)) {
 				return true;
-			} else {
-				await this.cacheManager.del(`token-${user.id}`);
 			}
 		}
-		return false;
+		throw new ForbiddenException('没有权限访问');
 	}
 }

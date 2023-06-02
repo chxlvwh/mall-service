@@ -1,5 +1,5 @@
 import { Roles } from '../../roles/roles.entity';
-import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import { Allow, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
 import { Profile } from '../profile.entity';
 
 export class CreateUserDto {
@@ -13,8 +13,26 @@ export class CreateUserDto {
 	password: string;
 
 	@IsOptional()
-	roles?: Roles[] | number[];
+	remark?: string;
 
 	@IsOptional()
-	profile?: Profile;
+	gender?: number;
+
+	@IsOptional()
+	address?: string;
+
+	@IsOptional()
+	avatar?: string;
+
+	@IsOptional()
+	email?: string;
+
+	@IsOptional()
+	nickname?: string;
+
+	@IsOptional()
+	isDeleted?: number;
+
+	@IsOptional()
+	roles?: Roles[] | number[];
 }

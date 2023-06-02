@@ -27,6 +27,10 @@ export class Profile {
 	@IsOptional()
 	address: string;
 
+	@Column({ nullable: true })
+	@IsOptional()
+	remark: string;
+
 	@OneToOne(() => User, (user) => user.profile)
 	@JoinColumn()
 	user: User;

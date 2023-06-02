@@ -42,8 +42,8 @@ export class UserService {
 		const obj = {
 			'user.username': { value: username, isLike: true },
 			'profile.gender': { value: gender, isLike: true },
-			'profile.nickname': { value: nickname },
-			'profile.email': { value: email },
+			'profile.nickname': { value: nickname, isLike: true },
+			'profile.email': { value: email, isLike: true },
 			'roles.id': { value: role },
 		};
 
@@ -125,15 +125,16 @@ export class UserService {
 				roles,
 			});
 			const profile = new Profile();
-			if (user.profile) {
-				profile.gender = user.profile.gender;
-				profile.address = user.profile.address;
-				profile.avatar = user.profile.avatar;
-				profile.email = user.profile.email;
-				profile.nickname = user.profile.nickname;
-			}
+			profile.gender = user.gender;
+			profile.address = user.address;
+			profile.avatar = user.avatar;
+			profile.email = user.email;
+			profile.nickname = user.nickname;
 			profile.user = newUser;
 			await manager.insert(Profile, profile);
+			if (user.isDeleted && user.isDeleted.toString() === '1') {
+				await manager.softDelete(User, newUser.id);
+			}
 			return manager.findOne(User, { where: { id: newUser.id }, relations: { profile: true } });
 		});
 	}
@@ -145,8 +146,16 @@ export class UserService {
 			user.username = updateUserDto.username || userTemp.username;
 			// 先更新主表
 			await manager.update(User, id, user);
-			const profile = { ...userTemp.profile, ...updateUserDto.profile };
+			const profile = userTemp.profile;
+			profile.gender = updateUserDto.gender;
+			profile.address = updateUserDto.address;
+			profile.avatar = updateUserDto.avatar;
+			profile.email = updateUserDto.email;
+			profile.nickname = updateUserDto.nickname;
 			await manager.update(Profile, profile.id, profile);
+			if (!userTemp.deletedAt && updateUserDto.isDeleted && updateUserDto.isDeleted.toString() === '1') {
+				await manager.softDelete(User, id);
+			}
 			return manager.findOne(User, { where: { id }, relations: { profile: true } });
 		});
 	}

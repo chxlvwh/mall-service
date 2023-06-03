@@ -11,6 +11,7 @@ import { LogsModule } from './logs/logs.module';
 import { RolesModule } from './roles/roles.module';
 import { MenusModule } from './menus/menus.module';
 import { AuthModule } from './auth/auth.module';
+import { BrandModule } from './brand/brand.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -40,6 +41,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		RolesModule,
 		AuthModule,
 		MenusModule,
+		BrandModule,
 	],
 	// 模块中所有用到的功能类，模块内共享使用
 	/**

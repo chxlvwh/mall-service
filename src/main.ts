@@ -4,6 +4,7 @@ import { AllExceptionFilter } from './filters/all-exception.filter';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import * as process from 'process';
 import { ValidationPipe } from '@nestjs/common';
+import { SerializeInterceptor } from './interceptors/serialize.interceptor';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
@@ -12,6 +13,7 @@ async function bootstrap() {
 	app.setGlobalPrefix('api/v1');
 	// 全局的 filter 只能有一个
 	// app.useGlobalFilters(new HttpExceptionFilter());
+	app.useGlobalInterceptors(new SerializeInterceptor());
 
 	const httpAdapter = app.get(HttpAdapterHost);
 	// 全局过滤器，主要做异常处理

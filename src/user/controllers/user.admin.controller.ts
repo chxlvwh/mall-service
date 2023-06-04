@@ -29,7 +29,7 @@ import { TypeORMFilter } from '../../decorators/TypeORMFilter';
 // 这里等同于 @UseGuards(AuthGuard('jwt')), JwtGuard 只不过做了一层封装
 // controller 中 guard 的优先级大于方法中的。
 @UseGuards(JwtGuard, AdminGuard)
-@UseInterceptors(SerializeInterceptor)
+// @UseInterceptors(SerializeInterceptor)
 export class UserAdminController {
 	constructor(private userService: UserService) {}
 

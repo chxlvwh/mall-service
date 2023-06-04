@@ -26,19 +26,20 @@ export class BrandService {
 		return pagingFormat(result, current, pageSize);
 	}
 
-	findById(id: number) {
-		return this.brandRepository.findOne({ where: { id } });
+	findOne(id: string | number) {
+		return this.brandRepository.findOne({ where: { id: Number(id) } });
 	}
 
 	createBrand(createBrandDto: CreateBrandDto) {
 		return this.brandRepository.save(createBrandDto);
 	}
 
-	updateBrand(id: number, updateBrandDto: UpdateBrandDto) {
-		return this.brandRepository.update(id, updateBrandDto);
+	async updateBrand(id: string, updateBrandDto: UpdateBrandDto) {
+		await this.brandRepository.update(id, updateBrandDto);
+		return this.findOne(id);
 	}
 
-	removeBrand(id: number) {
+	removeBrand(id: string) {
 		return this.brandRepository.delete(id);
 	}
 }

@@ -92,7 +92,11 @@ export class UserService {
 	}
 
 	findOne(id: number) {
-		return this.userRepository.findOne({ where: { id }, relations: { profile: true, roles: true } });
+		return this.userRepository.findOne({
+			where: { id },
+			relations: { profile: true, roles: true },
+			withDeleted: true,
+		});
 	}
 
 	async create(user: CreateUserDto) {

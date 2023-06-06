@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ProductCategoryService } from './product-category.service';
 import { SearchProductCategoryDto } from './dto/search-product-category.dto';
 import CreateProductCategoryDto from './dto/create-product-category.dto';
@@ -32,5 +32,13 @@ export class ProductCategoryController {
 	@Delete(':id')
 	async deleteProductCategory(@Param('id') id: number) {
 		return await this.productCategoryService.deleteProductCategory(id);
+	}
+
+	@Put(':id/restore')
+	async restore(@Param() param: { id: string }) {
+		if (isNaN(Number(param.id))) {
+			throw new BadRequestException('请输入正确的id，id为数字格式');
+		}
+		return this.productCategoryService.restore(Number(param.id));
 	}
 }

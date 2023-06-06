@@ -50,8 +50,10 @@ export class ProductCategoryService {
 				if (!parentProductCategory) {
 					throw new BadRequestException('父分类不存在');
 				}
+				// 先创建自己
 				productCategory.parent = parentProductCategory;
 				const subProductCategory = await entityManager.save(productCategory);
+				// 再创建关联
 				await entityManager.save(parentProductCategory);
 				return await entityManager.findOne(ProductCategory, {
 					where: { id: subProductCategory.id },
@@ -82,14 +84,8 @@ export class ProductCategoryService {
 					throw new BadRequestException('父分类不存在');
 				}
 				productCategory.parent = parentProductCategory;
-				const subProductCategory = await entityManager.save(productCategory);
-				if (parentProductCategory.children && parentProductCategory.children.length > 0) {
-					const index = parentProductCategory.children.findIndex((item) => item.id === id);
-					if (index > -1) {
-						parentProductCategory.children.splice(index, 1, subProductCategory);
-					}
-					await entityManager.save(parentProductCategory);
-				}
+				await entityManager.save(productCategory);
+				await entityManager.save(parentProductCategory);
 			}
 			return await entityManager.findOne(ProductCategory, { where: { id }, relations: { parent: true } });
 		});
@@ -104,24 +100,15 @@ export class ProductCategoryService {
 			throw new BadRequestException('该分类不存在');
 		}
 		return this.dataSource.transaction(async (entityManager) => {
-			const { parent } = productCategory;
-			if (parent) {
-				const parentProductCategory = await entityManager.findOne(ProductCategory, {
-					where: { id: parent.id },
-				});
-				if (
-					parentProductCategory &&
-					parentProductCategory.children &&
-					parentProductCategory.children.length > 0
-				) {
-					const index = parentProductCategory.children.findIndex((item) => item.id === id);
-					if (index > -1) {
-						parentProductCategory.children.splice(index, 1);
-					}
-					await entityManager.save(parentProductCategory);
-				}
-			}
-			await entityManager.softRemove(productCategory);
+			await entityManager.softDelete(ProductCategory, { id });
+		});
+	}
+
+	async restore(id: number) {
+		await this.productCategoryRepository.restore(id);
+		return await this.productCategoryRepository.findOne({
+			where: { id },
+			relations: { parent: true, children: true },
 		});
 	}
 }

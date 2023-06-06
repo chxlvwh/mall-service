@@ -11,6 +11,7 @@ import {
 	Tree,
 	TreeChildren,
 	TreeParent,
+	DeleteDateColumn,
 } from 'typeorm';
 import { Product } from '../product/product.entity';
 
@@ -49,4 +50,7 @@ export class ProductCategory {
 
 	@OneToMany(() => ProductCategory, (ProductCategory) => ProductCategory.parent)
 	children: ProductCategory[];
+
+	@DeleteDateColumn({ name: 'deleted_at' })
+	deletedAt: Date;
 }

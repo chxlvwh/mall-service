@@ -12,6 +12,10 @@ import { RolesModule } from './roles/roles.module';
 import { MenusModule } from './menus/menus.module';
 import { AuthModule } from './auth/auth.module';
 import { BrandModule } from './brand/brand.module';
+import { ProductCategoryModule } from './product-category/product-category.module';
+import { ProductController } from './product/product.controller';
+import { ProductService } from './product/product.service';
+import { ProductModule } from './product/product.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -42,6 +46,8 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		AuthModule,
 		MenusModule,
 		BrandModule,
+		ProductCategoryModule,
+		ProductModule,
 	],
 	// 模块中所有用到的功能类，模块内共享使用
 	/**
@@ -54,6 +60,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 			provide: APP_INTERCEPTOR,
 			useClass: ClassSerializerInterceptor,
 		},
+		ProductService,
 		// 全局使用 guard
 		// {
 		// 	provide: APP_GUARD,
@@ -62,5 +69,6 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 	],
 	// 导出其他模块需要依赖的Providers
 	exports: [Logger, CacheModule],
+	controllers: [ProductController],
 })
 export class AppModule {}

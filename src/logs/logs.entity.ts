@@ -19,6 +19,6 @@ export class Logs {
 	result: number;
 
 	@ManyToOne(() => User, (user) => user.logs)
-	@JoinColumn()
+	@JoinColumn({ name: 'user_id' })
 	user: User;
 }

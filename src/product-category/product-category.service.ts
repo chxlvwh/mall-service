@@ -16,14 +16,19 @@ export class ProductCategoryService {
 	) {}
 
 	async findAll(query: SearchProductCategoryDto) {
-		const { name, parentId, pageSize, current } = query;
+		const { name, parentId, pageSize, current, isActive } = query;
 		const take = pageSize || 10;
 		const skip = ((current || 1) - 1) * take;
 		const queryBuilder = await this.productCategoryRepository
 			.createQueryBuilder('productCategory')
-			.leftJoinAndSelect('productCategory.parent', 'parent');
+			.leftJoinAndSelect('productCategory.parent', 'parent')
+			.where('productCategory.parent IS NULL');
+		if (!parentId) {
+			queryBuilder.where('productCategory.parent IS NULL');
+		}
 		const queryObj = {
 			'productCategory.name': { value: name, isLike: true },
+			'productCategory.isActive': { value: isActive },
 			'parent.id': { value: parentId },
 		};
 		const queryResult = await conditionUtils(queryBuilder, queryObj).take(take).skip(skip).getManyAndCount();

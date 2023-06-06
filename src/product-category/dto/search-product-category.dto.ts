@@ -1,4 +1,4 @@
-import { Allow, IsNotEmpty } from 'class-validator';
+import { Allow } from 'class-validator';
 
 export class SearchProductCategoryDto {
 	@Allow()

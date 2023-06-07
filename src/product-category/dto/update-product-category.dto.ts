@@ -7,7 +7,7 @@ export class UpdateProductCategoryDto {
 	@Allow()
 	desc: string;
 
-	@IsNotEmpty()
+	@Allow()
 	parentId: number;
 
 	@Allow()

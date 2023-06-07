@@ -71,7 +71,10 @@ export class ProductCategoryService {
 	}
 
 	async updateProductCategory(id: number, updateProductCategoryDto: UpdateProductCategoryDto) {
-		const productCategory = await this.productCategoryRepository.findOneBy({ id });
+		const productCategory = await this.productCategoryRepository.findOne({
+			where: { id },
+			relations: { parent: true },
+		});
 		if (!productCategory) {
 			throw new BadRequestException('该分类不存在');
 		}
@@ -83,6 +86,9 @@ export class ProductCategoryService {
 		productCategory.order = order;
 		productCategory.isActive = isActive !== false;
 		if (parentId) {
+			if (productCategory.id === parentId) {
+				throw new BadRequestException('上级分类不能是自己');
+			}
 			return this.dataSource.transaction(async (entityManager) => {
 				const parentProductCategory = await entityManager.findOne(ProductCategory, { where: { id: parentId } });
 				if (!parentProductCategory) {
@@ -94,6 +100,7 @@ export class ProductCategoryService {
 				return await entityManager.findOne(ProductCategory, { where: { id }, relations: { parent: true } });
 			});
 		} else {
+			productCategory.parent = null;
 			return await this.productCategoryRepository.save(productCategory);
 		}
 	}

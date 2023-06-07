@@ -1,4 +1,16 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+	BadRequestException,
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Param,
+	ParseIntPipe,
+	Post,
+	Put,
+	Query,
+	UseGuards,
+} from '@nestjs/common';
 import { ProductCategoryService } from './product-category.service';
 import { SearchProductCategoryDto } from './dto/search-product-category.dto';
 import CreateProductCategoryDto from './dto/create-product-category.dto';
@@ -24,7 +36,7 @@ export class ProductCategoryController {
 
 	@UseGuards(AdminGuard)
 	@Put(':id')
-	async updateProductCategory(@Param('id') id: number, @Body() body: UpdateProductCategoryDto) {
+	async updateProductCategory(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateProductCategoryDto) {
 		return await this.productCategoryService.updateProductCategory(id, body);
 	}
 

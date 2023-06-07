@@ -11,7 +11,7 @@ export default class CreateProductCategoryDto {
 	@Allow()
 	desc: string;
 
-	@IsNotEmpty()
+	@Allow()
 	parentId: number;
 
 	@Allow()

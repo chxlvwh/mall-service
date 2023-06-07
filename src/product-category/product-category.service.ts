@@ -82,8 +82,8 @@ export class ProductCategoryService {
 		productCategory.icon = icon;
 		productCategory.order = order;
 		productCategory.isActive = isActive !== false;
-		return this.dataSource.transaction(async (entityManager) => {
-			if (parentId) {
+		if (parentId) {
+			return this.dataSource.transaction(async (entityManager) => {
 				const parentProductCategory = await entityManager.findOne(ProductCategory, { where: { id: parentId } });
 				if (!parentProductCategory) {
 					throw new BadRequestException('父分类不存在');
@@ -91,9 +91,11 @@ export class ProductCategoryService {
 				productCategory.parent = parentProductCategory;
 				await entityManager.save(productCategory);
 				await entityManager.save(parentProductCategory);
-			}
-			return await entityManager.findOne(ProductCategory, { where: { id }, relations: { parent: true } });
-		});
+				return await entityManager.findOne(ProductCategory, { where: { id }, relations: { parent: true } });
+			});
+		} else {
+			return await this.productCategoryRepository.save(productCategory);
+		}
 	}
 
 	async deleteProductCategory(id: number) {

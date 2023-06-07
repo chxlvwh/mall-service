@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Brand } from './brand.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -35,6 +35,10 @@ export class BrandService {
 	}
 
 	async updateBrand(id: string, updateBrandDto: UpdateBrandDto) {
+		const brand = await this.findOne(id);
+		if (!brand) {
+			throw new NotFoundException('品牌不存在');
+		}
 		await this.brandRepository.update(id, updateBrandDto);
 		return this.findOne(id);
 	}

@@ -22,7 +22,7 @@ export class ProductCategoryService {
 		const queryBuilder = await this.productCategoryRepository
 			.createQueryBuilder('productCategory')
 			.leftJoinAndSelect('productCategory.parent', 'parent')
-			.where('productCategory.parent IS NULL');
+			.leftJoinAndSelect('productCategory.children', 'children');
 		if (!parentId) {
 			queryBuilder.where('productCategory.parent IS NULL');
 		}
@@ -111,9 +111,10 @@ export class ProductCategoryService {
 
 	async restore(id: number) {
 		await this.productCategoryRepository.restore(id);
-		return await this.productCategoryRepository.findOne({
-			where: { id },
-			relations: { parent: true, children: true },
-		});
+		return this.findOne(id);
+	}
+
+	async findOne(id: number) {
+		return this.productCategoryRepository.findOne({ where: { id }, relations: { parent: true, children: true } });
 	}
 }

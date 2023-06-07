@@ -41,4 +41,9 @@ export class ProductCategoryController {
 		}
 		return this.productCategoryService.restore(Number(param.id));
 	}
+
+	@Get(':id')
+	async getById(@Param() params: { id: number }) {
+		return this.productCategoryService.findOne(params.id);
+	}
 }

@@ -28,6 +28,16 @@ export class ProductCategoryController {
 		return await this.productCategoryService.findAll(query);
 	}
 
+	@Get('tree')
+	async findTrees() {
+		return await this.productCategoryService.findTrees();
+	}
+
+	@Get('tree/ancestors/:id')
+	async findAncestors(@Param('id', ParseIntPipe) id: number) {
+		return await this.productCategoryService.findAncestors(id);
+	}
+
 	@UseGuards(AdminGuard)
 	@Post()
 	async createProductCategory(@Body() body: CreateProductCategoryDto) {

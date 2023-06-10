@@ -25,7 +25,7 @@ export class Product {
 	subtitle: string;
 
 	@Column({ nullable: true })
-	desc: string;
+	introduction: string;
 
 	@Column({ name: 'origin_price' })
 	originPrice: number;

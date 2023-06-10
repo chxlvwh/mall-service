@@ -17,7 +17,7 @@ export default class CreateProductCategoryDto {
 	@Allow()
 	icon: string;
 
-	@IsNotEmpty()
+	@Allow()
 	order: number;
 
 	@Allow()

@@ -3,7 +3,6 @@ import {
 	Entity,
 	Column,
 	PrimaryGeneratedColumn,
-	ManyToOne,
 	OneToMany,
 	CreateDateColumn,
 	UpdateDateColumn,
@@ -14,8 +13,10 @@ import {
 	DeleteDateColumn,
 } from 'typeorm';
 import { Product } from '../product/product.entity';
+import { ProductAttribute } from '../product-attribute/product-attribute.entity';
 
 @Entity()
+@Tree('closure-table')
 export class ProductCategory {
 	@PrimaryGeneratedColumn()
 	id: number;
@@ -29,7 +30,7 @@ export class ProductCategory {
 	@Column({ nullable: true })
 	icon: string;
 
-	@Column()
+	@Column({ nullable: true })
 	order: number;
 
 	@Column({ name: 'is_active', default: true })
@@ -44,11 +45,16 @@ export class ProductCategory {
 	@OneToMany(() => Product, (product) => product.productCategory)
 	products: Product[];
 
-	@ManyToOne(() => ProductCategory, (ProductCategory) => ProductCategory.children)
+	@OneToMany(() => ProductAttribute, (attribute) => attribute.productCategory)
+	attribute: ProductAttribute[];
+
+	// @ManyToOne(() => ProductCategory, (ProductCategory) => ProductCategory.children)
 	@JoinColumn({ name: 'parent_id' })
+	@TreeParent({ onDelete: 'SET NULL' })
 	parent: ProductCategory;
 
-	@OneToMany(() => ProductCategory, (ProductCategory) => ProductCategory.parent)
+	// @OneToMany(() => ProductCategory, (ProductCategory) => ProductCategory.parent)
+	@TreeChildren({ cascade: true })
 	children: ProductCategory[];
 
 	@DeleteDateColumn({ name: 'deleted_at' })

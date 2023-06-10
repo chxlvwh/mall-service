@@ -16,6 +16,7 @@ import { ProductCategoryModule } from './product-category/product-category.modul
 import { ProductController } from './product/product.controller';
 import { ProductService } from './product/product.service';
 import { ProductModule } from './product/product.module';
+import { ProductAttributeModule } from './product-attribute/product-attribute.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -48,6 +49,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		BrandModule,
 		ProductCategoryModule,
 		ProductModule,
+		ProductAttributeModule,
 	],
 	// 模块中所有用到的功能类，模块内共享使用
 	/**

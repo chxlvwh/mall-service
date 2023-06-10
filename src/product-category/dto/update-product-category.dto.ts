@@ -13,7 +13,7 @@ export class UpdateProductCategoryDto {
 	@Allow()
 	icon: string;
 
-	@IsNotEmpty()
+	@Allow()
 	order: number;
 
 	@Allow()

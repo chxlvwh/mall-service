@@ -17,12 +17,18 @@ import { ProductController } from './product/product.controller';
 import { ProductService } from './product/product.service';
 import { ProductModule } from './product/product.module';
 import { ProductAttributeModule } from './product-attribute/product-attribute.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import * as path from 'path';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
 @Global()
 @Module({
 	// 导入其他模块中导出的Providers，以实现共享
+	controllers: [ProductController],
+	// 模块中所有用到的功能类，模块内共享使用
+	exports: [Logger, CacheModule],
+	// 导出其他模块需要依赖的Providers
 	imports: [
 		// 设置配置文件地址和作用域已经加载方式
 		ConfigModule.forRoot({
@@ -38,6 +44,10 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 				LOG_ON: Joi.boolean().default(false),
 			}),
 		}),
+		// 添加静态文件路径
+		ServeStaticModule.forRoot({
+			rootPath: path.join(__dirname, '..', 'static'),
+		}),
 		CacheModule.register(),
 		// 加载数据库配置
 		TypeOrmModule.forRoot(connectionParams),
@@ -51,7 +61,6 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		ProductModule,
 		ProductAttributeModule,
 	],
-	// 模块中所有用到的功能类，模块内共享使用
 	/**
 	 * 跟app.useGlobalInterceptors()的区别是，用provider的方式可以注入依赖
 	 */
@@ -69,8 +78,5 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		// 	useClass: AdminGuard,
 		// },
 	],
-	// 导出其他模块需要依赖的Providers
-	exports: [Logger, CacheModule],
-	controllers: [ProductController],
 })
 export class AppModule {}

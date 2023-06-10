@@ -57,15 +57,15 @@ export class ProductCategoryController {
 	}
 
 	@Put(':id/restore')
-	async restore(@Param() param: { id: string }) {
-		if (isNaN(Number(param.id))) {
+	async restore(@Param('id', ParseIntPipe) id: number) {
+		if (isNaN(Number(id))) {
 			throw new BadRequestException('请输入正确的id，id为数字格式');
 		}
-		return this.productCategoryService.restore(Number(param.id));
+		return this.productCategoryService.restore(Number(id));
 	}
 
 	@Get(':id')
-	async getById(@Param() params: { id: number }) {
-		return this.productCategoryService.findOne(params.id);
+	async getById(@Param('id', ParseIntPipe) id: number) {
+		return this.productCategoryService.findOne(id);
 	}
 }

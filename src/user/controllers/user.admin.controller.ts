@@ -20,10 +20,11 @@ import { CreateUserPipe } from '../pipes/create-user.pipe';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { AdminGuard } from '../../guards/admin.guard';
 import { JwtGuard } from '../../guards/jwt.guard';
-import { SerializeInterceptor } from '../../interceptors/serialize.interceptor';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { TypeORMFilter } from '../../decorators/TypeORMFilter';
+import { ApiCreatedResponse, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Admin User')
 @Controller('admin/user')
 @TypeORMFilter()
 // 这里等同于 @UseGuards(AuthGuard('jwt')), JwtGuard 只不过做了一层封装
@@ -33,6 +34,7 @@ import { TypeORMFilter } from '../../decorators/TypeORMFilter';
 export class UserAdminController {
 	constructor(private userService: UserService) {}
 
+	@ApiProperty({ type: GetUserDto })
 	@Get('list')
 	getAllUsers(@Query() query: GetUserDto, @Req() request): any {
 		return this.userService.findAll(request.query);
@@ -53,10 +55,11 @@ export class UserAdminController {
 		return this.userService.create(createUserDto);
 	}
 
+	@ApiProperty({ name: 'id' })
 	@Put(':id/restore')
 	@HttpCode(204)
-	async restoreUser(@Param() params): Promise<any> {
-		return await this.userService.restore(params.id);
+	async restoreUser(@Param('id', ParseIntPipe) id: number): Promise<any> {
+		return await this.userService.restore(id);
 	}
 
 	@Put(':id')
@@ -69,13 +72,13 @@ export class UserAdminController {
 
 	@Delete(':id')
 	@HttpCode(204)
-	deleteUser(@Param() params): any {
-		this.userService.remove(params.id);
+	deleteUser(@Param('id', ParseIntPipe) id: number): any {
+		return this.userService.remove(id);
 	}
 
 	@Get(':id/profile')
 	async getUserProfile(
-		@Param('id', ParseIntPipe) id: any,
+		@Param('id', ParseIntPipe) id: number,
 		// 这里的req中的user是通过AuthGuard('jwt')中的validate方法返回的
 		// PassportModule来添加的
 		// @Req() req,

@@ -1,4 +1,16 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query } from '@nestjs/common';
+import {
+	BadRequestException,
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	Param,
+	ParseIntPipe,
+	Post,
+	Put,
+	Query,
+} from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { SearchBrandDto } from './dto/search-brand.dto';
 import { CreateBrandDto } from './dto/create-brand.dto';
@@ -14,8 +26,8 @@ export class BrandController {
 	}
 
 	@Get(':id')
-	findOne(@Param() param: { id: string }) {
-		return this.brandService.findOne(param.id);
+	findOne(@Param('id', ParseIntPipe) id: number) {
+		return this.brandService.findOne(id);
 	}
 
 	@Post()
@@ -24,15 +36,15 @@ export class BrandController {
 	}
 
 	@Put(':id')
-	update(@Param() param: { id: string }, @Body() updateBrandDto: UpdateBrandDto) {
+	update(@Param('id', ParseIntPipe) id: number, @Body() updateBrandDto: UpdateBrandDto) {
 		const { name } = updateBrandDto;
 		if (name === '') throw new BadRequestException('品牌名称不能为空');
-		return this.brandService.updateBrand(param.id, updateBrandDto);
+		return this.brandService.updateBrand(id, updateBrandDto);
 	}
 
 	@Delete(':id')
 	@HttpCode(204)
-	remove(@Param() params: { id: string }) {
-		return this.brandService.removeBrand(params.id);
+	remove(@Param('id', ParseIntPipe) id: number) {
+		return this.brandService.removeBrand(id);
 	}
 }

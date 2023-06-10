@@ -46,7 +46,7 @@ export class ProductCategory {
 	products: Product[];
 
 	@OneToMany(() => ProductAttribute, (attribute) => attribute.productCategory)
-	attribute: ProductAttribute[];
+	productAttribute: ProductAttribute[];
 
 	// @ManyToOne(() => ProductCategory, (ProductCategory) => ProductCategory.children)
 	@JoinColumn({ name: 'parent_id' })

@@ -20,10 +20,11 @@ import { CreateUserPipe } from '../pipes/create-user.pipe';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { AdminGuard } from '../../guards/admin.guard';
 import { JwtGuard } from '../../guards/jwt.guard';
-import { SerializeInterceptor } from '../../interceptors/serialize.interceptor';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { TypeORMFilter } from '../../decorators/TypeORMFilter';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Public User')
 @Controller('public/user')
 @TypeORMFilter()
 // 这里等同于 @UseGuards(AuthGuard('jwt')), JwtGuard 只不过做了一层封装
@@ -64,8 +65,8 @@ export class UserPublicController {
 
 	@Delete(':id')
 	@HttpCode(204)
-	deleteUser(@Param() params): any {
-		this.userService.remove(params.id);
+	deleteUser(@Param('id', ParseIntPipe) id: number): any {
+		return this.userService.remove(id);
 	}
 
 	@Get(':id/profile')

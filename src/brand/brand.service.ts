@@ -34,7 +34,7 @@ export class BrandService {
 		return this.brandRepository.save(createBrandDto);
 	}
 
-	async updateBrand(id: string, updateBrandDto: UpdateBrandDto) {
+	async updateBrand(id: number, updateBrandDto: UpdateBrandDto) {
 		const brand = await this.findOne(id);
 		if (!brand) {
 			throw new NotFoundException('品牌不存在');
@@ -43,7 +43,7 @@ export class BrandService {
 		return this.findOne(id);
 	}
 
-	removeBrand(id: string) {
+	removeBrand(id: number) {
 		return this.brandRepository.delete(id);
 	}
 }

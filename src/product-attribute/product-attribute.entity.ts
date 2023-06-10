@@ -23,7 +23,7 @@ export class ProductAttribute {
 	@Column({ type: 'enum', enum: [1, 2] })
 	type: TypeEnum;
 
-	@ManyToOne(() => ProductCategory, (productCategory) => productCategory.attribute)
+	@ManyToOne(() => ProductCategory, (productCategory) => productCategory.productAttribute)
 	@JoinColumn({ name: 'product_category_id' })
 	productCategory: ProductCategory;
 }

@@ -5,6 +5,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import * as process from 'process';
 import { ValidationPipe } from '@nestjs/common';
 import { SerializeInterceptor } from './interceptors/serialize.interceptor';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
@@ -30,6 +31,17 @@ async function bootstrap() {
 			forbidUnknownValues: false,
 		}),
 	);
+
+	// 配置swagger文档
+	const config = new DocumentBuilder()
+		.setTitle('Mall service')
+		.setDescription('The mall API description')
+		.setVersion('1.0')
+		.build();
+	const document = SwaggerModule.createDocument(app, config);
+	SwaggerModule.setup('/api/doc', app, document, {
+		customCssUrl: '/css/theme-flattop.css',
+	});
 	await app.listen(process.env.APP_PORT);
 	console.info(`Server is running on port ${process.env.APP_PORT}`);
 }

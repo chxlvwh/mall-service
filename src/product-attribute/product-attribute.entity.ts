@@ -1,5 +1,6 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ProductCategory } from '../product-category/product-category.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export type EntryMethodEnum = 1 | 2;
 export type TypeEnum = 1 | 2;
@@ -23,7 +24,14 @@ export class ProductAttribute {
 	@Column({ type: 'enum', enum: [1, 2] })
 	type: TypeEnum;
 
-	@ManyToOne(() => ProductCategory, (productCategory) => productCategory.productAttribute)
-	@JoinColumn({ name: 'product_category_id' })
-	productCategory: ProductCategory;
+	@ManyToMany(() => ProductCategory, (productCategory) => productCategory.productAttributes)
+	productCategory: ProductCategory[];
+
+	// @ManyToOne(() => ProductCategory, (productCategory) => productCategory.productAttribute)
+	// @JoinColumn({ name: 'product_category_id' })
+	// productCategory: ProductCategory;
+
+	// @ManyToOne(() => AttributeCategory, (attributeCategory) => attributeCategory.productAttribute)
+	// @JoinColumn({ name: 'attribute_category_id' })
+	// attributeCategory: AttributeCategory;
 }

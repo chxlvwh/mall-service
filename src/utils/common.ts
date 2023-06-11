@@ -2,6 +2,7 @@ import { User } from '../user/user.entity';
 import { Logs } from '../logs/logs.entity';
 import { Roles } from '../roles/roles.entity';
 import { Menus } from '../menus/menu.entity';
+import { Allow, IsOptional } from 'class-validator';
 
 export const getEntities = (path: string) => {
 	const map = {
@@ -18,4 +19,18 @@ export const getEntities = (path: string) => {
 			return map[key];
 		}
 	}
+};
+
+export class PaginationProps {
+	@Allow()
+	current: number;
+
+	@IsOptional()
+	pageSize?: number;
+}
+
+export const formatPageProps = (current, pageSize) => {
+	const take = pageSize || 10;
+	const skip = ((current || 1) - 1) * take;
+	return { take, skip };
 };

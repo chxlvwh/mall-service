@@ -185,8 +185,4 @@ export class UserService {
 			relations: { profile: true },
 		});
 	}
-
-	// updateProfile(profile: Partial<Profile>): Profile<Profile> {
-	// 	return this.userRepository
-	// }
 }

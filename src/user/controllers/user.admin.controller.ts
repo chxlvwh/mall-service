@@ -22,7 +22,7 @@ import { AdminGuard } from '../../guards/admin.guard';
 import { JwtGuard } from '../../guards/jwt.guard';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { TypeORMFilter } from '../../decorators/TypeORMFilter';
-import { ApiCreatedResponse, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Admin User')
 @Controller('admin/user')

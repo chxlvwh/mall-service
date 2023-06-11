@@ -11,6 +11,7 @@ import {
 	TreeChildren,
 	TreeParent,
 	DeleteDateColumn,
+	ManyToMany,
 } from 'typeorm';
 import { Product } from '../product/product.entity';
 import { ProductAttribute } from '../product-attribute/product-attribute.entity';
@@ -45,8 +46,8 @@ export class ProductCategory {
 	@OneToMany(() => Product, (product) => product.productCategory)
 	products: Product[];
 
-	@OneToMany(() => ProductAttribute, (attribute) => attribute.productCategory)
-	productAttribute: ProductAttribute[];
+	// @OneToMany(() => ProductAttribute, (attribute) => attribute.productCategory)
+	// productAttribute: ProductAttribute[];
 
 	// @ManyToOne(() => ProductCategory, (ProductCategory) => ProductCategory.children)
 	@JoinColumn({ name: 'parent_id' })
@@ -59,4 +60,7 @@ export class ProductCategory {
 
 	@DeleteDateColumn({ name: 'deleted_at' })
 	deletedAt: Date;
+
+	@ManyToMany(() => ProductAttribute, (productCategory) => productCategory.productCategory)
+	productAttributes: ProductAttribute[];
 }

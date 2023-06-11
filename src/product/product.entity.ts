@@ -8,10 +8,12 @@ import {
 	UpdateDateColumn,
 	OneToMany,
 	JoinColumn,
+	ManyToMany,
 } from 'typeorm';
 
 import { Brand } from '../brand/brand.entity';
 import { ProductCategory } from '../product-category/product-category.entity';
+import { ProductAttribute } from '../product-attribute/product-attribute.entity';
 
 @Entity()
 export class Product {

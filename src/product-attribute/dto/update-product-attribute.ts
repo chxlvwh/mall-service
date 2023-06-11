@@ -2,8 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsIn, IsNotEmpty } from 'class-validator';
 import { EntryMethodEnum, TypeEnum } from '../product-attribute.entity';
 
-export class CreateProductAttribute {
-	@ApiProperty({ description: '属性名称' })
+export class UpdateProductAttribute {
 	@IsNotEmpty()
 	name: string;
 

@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-// import * as requestIp from 'request-ip';
+import * as requestIp from 'request-ip';
 
 /** Filter主要进行错误拦截 */
 @Catch()
@@ -14,6 +14,7 @@ export class AllExceptionFilter implements ExceptionFilter {
 	catch(exception: unknown, host: ArgumentsHost): any {
 		const { httpAdapter } = this.httpAdapterHost;
 		const ctx = host.switchToHttp();
+		const request = ctx.getRequest();
 		const response = ctx.getResponse();
 
 		const httpStatus =
@@ -22,23 +23,32 @@ export class AllExceptionFilter implements ExceptionFilter {
 		const responseBody = {
 			exception: exception['name'],
 			error: exception['response'] || exception['message'] || 'Internal Server Error',
+			timestamp: new Date().toISOString(),
+		};
+
+		const logContent = {
+			exception: exception['name'],
+			error: exception['response'] || exception['message'] || 'Internal Server Error',
+			path: request.path,
 			// headers: request.headers,
-			// query: request.query,
-			// body: request.body,
-			// params: request.params,
+			query: request.query,
+			body: request.body,
+			params: request.params,
 			timestamp: new Date().toISOString(),
 			stack: exception['stack'],
-			// ip: requestIp.getClientIp(request),
+			ip: requestIp.getClientIp(request),
 		};
 
 		const getErrorMessage = () => {
-			if (responseBody.error && responseBody.error.message) {
-				return responseBody.error.message;
+			if (logContent.error && logContent.error.message) {
+				return logContent.error.message;
 			}
-			return responseBody.error;
+			return logContent.error;
 		};
 
-		this.logger.error(`[GlobalException] ${getErrorMessage()}`, responseBody);
+		// 存到日志中
+		this.logger.error(`[GlobalException] ${getErrorMessage()}`, logContent);
+		// 接口的返回
 		httpAdapter.reply(response, responseBody, httpStatus);
 	}
 }

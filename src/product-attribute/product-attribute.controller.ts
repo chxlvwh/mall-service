@@ -15,7 +15,7 @@ import { SearchProductAttributeDto } from './dto/search-product-attribute.dto';
 export class ProductAttributeController {
 	constructor(private readonly productAttributeService: ProductAttributeService) {}
 
-	@ApiProperty()
+	// @ApiProperty()
 	@Post()
 	async create(@Body() body: CreateProductAttributeDto) {
 		return await this.productAttributeService.create(body);

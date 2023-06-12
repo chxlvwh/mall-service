@@ -31,6 +31,9 @@ export class ProductAttribute extends DateProps {
 	@Column()
 	type: TypeEnum;
 
+	@Column({ nullable: true })
+	value: string;
+
 	@ManyToMany(() => ProductCategory, (productCategory) => productCategory.productAttributes)
 	productCategory: ProductCategory[];
 }

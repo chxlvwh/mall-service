@@ -23,4 +23,8 @@ export class UpdateProductAttributeDto {
 	@ApiProperty({ description: '属性类型，1-基础属性，2-规格属性' })
 	@IsIn(getEnumValues(TypeEnum))
 	type: TypeEnum;
+
+	@ApiProperty()
+	@Allow()
+	value: string;
 }

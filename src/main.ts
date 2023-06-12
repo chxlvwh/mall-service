@@ -40,7 +40,7 @@ async function bootstrap() {
 		.build();
 	const document = SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup('/api/doc', app, document, {
-		customCssUrl: '/css/theme-flattop.css',
+		customCssUrl: '/css/theme-outline.css',
 	});
 	await app.listen(process.env.APP_PORT);
 	console.info(`Server is running on port ${process.env.APP_PORT}`);

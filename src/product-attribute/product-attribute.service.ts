@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProductAttribute } from './product-attribute.entity';
@@ -31,6 +31,10 @@ export class ProductAttributeService {
 
 	async create(body: CreateProductAttribute) {
 		const attr = this.productAttributeRepository.create(body);
+		const isExist = await this.productAttributeRepository.findOne({ where: { name: attr.name } });
+		if (isExist) {
+			throw new ConflictException('属性名已存在');
+		}
 		attr.canSearch = !!body.canSearch;
 		attr.isRequired = !!body.isRequired;
 		return await this.productAttributeRepository.save(attr);

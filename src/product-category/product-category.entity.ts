@@ -12,6 +12,7 @@ import {
 	TreeParent,
 	DeleteDateColumn,
 	ManyToMany,
+	JoinTable,
 } from 'typeorm';
 import { Product } from '../product/product.entity';
 import { ProductAttribute } from '../product-attribute/product-attribute.entity';
@@ -62,5 +63,10 @@ export class ProductCategory {
 	deletedAt: Date;
 
 	@ManyToMany(() => ProductAttribute, (productCategory) => productCategory.productCategory)
+	@JoinTable({
+		name: 'categories_attributes',
+		joinColumn: { name: 'product_category_id' },
+		inverseJoinColumn: { name: 'product_attribute_id' },
+	})
 	productAttributes: ProductAttribute[];
 }

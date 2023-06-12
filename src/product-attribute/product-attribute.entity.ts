@@ -1,6 +1,5 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ProductCategory } from '../product-category/product-category.entity';
-import { ApiProperty } from '@nestjs/swagger';
 
 export type EntryMethodEnum = 1 | 2;
 export type TypeEnum = 1 | 2;
@@ -12,13 +11,14 @@ export class ProductAttribute {
 	@Column()
 	name: string;
 
-	@Column({ type: 'enum', enum: [1, 2], name: 'entry_method', default: 1 })
+	@Column({ type: 'enum', enum: [1, 2], name: 'entry_method' })
 	entryMethod: EntryMethodEnum;
 
-	@Column({ name: 'is_required', nullable: true })
+	// 传null的时候默认值生效，只有传true是true，其他都为false
+	@Column({ name: 'is_required', nullable: true, default: false })
 	isRequired: boolean;
 
-	@Column({ name: 'can_search' })
+	@Column({ name: 'can_search', nullable: true, default: true })
 	canSearch: boolean;
 
 	@Column({ type: 'enum', enum: [1, 2] })

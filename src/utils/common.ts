@@ -3,6 +3,9 @@ import { Logs } from '../logs/logs.entity';
 import { Roles } from '../roles/roles.entity';
 import { Menus } from '../menus/menu.entity';
 import { Allow, IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { log } from 'winston';
+import { CreateDateColumn, DeleteDateColumn, IsNull, Not, UpdateDateColumn } from 'typeorm';
 
 export const getEntities = (path: string) => {
 	const map = {
@@ -29,8 +32,38 @@ export class PaginationProps {
 	pageSize?: number;
 }
 
+export class DateProps {
+	@CreateDateColumn({ name: 'created_at' })
+	createdAt: Date;
+
+	@UpdateDateColumn({ name: 'last_modified' })
+	lastModifiedAt: Date;
+
+	@DeleteDateColumn({ name: 'delete_at' })
+	deletedAt: Date;
+}
+
 export const formatPageProps = (current, pageSize) => {
 	const take = pageSize || 10;
 	const skip = ((current || 1) - 1) * take;
 	return { take, skip };
+};
+
+export const getEnumKeys = (enumObj: object) => {
+	const arr = Object.values(enumObj) || [];
+	return arr.slice(0, arr.length / 2);
+};
+
+export const getEnumValues = (enumObj: object) => {
+	const arr = Object.keys(enumObj) || [];
+	return arr.slice(0, arr.length / 2).map((it) => parseInt(it));
+};
+
+export const withDeleteQuery = (queryBuilder, isDeleted) => {
+	if (!isDeleted) {
+		queryBuilder = queryBuilder.withDeleted();
+	} else if (isDeleted === '1') {
+		queryBuilder = queryBuilder.withDeleted().where({ deletedAt: Not(IsNull()) });
+	}
+	return isDeleted;
 };

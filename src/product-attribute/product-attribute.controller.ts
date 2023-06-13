@@ -1,11 +1,22 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Param,
+	ParseBoolPipe,
+	ParseIntPipe,
+	Post,
+	Put,
+	Query,
+	UseGuards,
+} from '@nestjs/common';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { ProductAttributeService } from './product-attribute.service';
 import { CreateProductAttributeDto } from './dto/create-product-attribute.dto';
 import { JwtGuard } from '../guards/jwt.guard';
 import { AdminGuard } from '../guards/admin.guard';
 import { UpdateProductAttributeDto } from './dto/update-product-attribute.dto';
-import { SearchProductCategoryDto } from '../product-category/dto/search-product-category.dto';
 import { PaginationProps } from '../utils/common';
 import { SearchProductAttributeDto } from './dto/search-product-attribute.dto';
 
@@ -29,7 +40,10 @@ export class ProductAttributeController {
 
 	@ApiProperty()
 	@Get('list')
-	async findAll(@Query() query: SearchProductAttributeDto & PaginationProps) {
+	async findAll(
+		@Query()
+		query: SearchProductAttributeDto & PaginationProps,
+	) {
 		return await this.productAttributeService.findAll(query);
 	}
 

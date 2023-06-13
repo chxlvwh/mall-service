@@ -45,6 +45,12 @@ export class ProductCategoryController {
 	}
 
 	@UseGuards(AdminGuard)
+	@Put(':id/attributes')
+	async updateProductCategoryAttrs(@Param('id', ParseIntPipe) id: number, @Body() body: { attributeIds: number[] }) {
+		return await this.productCategoryService.updateProductCategoryAttrs(id, body);
+	}
+
+	@UseGuards(AdminGuard)
 	@Put(':id')
 	async updateProductCategory(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateProductCategoryDto) {
 		return await this.productCategoryService.updateProductCategory(id, body);

@@ -63,4 +63,8 @@ export class ProductAttributeService {
 		await this.productAttributeRepository.restore(id);
 		return this.findOne(id);
 	}
+
+	async findByIds(ids: number[]) {
+		return await this.productAttributeRepository.createQueryBuilder('attribute').whereInIds(ids).getMany();
+	}
 }

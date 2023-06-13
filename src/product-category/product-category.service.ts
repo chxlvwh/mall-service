@@ -6,12 +6,16 @@ import CreateProductCategoryDto from './dto/create-product-category.dto';
 import { SearchProductCategoryDto } from './dto/search-product-category.dto';
 import { UpdateProductCategoryDto } from './dto/update-product-category.dto';
 import { conditionUtils, pagingFormat } from '../utils/db.helper';
+import { ProductAttribute } from '../product-attribute/product-attribute.entity';
+import { ProductAttributeService } from '../product-attribute/product-attribute.service';
 
 @Injectable()
 export class ProductCategoryService {
 	constructor(
 		@InjectRepository(ProductCategory)
 		private readonly productCategoryRepository: TreeRepository<ProductCategory>,
+		@InjectRepository(ProductAttribute)
+		private readonly productAttributeService: ProductAttributeService,
 	) {}
 
 	async findTrees() {
@@ -30,7 +34,8 @@ export class ProductCategoryService {
 		const queryBuilder = await this.productCategoryRepository
 			.createQueryBuilder('productCategory')
 			.leftJoinAndSelect('productCategory.parent', 'parent')
-			.leftJoinAndSelect('productCategory.children', 'children');
+			.leftJoinAndSelect('productCategory.children', 'children')
+			.leftJoinAndSelect('productCategory.productAttributes', 'attributes');
 		if (!parentId) {
 			queryBuilder.where('productCategory.parent IS NULL');
 		}
@@ -102,6 +107,17 @@ export class ProductCategoryService {
 		} else {
 			return await this.productCategoryRepository.save(productCategory);
 		}
+	}
+
+	async updateProductCategoryAttrs(id: number, attrs: { attributeIds: number[] }) {
+		const productCategory = await this.productCategoryRepository.findOne({
+			where: { id },
+		});
+		if (!productCategory) {
+			throw new BadRequestException('该分类不存在');
+		}
+		productCategory.productAttributes = await this.productAttributeService.findByIds(attrs.attributeIds);
+		return await this.productCategoryRepository.save(productCategory);
 	}
 
 	async deleteProductCategory(id: number) {

@@ -112,12 +112,17 @@ export class ProductCategoryService {
 	async updateProductCategoryAttrs(id: number, attrs: { attributeIds: number[] }) {
 		const productCategory = await this.productCategoryRepository.findOne({
 			where: { id },
+			relations: { productAttributes: true },
 		});
 		if (!productCategory) {
 			throw new BadRequestException('该分类不存在');
 		}
+		const oldAttrIds = productCategory.productAttributes.map((attr) => attr.id);
 		productCategory.productAttributes = await this.productAttributeService.findByIds(attrs.attributeIds);
-		return await this.productCategoryRepository.save(productCategory);
+		const qb = this.productCategoryRepository.createQueryBuilder('productCategory');
+		await qb.relation('productAttributes').of(productCategory).addAndRemove(attrs.attributeIds, oldAttrIds);
+		await qb.execute();
+		return true;
 	}
 
 	async deleteProductCategory(id: number) {

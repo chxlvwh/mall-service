@@ -56,6 +56,14 @@ export class ProductAttributeService {
 		if (!oldAttr) {
 			throw new NotFoundException('分类不存在');
 		}
+		const relations = await this.productAttributeRepository
+			.createQueryBuilder('attr')
+			.relation(ProductAttribute, 'productCategory')
+			.of(id)
+			.loadMany();
+		if (relations.length) {
+			throw new ConflictException('该属性已被分类使用，无法删除');
+		}
 		return await this.productAttributeRepository.softDelete(id);
 	}
 

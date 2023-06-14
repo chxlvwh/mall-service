@@ -62,7 +62,7 @@ export class ProductAttributeService {
 			.of(id)
 			.loadMany();
 		if (relations.length) {
-			throw new ConflictException('该属性已被分类使用，无法删除');
+			throw new ConflictException(`该属性已被分类【${relations.map((it) => it.name)}】使用，无法删除`);
 		}
 		return await this.productAttributeRepository.softDelete(id);
 	}

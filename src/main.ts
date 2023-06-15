@@ -33,15 +33,15 @@ async function bootstrap() {
 	);
 
 	// 配置swagger文档
-	// const config = new DocumentBuilder()
-	// 	.setTitle('Mall service')
-	// 	.setDescription('The mall API description')
-	// 	.setVersion('1.0')
-	// 	.build();
-	// const document = SwaggerModule.createDocument(app, config);
-	// SwaggerModule.setup('/api/doc', app, document, {
-	// 	customCssUrl: '/css/theme-outline.css',
-	// });
+	const config = new DocumentBuilder()
+		.setTitle('Mall service')
+		.setDescription('The mall API description')
+		.setVersion('1.0')
+		.build();
+	const document = SwaggerModule.createDocument(app, config);
+	SwaggerModule.setup('/api/doc', app, document, {
+		// customCssUrl: '/css/theme-outline.css',
+	});
 	await app.listen(process.env.APP_PORT);
 	console.info(`Server is running on port ${process.env.APP_PORT}`);
 }

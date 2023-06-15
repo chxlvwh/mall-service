@@ -47,7 +47,7 @@ export class ProductAttributeService {
 		if (!oldAttr) {
 			throw new NotFoundException('分类不存在');
 		}
-		await this.productAttributeRepository.save({ id, ...body });
+		await this.productAttributeRepository.save({ ...oldAttr, ...body });
 		return await this.findOne(id);
 	}
 

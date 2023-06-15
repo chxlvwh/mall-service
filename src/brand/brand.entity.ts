@@ -1,4 +1,12 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+	Column,
+	CreateDateColumn,
+	Entity,
+	ManyToMany,
+	OneToMany,
+	PrimaryGeneratedColumn,
+	UpdateDateColumn,
+} from 'typeorm';
 import { Product } from '../product/product.entity';
 
 @Entity()
@@ -12,7 +20,7 @@ export class Brand {
 	@Column({ nullable: true })
 	desc: string;
 
-	@OneToMany(() => Product, (product) => product.brand)
+	@ManyToMany(() => Product, (product) => product.brand)
 	products: any[];
 
 	@CreateDateColumn({ name: 'created_at' })

@@ -44,7 +44,7 @@ export class ProductCategory {
 	@UpdateDateColumn({ name: 'last_modified_at' })
 	lastModifiedAt: Date;
 
-	@OneToMany(() => Product, (product) => product.productCategory)
+	@ManyToMany(() => Product, (product) => product.productCategory)
 	products: Product[];
 
 	// @OneToMany(() => ProductAttribute, (attribute) => attribute.productCategory)

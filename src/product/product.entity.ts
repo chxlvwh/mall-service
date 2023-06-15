@@ -3,17 +3,16 @@ import {
 	Entity,
 	Column,
 	PrimaryGeneratedColumn,
-	ManyToOne,
 	CreateDateColumn,
 	UpdateDateColumn,
 	OneToMany,
-	JoinColumn,
 	ManyToMany,
+	JoinTable,
 } from 'typeorm';
 
 import { Brand } from '../brand/brand.entity';
 import { ProductCategory } from '../product-category/product-category.entity';
-import { ProductAttribute } from '../product-attribute/product-attribute.entity';
+import { Sku } from './sku.entity';
 
 @Entity()
 export class Product {
@@ -41,7 +40,7 @@ export class Product {
 	@Column({ nullable: true })
 	units: string;
 
-	@Column({ name: 'is_sale' })
+	@Column({ nullable: true })
 	weight: number;
 
 	@CreateDateColumn({ name: 'created_at' })
@@ -50,11 +49,14 @@ export class Product {
 	@UpdateDateColumn({ name: 'last_modified_at' })
 	lastModifiedAt: Date;
 
-	@ManyToOne(() => Brand, (brand) => brand.products)
-	@JoinColumn({ name: 'brand_id' })
+	@ManyToMany(() => Brand, (brand) => brand.products)
+	@JoinTable({ name: 'brand_product' })
 	brand: Brand;
 
-	@ManyToOne(() => ProductCategory, (productCategory) => productCategory.products)
-	@JoinColumn({ name: 'product_category_id' })
+	@ManyToMany(() => ProductCategory, (productCategory) => productCategory.products)
+	@JoinTable({ name: 'category_product' })
 	productCategory: ProductCategory;
+
+	@OneToMany(() => Sku, (sku) => sku.product)
+	skus: Sku[];
 }

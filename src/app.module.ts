@@ -14,7 +14,7 @@ import { AuthModule } from './auth/auth.module';
 import { BrandModule } from './brand/brand.module';
 import { ProductCategoryModule } from './product-category/product-category.module';
 import { ProductController } from './product/product.controller';
-import { ProductService } from './product/product.service';
+// import { ProductService } from './product/product.service';
 import { ProductModule } from './product/product.module';
 import { ProductAttributeModule } from './product-attribute/product-attribute.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -45,9 +45,9 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 			}),
 		}),
 		// 添加静态文件路径
-		ServeStaticModule.forRoot({
-			rootPath: path.join(__dirname, '..', 'static'),
-		}),
+		// ServeStaticModule.forRoot({
+		// 	rootPath: path.join(__dirname, '..', 'static'),
+		// }),
 		CacheModule.register(),
 		// 加载数据库配置
 		TypeOrmModule.forRoot(connectionParams),
@@ -71,7 +71,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 			provide: APP_INTERCEPTOR,
 			useClass: ClassSerializerInterceptor,
 		},
-		ProductService,
+		// ProductService,
 		// 全局使用 guard
 		// {
 		// 	provide: APP_GUARD,

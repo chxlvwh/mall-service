@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Product } from './product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -17,7 +17,6 @@ export class ProductService {
 		private readonly skuRepository: Repository<Sku>,
 		private readonly brandService: BrandService,
 		private readonly productCategoryService: ProductCategoryService,
-		private readonly dataSource: DataSource,
 	) {}
 
 	async create(body: CreateProductDto) {
@@ -69,7 +68,7 @@ export class ProductService {
 		if (!product) {
 			throw new Error('Product not found');
 		}
-		const { brandId, productCategoryId, skus } = body;
+		const { brandId, productCategoryId, skus = [] } = body;
 		const brand = await this.brandService.findOne(brandId);
 		const productCategory = await this.productCategoryService.findOne(productCategoryId);
 		// 验证存在
@@ -83,7 +82,7 @@ export class ProductService {
 		await this.productRepository.save(newProduct);
 
 		// 保存sku
-		if (skus && skus.length) {
+		if (skus.length) {
 			// 保存新增的sku
 			const newSkus = skus.filter((it) => !it.id);
 			await this.skuRepository.save(newSkus);
@@ -91,17 +90,20 @@ export class ProductService {
 			for (let i = 0; i < skus.length; i++) {
 				const it = skus[i];
 				const sku = await this.skuRepository.findOne({ where: { id: it.id } });
+				if (!sku) {
+					continue;
+				}
 				sku.price = it.price;
 				sku.stock = it.stock;
 				sku.props = it.props;
 				sku.product = product;
 				await this.skuRepository.save(sku);
 			}
-			// 删除不再使用的sku
-			const oldRelationSkus = await this.skuRepository.find({ where: { product: { id } } });
-			const oldSkus = oldRelationSkus.filter((it) => !skus.find((sku) => sku.id === it.id));
-			await this.skuRepository.remove(oldSkus);
 		}
+		// 删除不再使用的sku
+		const oldRelationSkus = await this.skuRepository.find({ where: { product: { id } } });
+		const oldSkus = oldRelationSkus.filter((it) => !skus.find((sku) => sku.id === it.id));
+		await this.skuRepository.remove(oldSkus);
 
 		const qb = this.productRepository.createQueryBuilder('product');
 		await qb.relation('brand').of(product).addAndRemove([brand], product.brand);

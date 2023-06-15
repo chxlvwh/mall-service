@@ -1,6 +1,7 @@
-import { Allow, IsNotEmpty } from 'class-validator';
+import { Allow, IsNotEmpty, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Sku } from '../sku.entity';
+import { Transform } from 'class-transformer';
+import { UpdateSkuDto } from './update-sku.dto';
 
 export class UpdateProductDto {
 	@IsNotEmpty()
@@ -36,6 +37,7 @@ export class UpdateProductDto {
 
 	@ApiProperty()
 	@IsNotEmpty()
+	@Transform(({ value }) => parseInt(value))
 	brandId: number;
 
 	@ApiProperty()
@@ -44,5 +46,6 @@ export class UpdateProductDto {
 
 	@ApiProperty()
 	@Allow()
-	skus: Sku[];
+	@Transform(({ value }) => value.map((sku) => ({ ...sku, id: sku.id ? parseInt(sku.id) : undefined })))
+	skus: UpdateSkuDto[];
 }

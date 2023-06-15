@@ -20,7 +20,7 @@ import { CaslAbilityService } from './casl-ability.service';
 				return {
 					secret: configService.get(AppConfigEnum.SECRET),
 					signOptions: {
-						expiresIn: '1d',
+						expiresIn: '7d',
 					},
 				};
 			},

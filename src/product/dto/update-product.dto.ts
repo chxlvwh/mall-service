@@ -48,4 +48,8 @@ export class UpdateProductDto {
 	@Allow()
 	@Transform(({ value }) => value.map((sku) => ({ ...sku, id: sku.id ? parseInt(sku.id) : undefined })))
 	skus: UpdateSkuDto[];
+
+	@ApiProperty({ description: '上架状态，0：下架，1：上架' })
+	@Allow()
+	status: number;
 }

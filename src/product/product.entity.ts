@@ -14,6 +14,11 @@ import { Brand } from '../brand/brand.entity';
 import { ProductCategory } from '../product-category/product-category.entity';
 import { Sku } from './sku.entity';
 
+export enum ProductStatus {
+	OFF_SHELF = 0,
+	ON_SHELF = 1,
+}
+
 @Entity()
 export class Product {
 	@PrimaryGeneratedColumn()
@@ -36,6 +41,9 @@ export class Product {
 
 	@Column({ default: 0 })
 	stock: number;
+
+	@Column()
+	status: ProductStatus;
 
 	@Column({ nullable: true })
 	units: string;

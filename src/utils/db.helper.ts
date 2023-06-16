@@ -28,8 +28,8 @@ export function pagingFormat(result, current, pageSize) {
 	return {
 		elements: result[0],
 		paging: {
-			current: Number(current),
-			pageSize: Number(pageSize),
+			current: Number(current) || 1,
+			pageSize: Number(pageSize) || 10,
 			total: result[1],
 		},
 	};

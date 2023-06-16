@@ -7,6 +7,9 @@ import { BrandService } from '../brand/brand.service';
 import { ProductCategoryService } from '../product-category/product-category.service';
 import { Sku } from './sku.entity';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { SearchProductDto } from './dto/search-product.dto';
+import { formatPageProps, PaginationProps } from '../utils/common';
+import { conditionUtils, pagingFormat } from '../utils/db.helper';
 
 @Injectable()
 export class ProductService {
@@ -109,5 +112,46 @@ export class ProductService {
 		await qb.relation('brand').of(product).addAndRemove([brand], product.brand);
 		await qb.relation('productCategory').of(product).addAndRemove([productCategory], product.productCategory);
 		await qb.execute();
+	}
+
+	async remove(id: number) {
+		const product = await this.findOne(id);
+		if (!product) {
+			throw new Error('Product not found');
+		}
+		await this.productRepository.softRemove(product);
+		return true;
+	}
+
+	async shelf(id: number, status: number) {
+		const product = await this.findOne(id);
+		if (!product) {
+			throw new Error('Product not found');
+		}
+		product.status = status;
+		await this.productRepository.save(product);
+		return true;
+	}
+
+	async findAll(query: SearchProductDto & PaginationProps) {
+		const { name, status, brandId, productCategoryId, current, pageSize, sortBy, sortOrder } = query;
+		const { take, skip } = formatPageProps(current, pageSize);
+		const queryBuilder = this.productRepository
+			.createQueryBuilder('product')
+			.leftJoinAndSelect('product.brand', 'brand')
+			.leftJoinAndSelect('product.productCategory', 'productCategory')
+			.leftJoinAndSelect('product.skus', 'skus');
+		const queryObj = {
+			'product.name': { value: name, isLike: true },
+			'product.status': { value: status },
+			'brand.id': { value: brandId },
+			'productCategory.id': { value: productCategoryId },
+		};
+		const queryResult = await conditionUtils(queryBuilder, queryObj)
+			.take(take)
+			.skip(skip)
+			.orderBy(`product.${sortBy || 'createdAt'}`, sortOrder || 'DESC')
+			.getManyAndCount();
+		return pagingFormat(queryResult, current, pageSize);
 	}
 }

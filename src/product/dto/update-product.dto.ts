@@ -43,7 +43,6 @@ export class UpdateProductDto {
 	@ApiProperty()
 	@IsNotEmpty()
 	productCategoryId: number;
-
 	@ApiProperty()
 	@Allow()
 	@Transform(({ value }) => value.map((sku) => ({ ...sku, id: sku.id ? parseInt(sku.id) : undefined })))

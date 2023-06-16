@@ -8,6 +8,7 @@ import {
 	OneToMany,
 	ManyToMany,
 	JoinTable,
+	DeleteDateColumn,
 } from 'typeorm';
 
 import { Brand } from '../brand/brand.entity';
@@ -67,4 +68,7 @@ export class Product {
 
 	@OneToMany(() => Sku, (sku) => sku.product)
 	skus: Sku[];
+
+	@DeleteDateColumn({ name: 'deleted_at' })
+	deletedAt: Date;
 }

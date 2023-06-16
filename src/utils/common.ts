@@ -30,6 +30,12 @@ export class PaginationProps {
 
 	@IsOptional()
 	pageSize?: number;
+
+	@IsOptional()
+	sortBy?: string;
+
+	@IsOptional()
+	sortOrder?: 'ASC' | 'DESC';
 }
 
 export class DateProps {

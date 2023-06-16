@@ -134,7 +134,7 @@ export class ProductService {
 	}
 
 	async findAll(query: SearchProductDto & PaginationProps) {
-		const { name, status, brandId, productCategoryId, current, pageSize, sortBy, sortOrder } = query;
+		const { name, status, itemNo, brandId, productCategoryId, current, pageSize, sortBy, sortOrder } = query;
 		const { take, skip } = formatPageProps(current, pageSize);
 		const queryBuilder = this.productRepository
 			.createQueryBuilder('product')
@@ -143,6 +143,7 @@ export class ProductService {
 			.leftJoinAndSelect('product.skus', 'skus');
 		const queryObj = {
 			'product.name': { value: name, isLike: true },
+			'product.itemNo': { value: itemNo },
 			'product.status': { value: status },
 			'brand.id': { value: brandId },
 			'productCategory.id': { value: productCategoryId },
@@ -152,6 +153,11 @@ export class ProductService {
 			.skip(skip)
 			.orderBy(`product.${sortBy || 'createdAt'}`, sortOrder || 'DESC')
 			.getManyAndCount();
+		const elements = queryResult[0];
+		elements.forEach((product) => {
+			product.brand = product.brand[0] || {};
+			product.productCategory = product.productCategory[0] || {};
+		});
 		return pagingFormat(queryResult, current, pageSize);
 	}
 }

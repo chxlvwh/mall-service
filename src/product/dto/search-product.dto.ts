@@ -14,6 +14,10 @@ export class SearchProductDto {
 
 	@ApiProperty()
 	@Allow()
+	itemNo: string;
+
+	@ApiProperty()
+	@Allow()
 	@Transform(({ value }) => parseInt(value))
 	brandId: number;
 

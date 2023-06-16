@@ -10,6 +10,11 @@ export class CreateProductDto {
 
 	@ApiProperty()
 	@IsNotEmpty()
+	@Length(1, 20)
+	itemNo: string;
+
+	@ApiProperty()
+	@IsNotEmpty()
 	originPrice: number;
 
 	@ApiProperty()

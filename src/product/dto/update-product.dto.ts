@@ -1,11 +1,17 @@
-import { Allow, IsNotEmpty, IsNumber } from 'class-validator';
+import { Allow, IsNotEmpty, IsNumber, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { UpdateSkuDto } from './update-sku.dto';
 
 export class UpdateProductDto {
 	@IsNotEmpty()
+	@Length(1, 60)
 	name: string;
+
+	@ApiProperty()
+	@IsNotEmpty()
+	@Length(1, 20)
+	itemNo: string;
 
 	@ApiProperty()
 	@Allow()

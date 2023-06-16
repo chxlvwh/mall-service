@@ -31,6 +31,9 @@ export class Product {
 	@Column()
 	subtitle: string;
 
+	@Column({ name: 'item_no' })
+	itemNo: string;
+
 	@Column({ nullable: true })
 	introduction: string;
 

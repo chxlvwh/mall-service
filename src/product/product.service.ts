@@ -53,10 +53,15 @@ export class ProductService {
 		await qb.relation('brand').of(product).add(brand);
 		await qb.relation('productCategory').of(product).add(productCategory);
 		await qb.execute();
-		return await this.productRepository.findOne({
+		const result = await this.productRepository.findOne({
 			where: { id: product.id },
 			relations: { brand: true, productCategory: true, skus: true },
 		});
+
+		result.brand = result.brand[0] || {};
+		result.productCategory = result.productCategory[0] || {};
+
+		return result;
 	}
 
 	async findOne(id: number) {
@@ -112,6 +117,7 @@ export class ProductService {
 		await qb.relation('brand').of(product).addAndRemove([brand], product.brand);
 		await qb.relation('productCategory').of(product).addAndRemove([productCategory], product.productCategory);
 		await qb.execute();
+		return true;
 	}
 
 	async remove(id: number) {

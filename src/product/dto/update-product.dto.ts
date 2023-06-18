@@ -35,7 +35,7 @@ export class UpdateProductDto {
 
 	@ApiProperty()
 	@Allow()
-	units: string;
+	unit: string;
 
 	@ApiProperty()
 	@Allow()
@@ -56,5 +56,6 @@ export class UpdateProductDto {
 
 	@ApiProperty({ description: '上架状态，0：下架，1：上架' })
 	@Allow()
+	@IsNotEmpty()
 	status: number;
 }

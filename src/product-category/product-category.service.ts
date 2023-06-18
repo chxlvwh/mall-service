@@ -27,6 +27,11 @@ export class ProductCategoryService {
 		return await this.productCategoryRepository.findAncestors(category);
 	}
 
+	async getAttrs(id: number) {
+		const category = await this.findOne(id);
+		return category.productAttributes;
+	}
+
 	async findAll(query: SearchProductCategoryDto) {
 		const { name, parentId, pageSize, current, isActive } = query;
 		const take = pageSize || 10;
@@ -142,6 +147,9 @@ export class ProductCategoryService {
 	}
 
 	async findOne(id: number) {
-		return this.productCategoryRepository.findOne({ where: { id }, relations: { parent: true, children: true } });
+		return this.productCategoryRepository.findOne({
+			where: { id },
+			relations: { parent: true, children: true, productAttributes: true },
+		});
 	}
 }

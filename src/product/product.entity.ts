@@ -50,7 +50,7 @@ export class Product {
 	status: ProductStatus;
 
 	@Column({ nullable: true })
-	units: string;
+	unit: string;
 
 	@Column({ nullable: true })
 	weight: number;
@@ -66,7 +66,11 @@ export class Product {
 	brand: Brand;
 
 	@ManyToMany(() => ProductCategory, (productCategory) => productCategory.products)
-	@JoinTable({ name: 'category_product' })
+	@JoinTable({
+		name: 'category_product',
+		joinColumn: { name: 'product_id' },
+		inverseJoinColumn: { name: 'product_category_id' },
+	})
 	productCategory: ProductCategory;
 
 	@OneToMany(() => Sku, (sku) => sku.product)

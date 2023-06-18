@@ -17,7 +17,9 @@ import CreateProductCategoryDto from './dto/create-product-category.dto';
 import { UpdateProductCategoryDto } from './dto/update-product-category.dto';
 import { AdminGuard } from '../guards/admin.guard';
 import { JwtGuard } from '../guards/jwt.guard';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Product Category')
 @UseGuards(JwtGuard)
 @Controller('product-category')
 export class ProductCategoryController {
@@ -26,6 +28,12 @@ export class ProductCategoryController {
 	@Get('list')
 	async findAll(@Query() query: SearchProductCategoryDto) {
 		return await this.productCategoryService.findAll(query);
+	}
+
+	@ApiProperty()
+	@Get(':id/attributes')
+	async getAttrs(@Param('id', ParseIntPipe) id: number) {
+		return await this.productCategoryService.getAttrs(id);
 	}
 
 	@Get('tree')
@@ -38,13 +46,11 @@ export class ProductCategoryController {
 		return await this.productCategoryService.findAncestors(id);
 	}
 
-	@UseGuards(AdminGuard)
 	@Post()
 	async createProductCategory(@Body() body: CreateProductCategoryDto) {
 		return await this.productCategoryService.createProductCategory(body);
 	}
 
-	@UseGuards(AdminGuard)
 	@Put(':id/attributes')
 	async updateProductCategoryAttrs(@Param('id', ParseIntPipe) id: number, @Body() body: { attributeIds: number[] }) {
 		return await this.productCategoryService.updateProductCategoryAttrs(id, body);

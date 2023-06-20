@@ -9,8 +9,6 @@ export class CreateProductDto {
 	name: string;
 
 	@ApiProperty()
-	@IsNotEmpty()
-	@Length(1, 20)
 	itemNo: string;
 
 	@ApiProperty()
@@ -30,7 +28,7 @@ export class CreateProductDto {
 	productCategoryId: number;
 
 	@ApiProperty()
-	@IsNotEmpty()
+	@Allow()
 	subtitle: string;
 
 	@ApiProperty()

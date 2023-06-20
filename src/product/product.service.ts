@@ -65,10 +65,15 @@ export class ProductService {
 	}
 
 	async findOne(id: number) {
-		return await this.productRepository.findOne({
+		const result = await this.productRepository.findOne({
 			where: { id },
 			relations: { brand: true, productCategory: true, skus: true },
 		});
+		return {
+			...result,
+			productCategory: result.productCategory[0] || {},
+			brand: result.brand[0] || {},
+		};
 	}
 
 	async update(id: number, body: UpdateProductDto) {

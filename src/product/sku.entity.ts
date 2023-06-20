@@ -15,7 +15,7 @@ export class Sku {
 	@Column()
 	stock: number;
 
-	@ApiProperty()
+	@ApiProperty({ description: 'name:属性名，value:属性值' })
 	@Column({ type: 'json', nullable: true })
 	props: JSON;
 

@@ -14,6 +14,7 @@ import {
 import { Brand } from '../brand/brand.entity';
 import { ProductCategory } from '../product-category/product-category.entity';
 import { Sku } from './sku.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export enum ProductStatus {
 	OFF_SHELF = 0,
@@ -28,10 +29,10 @@ export class Product {
 	@Column()
 	name: string;
 
-	@Column()
+	@Column({ nullable: true })
 	subtitle: string;
 
-	@Column({ name: 'item_no' })
+	@Column({ name: 'item_no', nullable: true })
 	itemNo: string;
 
 	@Column({ nullable: true })
@@ -54,6 +55,10 @@ export class Product {
 
 	@Column({ nullable: true })
 	weight: number;
+
+	@ApiProperty({ description: 'id: 属性id, name:属性名，value:属性值' })
+	@Column({ type: 'json', nullable: true })
+	props: JSON;
 
 	@CreateDateColumn({ name: 'created_at' })
 	createdAt: Date;

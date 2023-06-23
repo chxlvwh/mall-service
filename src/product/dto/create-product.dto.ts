@@ -21,6 +21,14 @@ export class CreateProductDto {
 
 	@ApiProperty()
 	@IsNotEmpty()
+	coverUrls: JSON;
+
+	@ApiProperty()
+	@IsNotEmpty()
+	content: string;
+
+	@ApiProperty()
+	@IsNotEmpty()
 	brandId: number;
 
 	@ApiProperty()

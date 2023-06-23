@@ -35,6 +35,14 @@ export class Product {
 	@Column({ name: 'item_no', nullable: true })
 	itemNo: string;
 
+	@ApiProperty({ description: 'url数组' })
+	@Column({ type: 'json', name: 'cover_urls' })
+	coverUrls: JSON;
+
+	@ApiProperty({ description: '详情页内容' })
+	@Column({ type: 'text' })
+	content: string;
+
 	@Column({ nullable: true })
 	introduction: string;
 

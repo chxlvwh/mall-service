@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Product } from './product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,7 +23,16 @@ export class ProductService {
 	) {}
 
 	async create(body: CreateProductDto) {
-		const { brandId, productCategoryId, skus } = body;
+		const { brandId, productCategoryId, skus, coverUrls } = body;
+		if (!Array.isArray(coverUrls)) {
+			throw new BadRequestException('CoverUrls must be an array');
+		}
+		if (!coverUrls.length) {
+			throw new BadRequestException('CoverUrls can not be empty');
+		}
+		if (coverUrls.length > 5) {
+			throw new BadRequestException('CoverUrls can not be more than 5');
+		}
 		const brand = await this.brandService.findOne(brandId);
 		const productCategory = await this.productCategoryService.findOne(productCategoryId);
 		// 验证存在

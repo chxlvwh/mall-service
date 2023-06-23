@@ -21,6 +21,14 @@ export class UpdateProductDto {
 
 	@ApiProperty()
 	@IsNotEmpty()
+	coverUrls: JSON;
+
+	@ApiProperty()
+	@IsNotEmpty()
+	content: string;
+
+	@ApiProperty()
+	@IsNotEmpty()
 	originPrice: number;
 
 	@ApiProperty()

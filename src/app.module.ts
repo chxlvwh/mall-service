@@ -14,11 +14,9 @@ import { AuthModule } from './auth/auth.module';
 import { BrandModule } from './brand/brand.module';
 import { ProductCategoryModule } from './product-category/product-category.module';
 import { ProductController } from './product/product.controller';
-// import { ProductService } from './product/product.service';
 import { ProductModule } from './product/product.module';
 import { ProductAttributeModule } from './product-attribute/product-attribute.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import * as path from 'path';
+import { UploadModule } from './upload/upload.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -60,6 +58,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		ProductCategoryModule,
 		ProductModule,
 		ProductAttributeModule,
+		UploadModule,
 	],
 	/**
 	 * 跟app.useGlobalInterceptors()的区别是，用provider的方式可以注入依赖

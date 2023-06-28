@@ -12,6 +12,10 @@ export class Sku {
 	price: number;
 
 	@ApiProperty()
+	@Column({ nullable: true })
+	code: string;
+
+	@ApiProperty()
 	@Column()
 	stock: number;
 

@@ -1,6 +1,7 @@
 import { Allow, IsNotEmpty, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Sku } from '../sku.entity';
+import { Column } from 'typeorm';
 
 export class CreateProductDto {
 	@ApiProperty()
@@ -9,6 +10,7 @@ export class CreateProductDto {
 	name: string;
 
 	@ApiProperty()
+	@Allow()
 	itemNo: string;
 
 	@ApiProperty()
@@ -54,6 +56,10 @@ export class CreateProductDto {
 	@ApiProperty()
 	@Allow()
 	weight: number;
+
+	@ApiProperty({ description: 'id: 属性id, name:属性名，value:属性值' })
+	@Allow()
+	props: JSON;
 
 	@ApiProperty()
 	@Allow({ each: true })

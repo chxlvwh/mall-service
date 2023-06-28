@@ -9,6 +9,7 @@ export class UpdateProductDto {
 	name: string;
 
 	@ApiProperty()
+	@Allow()
 	itemNo: string;
 
 	@ApiProperty()
@@ -52,9 +53,14 @@ export class UpdateProductDto {
 	@Transform(({ value }) => parseInt(value))
 	brandId: number;
 
+	@ApiProperty({ description: 'id: 属性id, name:属性名，value:属性值' })
+	@Allow()
+	props: JSON;
+
 	@ApiProperty()
 	@IsNotEmpty()
 	productCategoryId: number;
+
 	@ApiProperty()
 	@Allow()
 	@Transform(({ value }) => value.map((sku) => ({ ...sku, id: sku.id ? parseInt(sku.id) : undefined })))

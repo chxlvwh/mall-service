@@ -46,7 +46,7 @@ export class ProductController {
 
 	@ApiProperty()
 	@Put(':id')
-	async update(@Param('id') id: number, @Body() body: UpdateProductDto) {
+	async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateProductDto) {
 		return await this.productService.update(id, body);
 	}
 

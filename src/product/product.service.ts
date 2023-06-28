@@ -100,32 +100,25 @@ export class ProductService {
 		if (!productCategory) {
 			throw new Error('Product category not found');
 		}
-		const newProduct = { ...product, ...body };
+		const newProduct = { ...product, ...body, skus: null };
+
+		// 删除不再使用的sku
+		const oldSkus = await this.skuRepository.find({ where: { product: { id } } });
+		if (oldSkus.length) {
+			for (let i = 0; i < oldSkus.length; i++) {
+				await this.skuRepository.remove(oldSkus[i]);
+			}
+		}
 		await this.productRepository.save(newProduct);
 
 		// 保存sku
 		if (skus.length) {
-			// 保存新增的sku
-			const newSkus = skus.filter((it) => !it.id);
-			await this.skuRepository.save(newSkus);
-			// 保存修改的sku
 			for (let i = 0; i < skus.length; i++) {
-				const it = skus[i];
-				const sku = await this.skuRepository.findOne({ where: { id: it.id } });
-				if (!sku) {
-					continue;
-				}
-				sku.price = it.price;
-				sku.stock = it.stock;
-				sku.props = it.props;
+				const sku = this.skuRepository.create(skus[i]);
 				sku.product = product;
 				await this.skuRepository.save(sku);
 			}
 		}
-		// 删除不再使用的sku
-		const oldRelationSkus = await this.skuRepository.find({ where: { product: { id } } });
-		const oldSkus = oldRelationSkus.filter((it) => !skus.find((sku) => sku.id === it.id));
-		await this.skuRepository.remove(oldSkus);
 
 		const qb = this.productRepository.createQueryBuilder('product');
 		await qb.relation('brand').of(product).addAndRemove([brand], product.brand);

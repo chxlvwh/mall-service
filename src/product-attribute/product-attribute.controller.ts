@@ -42,7 +42,7 @@ export class ProductAttributeController {
 	@Get('list')
 	async findAll(
 		@Query()
-		query: SearchProductAttributeDto & PaginationProps,
+		query: SearchProductAttributeDto,
 	) {
 		return await this.productAttributeService.findAll(query);
 	}

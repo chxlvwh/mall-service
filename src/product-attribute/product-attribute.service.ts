@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProductAttribute } from './product-attribute.entity';
 import { SearchProductAttributeDto } from './dto/search-product-attribute.dto';
-import { formatPageProps, PaginationProps } from '../utils/common';
+import { formatPageProps } from '../utils/common';
 import { conditionUtils, pagingFormat } from '../utils/db.helper';
 import { CreateProductAttributeDto } from './dto/create-product-attribute.dto';
 import { UpdateProductAttributeDto } from './dto/update-product-attribute.dto';
@@ -15,7 +15,7 @@ export class ProductAttributeService {
 		private readonly productAttributeRepository: Repository<ProductAttribute>,
 	) {}
 
-	async findAll(query: SearchProductAttributeDto & PaginationProps) {
+	async findAll(query: SearchProductAttributeDto) {
 		const { name, isRequired, entryMethod, type, canSearch, pageSize = 20, current = 1 } = query;
 		const { take, skip } = formatPageProps(current, pageSize);
 		const queryBuilder = this.productAttributeRepository.createQueryBuilder('attribute');

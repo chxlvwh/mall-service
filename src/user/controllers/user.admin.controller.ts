@@ -13,7 +13,7 @@ import {
 	UseGuards,
 	UseInterceptors,
 } from '@nestjs/common';
-import { User } from '../user.entity';
+import { User } from '../entity/user.entity';
 import { UserService } from '../user.service';
 import { GetUserDto } from '../dto/get-users.dto';
 import { CreateUserPipe } from '../pipes/create-user.pipe';

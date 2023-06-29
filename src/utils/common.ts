@@ -1,4 +1,4 @@
-import { User } from '../user/user.entity';
+import { User } from '../user/entity/user.entity';
 import { Logs } from '../logs/logs.entity';
 import { Roles } from '../roles/roles.entity';
 import { Menus } from '../menus/menu.entity';

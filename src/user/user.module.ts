@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { UserAdminController } from './controllers/user.admin.controller';
 import { UserService } from './user.service';
-import { User } from './user.entity';
+import { User } from './entity/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Roles } from '../roles/roles.entity';
 import { UserPublicController } from './controllers/user.public.controller';

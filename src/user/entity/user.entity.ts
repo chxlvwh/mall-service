@@ -3,6 +3,7 @@ import {
 	CreateDateColumn,
 	DeleteDateColumn,
 	Entity,
+	JoinColumn,
 	JoinTable,
 	ManyToMany,
 	OneToMany,
@@ -10,10 +11,12 @@ import {
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from 'typeorm';
-import { Logs } from '../logs/logs.entity';
-import { Roles } from '../roles/roles.entity';
+import { Logs } from '../../logs/logs.entity';
+import { Roles } from '../../roles/roles.entity';
 import { Profile } from './profile.entity';
 import { Exclude } from 'class-transformer';
+import { Order } from '../../order/entity/order.entity';
+import { Receiver } from './receiver.entity';
 
 @Entity()
 export class User {
@@ -45,4 +48,15 @@ export class User {
 
 	@DeleteDateColumn({ name: 'delete_at' })
 	deletedAt: Date;
+
+	@ManyToMany(() => Order, (order) => order.user)
+	@JoinTable({
+		name: 'user_order',
+		joinColumn: { name: 'user_id' },
+		inverseJoinColumn: { name: 'order_id' },
+	})
+	orders: Order[];
+
+	@OneToMany(() => Receiver, (receiver) => receiver.user)
+	receivers: Receiver[];
 }

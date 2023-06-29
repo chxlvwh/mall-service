@@ -11,10 +11,11 @@ import {
 	DeleteDateColumn,
 } from 'typeorm';
 
-import { Brand } from '../brand/brand.entity';
-import { ProductCategory } from '../product-category/product-category.entity';
+import { Brand } from '../../brand/brand.entity';
+import { ProductCategory } from '../../product-category/product-category.entity';
 import { Sku } from './sku.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { OrderItem } from '../../order/entity/order-item.entity';
 
 export enum ProductStatus {
 	OFF_SHELF = 0,
@@ -74,6 +75,9 @@ export class Product {
 	@UpdateDateColumn({ name: 'last_modified_at' })
 	lastModifiedAt: Date;
 
+	@DeleteDateColumn({ name: 'deleted_at' })
+	deletedAt: Date;
+
 	@ManyToMany(() => Brand, (brand) => brand.products)
 	@JoinTable({ name: 'brand_product' })
 	brand: Brand;
@@ -89,6 +93,6 @@ export class Product {
 	@OneToMany(() => Sku, (sku) => sku.product)
 	skus: Sku[];
 
-	@DeleteDateColumn({ name: 'deleted_at' })
-	deletedAt: Date;
+	@ManyToMany(() => OrderItem, (orderItem) => orderItem.product)
+	orderItem: OrderItem[];
 }

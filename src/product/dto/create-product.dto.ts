@@ -1,6 +1,6 @@
 import { Allow, IsNotEmpty, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Sku } from '../sku.entity';
+import { Sku } from '../entity/sku.entity';
 import { Column } from 'typeorm';
 
 export class CreateProductDto {

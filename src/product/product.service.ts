@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { Product } from './product.entity';
+import { Product } from './entity/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { BrandService } from '../brand/brand.service';
 import { ProductCategoryService } from '../product-category/product-category.service';
-import { Sku } from './sku.entity';
+import { Sku } from './entity/sku.entity';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { SearchProductDto } from './dto/search-product.dto';
 import { formatPageProps, PaginationProps } from '../utils/common';

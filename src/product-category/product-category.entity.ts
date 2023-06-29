@@ -14,7 +14,7 @@ import {
 	ManyToMany,
 	JoinTable,
 } from 'typeorm';
-import { Product } from '../product/product.entity';
+import { Product } from '../product/entity/product.entity';
 import { ProductAttribute } from '../product-attribute/product-attribute.entity';
 
 @Entity()

@@ -17,6 +17,7 @@ import { ProductController } from './product/product.controller';
 import { ProductModule } from './product/product.module';
 import { ProductAttributeModule } from './product-attribute/product-attribute.module';
 import { UploadModule } from './upload/upload.module';
+import { OrderModule } from './order/order.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -59,6 +60,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		ProductModule,
 		ProductAttributeModule,
 		UploadModule,
+		OrderModule,
 	],
 	/**
 	 * 跟app.useGlobalInterceptors()的区别是，用provider的方式可以注入依赖

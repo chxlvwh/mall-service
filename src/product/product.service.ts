@@ -146,7 +146,7 @@ export class ProductService {
 		return true;
 	}
 
-	async findAll(query: SearchProductDto & PaginationProps) {
+	async findAll(query: SearchProductDto) {
 		const { name, status, itemNo, brandId, productCategoryId, current, pageSize, sortBy, sortOrder } = query;
 		const { take, skip } = formatPageProps(current, pageSize);
 		const queryBuilder = this.productRepository

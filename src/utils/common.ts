@@ -6,6 +6,7 @@ import { Allow, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { log } from 'winston';
 import { CreateDateColumn, DeleteDateColumn, IsNull, Not, UpdateDateColumn } from 'typeorm';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export const getEntities = (path: string) => {
 	const map = {
@@ -25,15 +26,19 @@ export const getEntities = (path: string) => {
 };
 
 export class PaginationProps {
+	@ApiPropertyOptional({ description: '第几页' })
 	@Allow()
 	current: number;
 
+	@ApiPropertyOptional({ description: '每页条数' })
 	@IsOptional()
 	pageSize?: number;
 
+	@ApiPropertyOptional({ description: '排序字段' })
 	@IsOptional()
 	sortBy?: string;
 
+	@ApiPropertyOptional({ description: '排序方式 ASC：正序，DESC：逆序' })
 	@IsOptional()
 	sortOrder?: 'ASC' | 'DESC';
 }

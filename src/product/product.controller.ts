@@ -6,7 +6,6 @@ import { ProductService } from './product.service';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { SearchProductDto } from './dto/search-product.dto';
-import { PaginationProps } from '../utils/common';
 
 @ApiTags('Product')
 @UseGuards(JwtGuard, AdminGuard)
@@ -16,7 +15,7 @@ export class ProductController {
 
 	@ApiProperty()
 	@Get('list')
-	async findAll(@Query() query: SearchProductDto & PaginationProps) {
+	async findAll(@Query() query: SearchProductDto) {
 		return await this.productService.findAll(query);
 	}
 

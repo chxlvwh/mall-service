@@ -8,18 +8,18 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { SearchProductDto } from './dto/search-product.dto';
 
 @ApiTags('Product')
-@UseGuards(JwtGuard, AdminGuard)
 @Controller('product')
 export class ProductController {
 	constructor(private readonly productService: ProductService) {}
 
 	@ApiProperty()
-	@Get('list')
+	@Get('')
 	async findAll(@Query() query: SearchProductDto) {
 		return await this.productService.findAll(query);
 	}
 
 	@ApiProperty()
+	@UseGuards(JwtGuard, AdminGuard)
 	@Post()
 	async create(@Body() body: CreateProductDto) {
 		return await this.productService.create(body);
@@ -32,24 +32,28 @@ export class ProductController {
 	}
 
 	@ApiProperty()
+	@UseGuards(JwtGuard, AdminGuard)
 	@Put(':id/status/on-sale')
 	async onSale(@Param('id', ParseIntPipe) id: number) {
 		return await this.productService.shelf(id, 1);
 	}
 
 	@ApiProperty()
+	@UseGuards(JwtGuard, AdminGuard)
 	@Put(':id/status/off-sale')
 	async offSale(@Param('id', ParseIntPipe) id: number) {
 		return await this.productService.shelf(id, 0);
 	}
 
 	@ApiProperty()
+	@UseGuards(JwtGuard, AdminGuard)
 	@Put(':id')
 	async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateProductDto) {
 		return await this.productService.update(id, body);
 	}
 
 	@ApiProperty()
+	@UseGuards(JwtGuard, AdminGuard)
 	@Delete(':id')
 	async remove(@Param('id', ParseIntPipe) id: number) {
 		return await this.productService.remove(id);

@@ -65,6 +65,9 @@ export class Product {
 	@Column({ nullable: true })
 	weight: number;
 
+	@Column({ nullable: true })
+	sales: number;
+
 	@ApiProperty({ description: 'id: 属性id, name:属性名，value:属性值' })
 	@Column({ type: 'json', nullable: true })
 	props: JSON;

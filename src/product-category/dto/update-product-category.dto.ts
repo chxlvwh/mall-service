@@ -8,6 +8,9 @@ export class UpdateProductCategoryDto {
 	desc: string;
 
 	@Allow()
+	picture: string;
+
+	@Allow()
 	parentId: number;
 
 	@Allow()

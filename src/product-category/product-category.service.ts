@@ -60,12 +60,13 @@ export class ProductCategoryService {
 		if (isExist) {
 			throw new ConflictException('该分类已存在');
 		}
-		const { name, desc, parentId, icon, order, isActive } = createProductCategoryDto;
+		const { name, desc, parentId, icon, order, isActive, picture } = createProductCategoryDto;
 		const productCategory = new ProductCategory();
 		productCategory.name = name;
 		productCategory.desc = desc;
 		productCategory.icon = icon;
 		productCategory.order = order;
+		productCategory.picture = picture;
 		productCategory.isActive = isActive !== false;
 		if (parentId) {
 			const parentProductCategory = await this.productCategoryRepository.findOne({ where: { id: parentId } });
@@ -92,11 +93,12 @@ export class ProductCategoryService {
 			throw new BadRequestException('该分类不存在');
 		}
 
-		const { name, desc, parentId, icon, order, isActive } = updateProductCategoryDto;
+		const { name, desc, parentId, icon, order, isActive, picture } = updateProductCategoryDto;
 		productCategory.name = name;
 		productCategory.desc = desc;
 		productCategory.icon = icon;
 		productCategory.order = order;
+		productCategory.picture = picture;
 		productCategory.isActive = isActive !== false;
 		if (parentId) {
 			if (productCategory.id === parentId) {

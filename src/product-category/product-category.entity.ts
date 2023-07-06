@@ -33,6 +33,9 @@ export class ProductCategory {
 	icon: string;
 
 	@Column({ nullable: true })
+	picture: string;
+
+	@Column({ nullable: true })
 	order: number;
 
 	@Column({ name: 'is_active', default: true })

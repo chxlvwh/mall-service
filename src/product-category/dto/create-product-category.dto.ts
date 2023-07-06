@@ -12,6 +12,9 @@ export default class CreateProductCategoryDto {
 	desc: string;
 
 	@Allow()
+	picture: string;
+
+	@Allow()
 	parentId: number;
 
 	@Allow()

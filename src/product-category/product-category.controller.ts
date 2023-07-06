@@ -20,12 +20,11 @@ import { JwtGuard } from '../guards/jwt.guard';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Product Category')
-@UseGuards(JwtGuard)
 @Controller('product-category')
 export class ProductCategoryController {
 	constructor(private readonly productCategoryService: ProductCategoryService) {}
 
-	@Get('list')
+	@Get('')
 	async findAll(@Query() query: SearchProductCategoryDto) {
 		return await this.productCategoryService.findAll(query);
 	}
@@ -46,28 +45,31 @@ export class ProductCategoryController {
 		return await this.productCategoryService.findAncestors(id);
 	}
 
+	@UseGuards(JwtGuard, AdminGuard)
 	@Post()
 	async createProductCategory(@Body() body: CreateProductCategoryDto) {
 		return await this.productCategoryService.createProductCategory(body);
 	}
 
+	@UseGuards(JwtGuard, AdminGuard)
 	@Put(':id/attributes')
 	async updateProductCategoryAttrs(@Param('id', ParseIntPipe) id: number, @Body() body: { attributeIds: number[] }) {
 		return await this.productCategoryService.updateProductCategoryAttrs(id, body);
 	}
 
-	@UseGuards(AdminGuard)
+	@UseGuards(JwtGuard, AdminGuard)
 	@Put(':id')
 	async updateProductCategory(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateProductCategoryDto) {
 		return await this.productCategoryService.updateProductCategory(id, body);
 	}
 
-	@UseGuards(AdminGuard)
+	@UseGuards(JwtGuard, AdminGuard)
 	@Delete(':id')
 	async deleteProductCategory(@Param('id') id: number) {
 		return await this.productCategoryService.deleteProductCategory(id);
 	}
 
+	@UseGuards(JwtGuard, AdminGuard)
 	@Put(':id/restore')
 	async restore(@Param('id', ParseIntPipe) id: number) {
 		if (isNaN(Number(id))) {

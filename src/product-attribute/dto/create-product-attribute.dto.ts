@@ -8,6 +8,10 @@ export class CreateProductAttributeDto {
 	@IsNotEmpty()
 	name: string;
 
+	@ApiProperty({ description: '展示名称' })
+	@Allow()
+	displayName: string;
+
 	@ApiProperty({ description: '录入方式，1-手动录入， 2-从列表选择' })
 	@IsNotEmpty()
 	@IsIn(getEnumValues(EntryMethodEnum))

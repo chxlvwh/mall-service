@@ -15,6 +15,10 @@ export class ProductAttribute extends DateProps {
 	@PrimaryGeneratedColumn()
 	id: number;
 
+	// 展示名称
+	@Column()
+	displayName: string;
+
 	@Column()
 	name: string;
 

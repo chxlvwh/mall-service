@@ -10,6 +10,12 @@ export class UpdateReceiverDto {
 	@IsNotEmpty()
 	address: string;
 
+	@IsNotEmpty()
+	addressName: string;
+
+	@IsNotEmpty()
+	houseNo: string;
+
 	@Allow()
 	province: string;
 

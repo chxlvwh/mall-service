@@ -16,6 +16,12 @@ export class Receiver {
 	@Column()
 	address: string;
 
+	@Column()
+	houseNo: string;
+
+	@Column()
+	addressName: string;
+
 	@Column({ nullable: true })
 	province: string;
 

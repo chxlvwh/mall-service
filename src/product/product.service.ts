@@ -8,7 +8,7 @@ import { ProductCategoryService } from '../product-category/product-category.ser
 import { Sku } from './entity/sku.entity';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { SearchProductDto } from './dto/search-product.dto';
-import { formatPageProps, PaginationProps } from '../utils/common';
+import { formatPageProps } from '../utils/common';
 import { conditionUtils, pagingFormat } from '../utils/db.helper';
 
 @Injectable()

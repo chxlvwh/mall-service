@@ -14,7 +14,7 @@ import {
 	UseInterceptors,
 } from '@nestjs/common';
 import { User } from '../entity/user.entity';
-import { UserService } from '../user.service';
+import { UserService } from '../services/user.service';
 import { GetUserDto } from '../dto/get-users.dto';
 import { CreateUserPipe } from '../pipes/create-user.pipe';
 import { CreateUserDto } from '../dto/create-user.dto';

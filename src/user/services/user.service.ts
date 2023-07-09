@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entity/user.entity';
+import { User } from '../entity/user.entity';
 import { DataSource, In, IsNull, Not, Repository } from 'typeorm';
-import { GetUserDto } from './dto/get-users.dto';
-import { conditionUtils } from '../utils/db.helper';
-import { Roles } from '../roles/roles.entity';
-import { CreateUserDto } from './dto/create-user.dto';
+import { GetUserDto } from '../dto/get-users.dto';
+import { conditionUtils } from '../../utils/db.helper';
+import { Roles } from '../../roles/roles.entity';
+import { CreateUserDto } from '../dto/create-user.dto';
 import * as argon2 from 'argon2';
-import { Profile } from './entity/profile.entity';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Profile } from '../entity/profile.entity';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -94,7 +94,7 @@ export class UserService {
 	findOne(id: number) {
 		return this.userRepository.findOne({
 			where: { id },
-			relations: { profile: true, roles: true },
+			relations: { profile: true, roles: true, receivers: true },
 			withDeleted: true,
 		});
 	}

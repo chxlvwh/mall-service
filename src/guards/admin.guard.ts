@@ -1,5 +1,5 @@
 import { BadRequestException, CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
-import { UserService } from '../user/user.service';
+import { UserService } from '../user/services/user.service';
 
 /**
  * Guard 唯一的功能是进行权限的验证

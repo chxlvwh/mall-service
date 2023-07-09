@@ -14,7 +14,7 @@ import {
 	UseInterceptors,
 } from '@nestjs/common';
 import { User } from '../entity/user.entity';
-import { UserService } from '../user.service';
+import { UserService } from '../services/user.service';
 import { GetUserDto } from '../dto/get-users.dto';
 import { CreateUserPipe } from '../pipes/create-user.pipe';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -23,6 +23,8 @@ import { JwtGuard } from '../../guards/jwt.guard';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { TypeORMFilter } from '../../decorators/TypeORMFilter';
 import { ApiTags } from '@nestjs/swagger';
+import { CreateReceiverDto } from '../dto/create-receiver.dto';
+import { ReceiverService } from '../services/receiver.service';
 
 @ApiTags('Public User')
 @Controller('public/user')
@@ -32,7 +34,7 @@ import { ApiTags } from '@nestjs/swagger';
 @UseGuards(JwtGuard)
 // @UseInterceptors(SerializeInterceptor)
 export class UserPublicController {
-	constructor(private userService: UserService) {}
+	constructor(private userService: UserService, private receiverService: ReceiverService) {}
 
 	@Get()
 	@UseGuards(AdminGuard)
@@ -77,5 +79,35 @@ export class UserPublicController {
 		// @Req() req,
 	): Promise<User> {
 		return await this.userService.findProfile(id);
+	}
+
+	@Post(':userId/receivers')
+	async createReceiver(
+		@Param('userId', ParseIntPipe) userId: number,
+		@Body() createReceiverDto: CreateReceiverDto,
+	): Promise<any> {
+		return await this.receiverService.createReceiver(userId, createReceiverDto);
+	}
+
+	@Put(':userId/receivers/:receiverId')
+	async updateReceiver(
+		@Param('userId', ParseIntPipe) userId: number,
+		@Param('receiverId', ParseIntPipe) receiverId: number,
+		@Body() updateReceiverDto: CreateReceiverDto,
+	): Promise<any> {
+		return await this.receiverService.updateReceiver(userId, receiverId, updateReceiverDto);
+	}
+
+	@Delete(':userId/receivers/:receiverId')
+	async deleteReceiver(
+		@Param('userId', ParseIntPipe) userId: number,
+		@Param('receiverId', ParseIntPipe) receiverId: number,
+	): Promise<any> {
+		return await this.receiverService.deleteReceiver(userId, receiverId);
+	}
+
+	@Get(':userId/receivers')
+	async getReceivers(@Param('userId', ParseIntPipe) userId: number): Promise<any> {
+		return await this.receiverService.findAll(userId);
 	}
 }

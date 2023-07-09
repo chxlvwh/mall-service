@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AbilityBuilder, createMongoAbility } from '@casl/ability';
-import { UserService } from '../user/user.service';
+import { UserService } from '../user/services/user.service';
 import { getEntities } from '../utils/common';
 
 @Injectable()

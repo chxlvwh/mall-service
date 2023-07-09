@@ -16,19 +16,19 @@ export class Receiver {
 	@Column()
 	address: string;
 
-	@Column()
+	@Column({ nullable: true })
 	province: string;
 
-	@Column()
+	@Column({ nullable: true })
 	city: string;
 
-	@Column()
+	@Column({ nullable: true })
 	region: string;
 
-	@Column()
+	@Column({ nullable: true })
 	zip: string;
 
-	@Column()
+	@Column({ name: 'is_default', default: false })
 	isDefault: boolean;
 
 	@ManyToOne(() => User, (user) => user.receivers)

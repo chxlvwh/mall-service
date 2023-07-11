@@ -16,6 +16,7 @@ import { ProductCategory } from '../../product-category/product-category.entity'
 import { Sku } from './sku.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderItem } from '../../order/entity/order-item.entity';
+import { Coupon } from '../../coupon/entity/coupon.entity';
 
 export enum ProductStatus {
 	OFF_SHELF = 0,
@@ -98,4 +99,8 @@ export class Product {
 
 	@ManyToMany(() => OrderItem, (orderItem) => orderItem.product)
 	orderItem: OrderItem[];
+
+	// 关联优惠券
+	@ManyToMany(() => Coupon, (coupon) => coupon.products)
+	coupons: Coupon[];
 }

@@ -16,6 +16,7 @@ import {
 } from 'typeorm';
 import { Product } from '../product/entity/product.entity';
 import { ProductAttribute } from '../product-attribute/product-attribute.entity';
+import { Coupon } from '../coupon/entity/coupon.entity';
 
 @Entity()
 @Tree('closure-table')
@@ -72,4 +73,8 @@ export class ProductCategory {
 		inverseJoinColumn: { name: 'product_attribute_id' },
 	})
 	productAttributes: ProductAttribute[];
+
+	// 关联优惠券
+	@ManyToMany(() => Coupon, (coupon) => coupon.categories)
+	coupons: Coupon[];
 }

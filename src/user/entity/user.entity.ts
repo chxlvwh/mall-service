@@ -17,6 +17,7 @@ import { Profile } from './profile.entity';
 import { Exclude } from 'class-transformer';
 import { Order } from '../../order/entity/order.entity';
 import { Receiver } from './receiver.entity';
+import { CouponItem } from '../../coupon/entity/coupon-item.entity';
 
 @Entity()
 export class User {
@@ -59,4 +60,7 @@ export class User {
 
 	@OneToMany(() => Receiver, (receiver) => receiver.user)
 	receivers: Receiver[];
+
+	@ManyToMany(() => CouponItem, (couponItem) => couponItem.usedBy)
+	couponItems: CouponItem[];
 }

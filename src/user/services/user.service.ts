@@ -99,6 +99,15 @@ export class UserService {
 		});
 	}
 
+	async findCouponItems(id: number) {
+		const user = await this.userRepository.findOne({
+			where: { id },
+			relations: { couponItems: true },
+			withDeleted: true,
+		});
+		return user.couponItems;
+	}
+
 	async create(user: CreateUserDto) {
 		let roles: Roles[] = [];
 		if (user.roles instanceof Array && typeof user.roles[0] === 'number') {

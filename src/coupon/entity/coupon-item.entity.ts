@@ -23,10 +23,10 @@ export class CouponItem {
 	@ManyToMany(() => User, (user) => user.couponItems)
 	@JoinTable({
 		name: 'user_coupon_item',
-		joinColumn: { name: 'user_id' },
-		inverseJoinColumn: { name: 'coupon_item_id' },
+		joinColumn: { name: 'coupon_item_id' },
+		inverseJoinColumn: { name: 'user_id' },
 	})
-	usedBy: User;
+	user: User;
 
 	@ManyToOne(() => Coupon, (coupon) => coupon.couponItems)
 	@JoinColumn({ name: 'coupon_id' })

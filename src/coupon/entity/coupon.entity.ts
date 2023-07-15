@@ -47,9 +47,11 @@ export class Coupon {
 	@Column({ default: CouponType.DISCOUNT_AMOUNT })
 	type: string;
 
+	// 优惠券面值
 	@Column()
 	value: number;
 
+	// 门槛
 	@Column()
 	threshold: number;
 
@@ -59,9 +61,11 @@ export class Coupon {
 	@Column()
 	endDate: Date;
 
+	//
 	@Column()
 	quantity: number;
 
+	//
 	@Column()
 	quantityPerUser: number;
 

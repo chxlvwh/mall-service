@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Coupon } from './entity/coupon.entity';
+import { Coupon, CouponStatus } from './entity/coupon.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { CouponItem } from './entity/coupon-item.entity';
@@ -10,6 +10,9 @@ import { conditionUtils, pagingFormat } from '../utils/db.helper';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
 import { UserService } from '../user/services/user.service';
 import { SearchCouponDetailDto } from './dto/search-coupon-detail.dto';
+import { ProductService } from '../product/product.service';
+import { ProductCategoryService } from '../product-category/product-category.service';
+import { ProductCategory } from '../product-category/product-category.entity';
 
 @Injectable()
 export class CouponService {
@@ -18,6 +21,8 @@ export class CouponService {
 		@InjectRepository(CouponItem) private readonly couponItemRepository: Repository<CouponItem>,
 		private readonly userService: UserService,
 		private dataSource: DataSource,
+		private productService: ProductService,
+		private productCategoryService: ProductCategoryService,
 	) {}
 
 	async generateCoupon(createCouponDto: CreateCouponDto) {
@@ -34,7 +39,7 @@ export class CouponService {
 			startDate &&
 			new Date(startDate).getTime() < now.getTime() &&
 			endDate &&
-			new Date(endDate).getTime() < now.getTime()
+			new Date(endDate).getTime() > now.getTime()
 		) {
 			coupon.status = 'ONGOING';
 		}
@@ -42,7 +47,21 @@ export class CouponService {
 			coupon.status = 'NOT_STARTED';
 		}
 		if (endDate && new Date(endDate).getTime() < now.getTime()) {
-			coupon.status = 'ENDED';
+			coupon.status = 'EXPIRED';
+		}
+		const { scope, productIds, categoryIds } = createCouponDto;
+		if (scope === 'PRODUCT') {
+			const products = await this.productService.findByIds(productIds);
+			if (!products.length) {
+				throw new Error('No product found');
+			}
+			coupon.products = products;
+		} else if (scope === 'CATEGORY') {
+			const categories = await this.productCategoryService.findByIds(categoryIds);
+			if (!categories.length) {
+				throw new Error('No category found');
+			}
+			coupon.categories = categories;
 		}
 		return await this.couponRepository.save(coupon);
 	}
@@ -70,6 +89,15 @@ export class CouponService {
 			.skip(skip)
 			.orderBy(`coupon.${sortBy || 'createdAt'}`, sortOrder || 'DESC')
 			.getManyAndCount();
+		const [data] = queryResult;
+		if (data.length) {
+			for (const item of data) {
+				if (new Date().getTime() > new Date(item.endDate).getTime() && item.status === CouponStatus.ONGOING) {
+					item.status = CouponStatus.EXPIRED;
+					await this.couponRepository.save(item);
+				}
+			}
+		}
 		return pagingFormat(queryResult, current, pageSize);
 	}
 
@@ -126,9 +154,20 @@ export class CouponService {
 	async findOne(couponId: number, searchCouponDetailDto: SearchCouponDetailDto) {
 		let coupon;
 		if (searchCouponDetailDto.withCouponItems) {
-			coupon = await this.couponRepository.findOne({ where: { id: couponId }, relations: ['couponItems'] });
+			coupon = await this.couponRepository.findOne({
+				where: { id: couponId },
+				relations: ['couponItems', 'products', 'categories'],
+			});
 		} else {
-			coupon = await this.couponRepository.findOne({ where: { id: couponId } });
+			coupon = await this.couponRepository.findOne({
+				where: { id: couponId },
+				relations: {
+					products: true,
+					categories: {
+						parent: true,
+					},
+				},
+			});
 		}
 		if (!coupon) {
 			throw new Error('Coupon not found');

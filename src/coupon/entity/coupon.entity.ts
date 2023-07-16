@@ -14,19 +14,24 @@ import { Product } from '../../product/entity/product.entity';
 import { ProductCategory } from '../../product-category/product-category.entity';
 
 export enum CouponType {
+	/** 打折 */
 	PERCENTAGE = 'PERCENTAGE',
+	/** 满减 */
 	DISCOUNT_AMOUNT = 'DISCOUNT_AMOUNT',
+	/** 直减 */
 	PAY_AMOUNT = 'PAY_AMOUNT',
 }
 
 export enum CouponStatus {
+	/** 未开始 */
 	NOT_STARTED = 'NOT_STARTED',
+	/** 进行中 */
 	ONGOING = 'ONGOING',
-	// 已结束，手动结束
+	/** 已结束，手动结束 */
 	ENDED = 'ENDED',
-	// 已领完
+	/** 已结束，已用完 */
 	FINISHED = 'FINISHED',
-	// 已过期
+	/** 已结束，已过期 */
 	EXPIRED = 'EXPIRED',
 }
 
@@ -95,7 +100,7 @@ export class Coupon {
 		joinColumn: { name: 'coupon_id' },
 		inverseJoinColumn: { name: 'category_id' },
 	})
-	categories: Product[];
+	categories: ProductCategory[];
 
 	@CreateDateColumn({ name: 'created_at' })
 	createdAt: Date;

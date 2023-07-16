@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductCategory } from './product-category.entity';
-import { TreeRepository } from 'typeorm';
+import { In, TreeRepository } from 'typeorm';
 import CreateProductCategoryDto from './dto/create-product-category.dto';
 import { SearchProductCategoryDto } from './dto/search-product-category.dto';
 import { UpdateProductCategoryDto } from './dto/update-product-category.dto';
@@ -153,5 +153,12 @@ export class ProductCategoryService {
 			where: { id },
 			relations: { parent: true, children: true, productAttributes: true },
 		});
+	}
+
+	async findByIds(ids: number[]) {
+		if (!ids.length) {
+			return [];
+		}
+		return this.productCategoryRepository.findBy({ id: In(ids) });
 	}
 }

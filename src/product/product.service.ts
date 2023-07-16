@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Product } from './entity/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -78,11 +78,15 @@ export class ProductService {
 			where: { id },
 			relations: { brand: true, productCategory: true, skus: true },
 		});
-		return {
-			...result,
-			productCategory: result.productCategory[0] || {},
-			brand: result.brand[0] || {},
-		};
+		if (!result) {
+			throw new Error('Product not found');
+		} else {
+			return {
+				...result,
+				productCategory: result.productCategory[0] || {},
+				brand: result.brand[0] || {},
+			};
+		}
 	}
 
 	async update(id: number, body: UpdateProductDto) {
@@ -172,5 +176,12 @@ export class ProductService {
 			product.productCategory = product.productCategory[0] || {};
 		});
 		return pagingFormat(queryResult, current, pageSize);
+	}
+
+	async findByIds(ids: number[]) {
+		if (!ids.length) {
+			return [];
+		}
+		return await this.productRepository.findBy({ id: In(ids) });
 	}
 }

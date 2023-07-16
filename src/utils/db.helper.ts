@@ -24,7 +24,7 @@ export function conditionUtils<T>(queryBuilder: SelectQueryBuilder<T>, obj) {
 	return queryBuilder;
 }
 
-export function pagingFormat(result, current, pageSize) {
+export function pagingFormat<T>(result: [T[], number], current: number, pageSize: number) {
 	return {
 		elements: result[0],
 		paging: {

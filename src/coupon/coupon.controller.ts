@@ -5,12 +5,14 @@ import { SearchCouponDto } from './dto/search-coupon.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
 import { JwtGuard } from '../guards/jwt.guard';
 import { SearchCouponDetailDto } from './dto/search-coupon-detail.dto';
+import { AdminGuard } from '../guards/admin.guard';
 
 @Controller('coupon')
 @UseGuards(JwtGuard)
 export class CouponController {
 	constructor(private readonly couponService: CouponService) {}
 
+	@UseGuards(AdminGuard)
 	@Post()
 	async generateCoupon(@Body() createCouponDto: CreateCouponDto) {
 		return await this.couponService.generateCoupon(createCouponDto);

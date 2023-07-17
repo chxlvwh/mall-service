@@ -45,7 +45,7 @@ export class CreateCouponDto {
 	scope: CouponScope;
 
 	@ApiProperty({ description: '可用商品' })
-	@IsConditionalRequired('scope', 'PRODUCT', { message: '可用产品不能为空' })
+	@IsConditionalRequired('scope', CouponScope.PRODUCT, { message: '可用产品不能为空' })
 	productIds: number[];
 
 	@ApiProperty({ description: '可用分类' })

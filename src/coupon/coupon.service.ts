@@ -25,15 +25,7 @@ export class CouponService {
 		private productCategoryService: ProductCategoryService,
 	) {}
 
-	async generateCoupon(createCouponDto: CreateCouponDto) {
-		const coupon = this.couponRepository.create(createCouponDto);
-		coupon.couponItems = [];
-
-		if (coupon.quantity === 0) {
-			throw new Error('Quantity can not be 0');
-		}
-
-		const { startDate, endDate } = coupon;
+	processStatus(coupon: Coupon, startDate, endDate) {
 		const now = new Date();
 		if (
 			startDate &&
@@ -49,7 +41,9 @@ export class CouponService {
 		if (endDate && new Date(endDate).getTime() < now.getTime()) {
 			coupon.status = 'EXPIRED';
 		}
-		const { scope, productIds, categoryIds } = createCouponDto;
+	}
+
+	async processProductAndCategory(coupon: Coupon, scope, productIds: number[], categoryIds: number[]) {
 		if (scope === 'PRODUCT') {
 			const products = await this.productService.findByIds(productIds);
 			if (!products.length) {
@@ -63,6 +57,20 @@ export class CouponService {
 			}
 			coupon.categories = categories;
 		}
+	}
+
+	async generateCoupon(createCouponDto: CreateCouponDto) {
+		const coupon = this.couponRepository.create(createCouponDto);
+		coupon.couponItems = [];
+
+		if (coupon.quantity === 0) {
+			throw new Error('Quantity can not be 0');
+		}
+
+		const { startDate, endDate } = coupon;
+		this.processStatus(coupon, startDate, endDate);
+		const { scope, productIds, categoryIds } = createCouponDto;
+		await this.processProductAndCategory(coupon, scope, productIds, categoryIds);
 		return await this.couponRepository.save(coupon);
 	}
 
@@ -111,8 +119,12 @@ export class CouponService {
 			throw new Error('Coupon not found');
 		}
 		const { startDate, endDate } = updateCouponDto;
-		coupon.startDate = startDate ? new Date(startDate) : coupon.startDate;
-		coupon.endDate = endDate ? new Date(endDate) : coupon.endDate;
+		coupon.startDate = startDate || coupon.startDate;
+		coupon.endDate = endDate || coupon.endDate;
+		this.processStatus(coupon, coupon.startDate, coupon.endDate);
+		const { scope } = coupon;
+		const { productIds, categoryIds } = updateCouponDto;
+		await this.processProductAndCategory(coupon, scope, productIds, categoryIds);
 		return await this.couponRepository.save(coupon);
 	}
 

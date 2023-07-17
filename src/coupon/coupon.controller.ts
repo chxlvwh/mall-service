@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { CouponService } from './coupon.service';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { SearchCouponDto } from './dto/search-coupon.dto';
@@ -45,5 +45,11 @@ export class CouponController {
 	@Get(':id/coupon-items')
 	async getCouponItems(@Param('id', ParseIntPipe) id: number) {
 		return await this.couponService.getCouponItems(id);
+	}
+
+	// 删除优惠券
+	@Delete(':id')
+	async deleteCoupon(@Param('id', ParseIntPipe) id: number) {
+		return await this.couponService.deleteCoupon(id);
 	}
 }

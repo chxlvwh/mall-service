@@ -130,7 +130,7 @@ export class CouponService {
 
 	// findCouponById
 	async findCouponById(id: number) {
-		return await this.couponRepository.findOne({ where: { id } });
+		return await this.couponRepository.findOne({ where: { id }, withDeleted: true });
 	}
 
 	// 领取优惠券
@@ -188,5 +188,14 @@ export class CouponService {
 			throw new Error('Coupon not found');
 		}
 		return coupon;
+	}
+
+	// 删除优惠券
+	async deleteCoupon(id: number) {
+		const coupon = await this.findCouponById(id);
+		if (!coupon) {
+			throw new Error('Coupon not found');
+		}
+		return await this.couponRepository.softRemove(coupon);
 	}
 }

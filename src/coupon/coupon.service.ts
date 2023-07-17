@@ -71,11 +71,14 @@ export class CouponService {
 		const { take, skip } = formatPageProps(current, pageSize);
 		let queryBuilder = this.couponRepository.createQueryBuilder('coupon');
 
-		if (startDate) {
-			queryBuilder = queryBuilder.andWhere('coupon.endDate >= :start', { start: new Date(startDate) });
-		}
-		if (endDate) {
-			queryBuilder = queryBuilder.andWhere('coupon.startDate <= :end', { end: new Date(endDate) });
+		if (startDate && endDate) {
+			queryBuilder = queryBuilder.andWhere(
+				':start >= coupon.startDate AND :start <= coupon.endDate OR (:end >= coupon.startDate AND :end <= coupon.endDate)',
+				{
+					start: new Date(startDate),
+					end: new Date(endDate),
+				},
+			);
 		}
 
 		const queryObj = {

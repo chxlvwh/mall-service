@@ -38,7 +38,7 @@ export class CouponController {
 	// 领取优惠券
 	@Post(':id/receive')
 	async receiveCoupon(@Param('id', ParseIntPipe) id: number, @Req() request) {
-		return await this.couponService.receiveCoupon(request.user.userId, id);
+		return await this.couponService.receiveCoupon(Number(request.user.userId), id);
 	}
 
 	// 获取领取的优惠券

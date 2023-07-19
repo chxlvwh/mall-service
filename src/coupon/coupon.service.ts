@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { Coupon, CouponScope, CouponStatus } from './entity/coupon.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
@@ -134,12 +134,20 @@ export class CouponService {
 
 	// 领取优惠券
 	async receiveCoupon(userId: number, couponId: number) {
-		const coupon = await this.findCouponById(couponId);
+		const coupon = await this.couponRepository.findOne({
+			where: { id: couponId },
+			relations: { couponItems: { user: true } },
+		});
+		if (coupon.couponItems.length >= coupon.quantity) {
+			throw new ConflictException('已被抢光了~');
+		}
+		const userReceivedCoupons = coupon.couponItems.filter((item) => item.user[0].id === userId);
+		if (userReceivedCoupons.length >= coupon.quantityPerUser) {
+			throw new ConflictException('已经领取过了~');
+		}
 		const user = await this.userService.findOne(userId);
-		// const userCouponItems = await this.userService.findCouponItems(userId);
-		// console.log('[userCouponItems:] ', userCouponItems);
 		if (!coupon) {
-			throw new Error('Coupon not found');
+			throw new BadRequestException('Coupon not found');
 		}
 		const couponItem = this.couponItemRepository.create();
 		couponItem.receivedDate = new Date();

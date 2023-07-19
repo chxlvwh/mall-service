@@ -6,6 +6,7 @@ import { ProductService } from './product.service';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { SearchProductDto } from './dto/search-product.dto';
+import { Product } from './entity/product.entity';
 
 @ApiTags('Product')
 @Controller('product')

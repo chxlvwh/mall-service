@@ -52,4 +52,10 @@ export class CouponController {
 	async deleteCoupon(@Param('id', ParseIntPipe) id: number) {
 		return await this.couponService.deleteCoupon(id);
 	}
+
+	// 获取产品有效的优惠券
+	@Get('product/:productId/valid')
+	async getValidCoupons(@Param('productId', ParseIntPipe) productId: number) {
+		return await this.couponService.getValidCoupons(productId);
+	}
 }

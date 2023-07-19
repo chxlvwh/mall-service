@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Coupon, CouponStatus } from './entity/coupon.entity';
+import { Coupon, CouponScope, CouponStatus } from './entity/coupon.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { CouponItem } from './entity/coupon-item.entity';
@@ -12,7 +12,6 @@ import { UserService } from '../user/services/user.service';
 import { SearchCouponDetailDto } from './dto/search-coupon-detail.dto';
 import { ProductService } from '../product/product.service';
 import { ProductCategoryService } from '../product-category/product-category.service';
-import { ProductCategory } from '../product-category/product-category.entity';
 
 @Injectable()
 export class CouponService {
@@ -197,5 +196,56 @@ export class CouponService {
 			throw new Error('Coupon not found');
 		}
 		return await this.couponRepository.softRemove(coupon);
+	}
+
+	// 获取产品有效的优惠券
+	async getValidCoupons(productId) {
+		const product = await this.productService.findOne(productId);
+		if (!product) {
+			return [];
+		}
+		const productCategory = product.productCategory;
+		const queryBuilder = this.couponRepository
+			.createQueryBuilder('coupon')
+			.leftJoinAndSelect('coupon.products', 'products')
+			.leftJoinAndSelect('coupon.categories', 'categories')
+			.andWhere('coupon.startDate <= :current AND coupon.endDate >= :current', { current: new Date() })
+			.andWhere('coupon.status = :status', {
+				status: CouponStatus.ONGOING || CouponStatus.NOT_STARTED,
+			});
+
+		const coupons = await queryBuilder.orderBy('coupon.createdAt', 'DESC').getMany();
+		if (coupons.length) {
+			const validCoupons = [];
+			for (const coupon of coupons) {
+				const { scope } = coupon;
+				const { categories, products } = coupon;
+				const categoryIds = categories.map((item) => item.id);
+				const productIds = products.map((item) => item.id);
+				if (scope === CouponScope.ALL) {
+					validCoupons.push(coupon);
+				} else if (scope === CouponScope.PRODUCT && productIds.includes(productId)) {
+					validCoupons.push(coupon);
+				} else if (scope === CouponScope.CATEGORY) {
+					const category = await this.productCategoryService.findOne(productCategory.id);
+					const parentCategory = category.parent;
+					if (
+						categoryIds.includes(productCategory.id) ||
+						(parentCategory && categoryIds.includes(parentCategory.id))
+					) {
+						validCoupons.push(coupon);
+					}
+				}
+			}
+			return validCoupons.map((item) => {
+				return {
+					...item,
+					products: undefined,
+					categories: undefined,
+				};
+			});
+		} else {
+			return [];
+		}
 	}
 }

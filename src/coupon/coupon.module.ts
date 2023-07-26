@@ -11,5 +11,6 @@ import { ProductCategoryModule } from '../product-category/product-category.modu
 	imports: [TypeOrmModule.forFeature([Coupon, CouponItem]), ProductModule, ProductCategoryModule],
 	providers: [CouponService],
 	controllers: [CouponController],
+	exports: [CouponService],
 })
 export class CouponModule {}

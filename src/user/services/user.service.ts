@@ -100,12 +100,29 @@ export class UserService {
 	}
 
 	async findCouponItems(id: number) {
-		const user = await this.userRepository.findOne({
-			where: { id },
-			relations: { couponItems: true },
-			withDeleted: true,
-		});
+		const qb = this.userRepository
+			.createQueryBuilder('user')
+			.where('user.id = :id', { id })
+			.leftJoinAndSelect('user.couponItems', 'couponItems')
+			.leftJoinAndSelect('couponItems.coupon', 'coupon')
+			.andWhere('couponItems.isUsed = :isUsed', { isUsed: false })
+			.andWhere('coupon.status = :status1 OR coupon.status = :status2', {
+				status1: 'ONGOING',
+				status2: 'NOT_STARTED',
+			})
+			.andWhere('coupon.startDate <= :now AND coupon.endDate >= :now', { now: new Date() });
+		const user = await qb.getOne();
 		return user.couponItems;
+	}
+
+	async findValidCouponItems(id: number) {
+		const qb = this.userRepository
+			.createQueryBuilder('user')
+			.leftJoinAndSelect('user.couponItems', 'couponItems')
+			.leftJoinAndSelect('couponItems.coupon', 'coupon')
+			.where('user.id = :id', { id })
+			.andWhere('couponItems.isUsed = :isUsed', { isUsed: false })
+			.andWhere('coupon.startTime <= :now AND coupon.endDate >= :now AND coupon.', { now: new Date() });
 	}
 
 	async create(user: CreateUserDto) {

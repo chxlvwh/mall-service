@@ -12,6 +12,7 @@ import { UserService } from '../user/services/user.service';
 import { SearchCouponDetailDto } from './dto/search-coupon-detail.dto';
 import { ProductService } from '../product/product.service';
 import { ProductCategoryService } from '../product-category/product-category.service';
+import { compareAsc, compareDesc } from 'date-fns';
 
 @Injectable()
 export class CouponService {
@@ -102,8 +103,18 @@ export class CouponService {
 		const [data] = queryResult;
 		if (data.length) {
 			for (const item of data) {
-				if (new Date().getTime() > new Date(item.endDate).getTime() && item.status === CouponStatus.ONGOING) {
+				if (
+					compareDesc(new Date(item.endDate), new Date()) === 1 &&
+					(item.status === CouponStatus.NOT_STARTED || item.status === CouponStatus.ONGOING)
+				) {
 					item.status = CouponStatus.EXPIRED;
+					await this.couponRepository.save(item);
+				}
+				if (
+					compareDesc(new Date(item.startDate), new Date()) === 1 &&
+					item.status === CouponStatus.NOT_STARTED
+				) {
+					item.status = CouponStatus.ONGOING;
 					await this.couponRepository.save(item);
 				}
 			}
@@ -163,7 +174,7 @@ export class CouponService {
 		return await this.couponItemRepository.findOne({ where: { id: savedCoupon.id } });
 	}
 
-	// 获取领取的优惠券
+	// 获取已领取的优惠券
 	async getCouponItems(couponId: number) {
 		const coupon = await this.couponRepository.findOne({ where: { id: couponId }, relations: ['couponItems'] });
 		if (!coupon) {
@@ -173,9 +184,9 @@ export class CouponService {
 	}
 
 	// 获取优惠券详情
-	async findOne(couponId: number, searchCouponDetailDto: SearchCouponDetailDto) {
+	async findOne(couponId: number, searchCouponDetailDto?: SearchCouponDetailDto) {
 		let coupon;
-		if (searchCouponDetailDto.withCouponItems) {
+		if (searchCouponDetailDto && searchCouponDetailDto.withCouponItems) {
 			coupon = await this.couponRepository.findOne({
 				where: { id: couponId },
 				relations: ['couponItems', 'products', 'categories'],
@@ -206,7 +217,7 @@ export class CouponService {
 		return await this.couponRepository.softRemove(coupon);
 	}
 
-	// 获取产品有效的优惠券
+	// 获取产品可领取优惠券
 	async getValidCoupons(productId) {
 		const product = await this.productService.findOne(productId);
 		if (!product) {
@@ -217,9 +228,10 @@ export class CouponService {
 			.createQueryBuilder('coupon')
 			.leftJoinAndSelect('coupon.products', 'products')
 			.leftJoinAndSelect('coupon.categories', 'categories')
-			.andWhere('coupon.startDate <= :current AND coupon.endDate >= :current', { current: new Date() })
-			.andWhere('coupon.status = :status', {
-				status: CouponStatus.ONGOING || CouponStatus.NOT_STARTED,
+			.andWhere('coupon.endDate >= :current', { current: new Date() })
+			.andWhere('coupon.status = :status1 || coupon.status = :status2', {
+				status1: CouponStatus.ONGOING,
+				status2: CouponStatus.NOT_STARTED,
 			});
 
 		const coupons = await queryBuilder.orderBy('coupon.createdAt', 'DESC').getMany();

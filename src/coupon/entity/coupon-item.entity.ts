@@ -13,12 +13,17 @@ export class CouponItem {
 	@Column()
 	code: string;
 
+	// 使用时间
 	@Column({ name: 'used_date', nullable: true })
 	usedDate: Date;
 
 	// 领取时间
 	@Column({ name: 'received_date', nullable: true })
 	receivedDate: Date;
+
+	// 是否已使用
+	@Column({ name: 'is_used', default: false })
+	isUsed: boolean;
 
 	@ManyToMany(() => User, (user) => user.couponItems)
 	@JoinTable({

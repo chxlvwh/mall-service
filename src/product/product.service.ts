@@ -76,7 +76,7 @@ export class ProductService {
 	async findOne(id: number) {
 		const result = await this.productRepository.findOne({
 			where: { id },
-			relations: { brand: true, productCategory: true, skus: true },
+			relations: { brand: true, productCategory: { parent: true }, skus: true },
 		});
 		if (!result) {
 			throw new Error('Product not found');
@@ -183,5 +183,9 @@ export class ProductService {
 			return [];
 		}
 		return await this.productRepository.findBy({ id: In(ids) });
+	}
+
+	async getSkuById(id: number) {
+		return await this.skuRepository.findOne({ where: { id } });
 	}
 }

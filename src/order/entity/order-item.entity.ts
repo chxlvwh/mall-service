@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Order } from './order.entity';
 import { Product } from '../../product/entity/product.entity';
 import { Coupon } from '../../coupon/entity/coupon.entity';
@@ -31,22 +31,12 @@ export class OrderItem {
 	@ManyToMany(() => Coupon, (coupon) => coupon.orderItem)
 	coupon: Coupon;
 
-	@ManyToMany(() => Order, (order) => order.items)
+	@ManyToOne(() => Order, (order) => order.items)
 	order: Order;
 
-	@ManyToMany(() => Product, (product) => product.orderItem)
-	@JoinTable({
-		name: 'order_item_product',
-		joinColumn: { name: 'product_id' },
-		inverseJoinColumn: { name: 'order_item_id' },
-	})
+	@ManyToOne(() => Product, (product) => product.orderItem)
 	product: Product;
 
-	@ManyToMany(() => Sku, (sku) => sku.orderItem)
-	@JoinTable({
-		name: 'order_item_sku',
-		joinColumn: { name: 'sku_id' },
-		inverseJoinColumn: { name: 'order_item_id' },
-	})
+	@ManyToOne(() => Sku, (sku) => sku.orderItem)
 	sku: Sku;
 }

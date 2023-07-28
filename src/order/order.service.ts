@@ -21,6 +21,21 @@ export class OrderService {
 		private readonly productService: ProductService,
 	) {}
 
+	// 查询订单
+	async findOne(id: string) {
+		return await this.orderRepository.findOne({
+			where: { id },
+			relations: {
+				items: {
+					product: true,
+					sku: true,
+					coupon: true,
+				},
+			},
+		});
+	}
+
+	// 生成订单
 	async createOrder(userId: number, createOrderDto: CreateOrderDto) {
 		const { products, receiverId, remark, generalCouponId } = createOrderDto;
 		const order = this.orderRepository.create();
@@ -31,10 +46,12 @@ export class OrderService {
 		const receiver = await this.userService.findReceiverById(receiverId);
 		const generalCoupon = await this.couponService.findOne(generalCouponId);
 		await this.orderRepository.save(order);
+
 		const qb = this.orderRepository.createQueryBuilder('order');
-		await qb.relation('user').of(order).add(user);
-		await qb.relation('receiver').of(order).add(receiver);
+		await qb.relation('user').of(order).set(user);
+		await qb.relation('receiver').of(order).set(receiver);
 		await qb.relation('generalCoupon').of(order).add(generalCoupon);
+
 		const orderItems = [];
 		for (let i = 0; i < products.length; i++) {
 			const orderItem = this.orderItemRepository.create();
@@ -42,19 +59,23 @@ export class OrderService {
 			orderItem.discountedPrice = products[i].basePrice - products[i].discount;
 			orderItem.status = OrderItemStatus.NOT_DELIVERED;
 			await this.orderItemRepository.save(orderItem);
+
 			const qb = this.orderItemRepository.createQueryBuilder('orderItem');
-			await qb.relation('items').of(order).add(orderItems);
 			const product = await this.productService.findOne(products[i].id);
 			const coupon = await this.couponService.findOne(products[i].couponId);
-			await qb.relation('product').of(orderItem).add(product);
+			await qb.relation('product').of(orderItem).set(product);
 			if (products[i].sku) {
 				const sku = await this.productService.getSkuById(products[i].sku.id);
-				await qb.relation('sku').of(orderItem).add(sku);
+				await qb.relation('sku').of(orderItem).set(sku);
 			}
 			await qb.relation('coupon').of(orderItem).add(coupon);
 			orderItems.push(orderItem);
+			await qb.execute();
 		}
+		await qb.relation('items').of(order).add(orderItems);
 		await qb.execute();
+		const order1 = await this.findOne(order.id);
+		return order1;
 	}
 
 	// 生成预览订单

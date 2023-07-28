@@ -5,6 +5,8 @@ import {
 	Entity,
 	JoinTable,
 	ManyToMany,
+	ManyToOne,
+	OneToMany,
 	PrimaryColumn,
 	UpdateDateColumn,
 } from 'typeorm';
@@ -65,23 +67,13 @@ export class Order {
 	@DeleteDateColumn({ name: 'deleted_at' })
 	deletedAt: Date;
 
-	@ManyToMany(() => OrderItem, (orderItem) => orderItem.order)
-	@JoinTable({
-		name: 'order_item_order',
-		joinColumn: { name: 'order_item_id' },
-		inverseJoinColumn: { name: 'order_id' },
-	})
+	@OneToMany(() => OrderItem, (orderItem) => orderItem.order, { eager: true })
 	items: OrderItem[];
 
-	@ManyToMany(() => User, (user) => user.orders)
+	@ManyToOne(() => User, (user) => user.orders, { eager: true })
 	user: User;
 
-	@ManyToMany(() => Receiver, (receiver) => receiver.orders, { eager: true })
-	@JoinTable({
-		name: 'order_receiver',
-		joinColumn: { name: 'order_id' },
-		inverseJoinColumn: { name: 'receiver_id' },
-	})
+	@ManyToOne(() => Receiver, (receiver) => receiver.orders, { eager: true })
 	receiver: Receiver;
 
 	@ManyToMany(() => Coupon, (coupon) => coupon.orders, { eager: true })

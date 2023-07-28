@@ -11,11 +11,11 @@ export class OrderController {
 
 	@Post('preview')
 	async previewOrder(@Body() previewOrderDto: PreviewOrderDto, @Req() request) {
-		return this.orderService.previewOrder(Number(request.user.userId), previewOrderDto);
+		return await this.orderService.previewOrder(Number(request.user.userId), previewOrderDto);
 	}
 
 	@Post('')
 	async createOrder(@Body() createOrderDto: CreateOrderDto, @Req() request) {
-		return this.orderService.createOrder(Number(request.user.userId), createOrderDto);
+		return await this.orderService.createOrder(Number(request.user.userId), createOrderDto);
 	}
 }

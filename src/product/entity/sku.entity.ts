@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Product } from './product.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderItem } from '../../order/entity/order-item.entity';
@@ -28,6 +28,6 @@ export class Sku {
 	@JoinColumn({ name: 'product_id' })
 	product: Product;
 
-	@ManyToMany(() => OrderItem, (orderItem) => orderItem.sku)
+	@OneToMany(() => OrderItem, (orderItem) => orderItem.sku)
 	orderItem: OrderItem;
 }

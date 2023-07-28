@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Order } from '../../order/entity/order.entity';
 
@@ -41,6 +41,6 @@ export class Receiver {
 	@JoinColumn({ name: 'user_id' })
 	user: User;
 
-	@ManyToMany(() => Order, (order) => order.receiver)
+	@OneToMany(() => Order, (order) => order.receiver)
 	orders: Order[];
 }

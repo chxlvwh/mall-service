@@ -97,7 +97,7 @@ export class Product {
 	@OneToMany(() => Sku, (sku) => sku.product)
 	skus: Sku[];
 
-	@ManyToMany(() => OrderItem, (orderItem) => orderItem.product)
+	@OneToMany(() => OrderItem, (orderItem) => orderItem.product)
 	orderItem: OrderItem[];
 
 	// 关联优惠券

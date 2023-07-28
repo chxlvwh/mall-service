@@ -50,12 +50,7 @@ export class User {
 	@DeleteDateColumn({ name: 'delete_at' })
 	deletedAt: Date;
 
-	@ManyToMany(() => Order, (order) => order.user)
-	@JoinTable({
-		name: 'user_order',
-		joinColumn: { name: 'user_id' },
-		inverseJoinColumn: { name: 'order_id' },
-	})
+	@OneToMany(() => Order, (order) => order.user)
 	orders: Order[];
 
 	@OneToMany(() => Receiver, (receiver) => receiver.user)

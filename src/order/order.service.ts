@@ -37,7 +37,19 @@ export class OrderService {
 
 	// 生成订单
 	async createOrder(userId: number, createOrderDto: CreateOrderDto) {
-		const { products, receiverId, remark, generalCouponId } = createOrderDto;
+		const { products, receiverId, remark, generalCouponId, totalPrice } = createOrderDto;
+		const previewOrder = await this.previewOrder(userId, {
+			products: products.map((p) => {
+				return {
+					id: p.id,
+					skuId: p.sku && p.sku.id,
+					count: p.count,
+				};
+			}) as PreviewOrderDto['products'],
+		});
+		if (previewOrder.totalPrice !== totalPrice) {
+			throw new Error('Total price not match');
+		}
 		const order = this.orderRepository.create();
 		order.id = format(new Date(), 'yyyyMMddHHmmssSSS');
 		order.remark = remark;
@@ -74,8 +86,7 @@ export class OrderService {
 		}
 		await qb.relation('items').of(order).add(orderItems);
 		await qb.execute();
-		const order1 = await this.findOne(order.id);
-		return order1;
+		return order.id;
 	}
 
 	// 生成预览订单

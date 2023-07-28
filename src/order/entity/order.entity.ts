@@ -67,6 +67,10 @@ export class Order {
 	@DeleteDateColumn({ name: 'deleted_at' })
 	deletedAt: Date;
 
+	// 总价格
+	@Column({ name: 'total_price' })
+	totalPrice: number;
+
 	@OneToMany(() => OrderItem, (orderItem) => orderItem.order, { eager: true })
 	items: OrderItem[];
 

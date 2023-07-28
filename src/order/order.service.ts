@@ -53,6 +53,7 @@ export class OrderService {
 		const order = this.orderRepository.create();
 		order.id = format(new Date(), 'yyyyMMddHHmmssSSS');
 		order.remark = remark;
+		order.totalPrice = totalPrice;
 		order.status = OrderStatus.UNPAID;
 		const user = await this.userService.findOne(userId);
 		const receiver = await this.userService.findReceiverById(receiverId);

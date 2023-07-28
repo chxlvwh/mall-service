@@ -12,4 +12,9 @@ export class OrderController {
 	async previewOrder(@Body() previewOrderDto: PreviewOrderDto, @Req() request) {
 		return this.orderService.previewOrder(Number(request.user.userId), previewOrderDto);
 	}
+
+	@Post('create')
+	async createOrder(@Body() previewOrderDto: PreviewOrderDto, @Req() request) {
+
+	}
 }

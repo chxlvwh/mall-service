@@ -94,8 +94,9 @@ export class OrderService {
 		const consumedCoupons: number[] = [];
 		for (let i = 0; i < products.length; i++) {
 			let salePrice = 0;
+			let sku = null;
 			if (products[i].skuId) {
-				const sku = await this.productService.getSkuById(products[i].skuId);
+				sku = await this.productService.getSkuById(products[i].skuId);
 				salePrice = sku && sku.price;
 			} else {
 				const product = await this.productService.findOne(products[i].id);
@@ -119,15 +120,18 @@ export class OrderService {
 			if (maxCoupon) {
 				consumedCoupons.push(maxCoupon.id);
 			}
+			const product = await this.productService.findOne(products[i].id);
 			result.products.push({
-				productId: products[i].id,
-				skuId: products[i].skuId,
+				name: product.name,
+				id: products[i].id,
+				sku,
 				coupon: maxCoupon && {
 					...maxCoupon,
 					categories: undefined,
 				},
 				discount: maxDiscount,
 				basePrice,
+				cover: product.coverUrls && product.coverUrls[0],
 			});
 		}
 
@@ -146,7 +150,7 @@ export class OrderService {
 				}
 			}
 		});
-		result.totalPrice = totalPriceWithoutGeneralCoupon - maxDiscount;
+		result.totalPrice = totalPriceWithoutGeneralCoupon - maxDiscount * 100;
 		result.generalCoupon = maxCoupon && {
 			...maxCoupon,
 			categories: undefined,

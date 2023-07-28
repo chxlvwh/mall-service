@@ -2,6 +2,7 @@ import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { PreviewOrderDto } from './dto/preview-order.dto';
 import { OrderService } from './order.service';
 import { JwtGuard } from '../guards/jwt.guard';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @UseGuards(JwtGuard)
 @Controller('order')
@@ -13,8 +14,8 @@ export class OrderController {
 		return this.orderService.previewOrder(Number(request.user.userId), previewOrderDto);
 	}
 
-	@Post('create')
-	async createOrder(@Body() previewOrderDto: PreviewOrderDto, @Req() request) {
-
+	@Post('')
+	async createOrder(@Body() createOrderDto: CreateOrderDto, @Req() request) {
+		return this.orderService.createOrder(Number(request.user.userId), createOrderDto);
 	}
 }

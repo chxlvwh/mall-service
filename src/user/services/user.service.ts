@@ -9,6 +9,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import * as argon2 from 'argon2';
 import { Profile } from '../entity/profile.entity';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { Receiver } from '../entity/receiver.entity';
 
 @Injectable()
 export class UserService {
@@ -17,6 +18,8 @@ export class UserService {
 		private readonly userRepository: Repository<User>,
 		@InjectRepository(Roles)
 		private readonly rolesRepository: Repository<Roles>,
+		@InjectRepository(Receiver)
+		private readonly receiverRepository: Repository<Receiver>,
 		private dataSource: DataSource,
 	) {}
 
@@ -209,6 +212,12 @@ export class UserService {
 		return this.userRepository.findOne({
 			where: { id },
 			relations: { profile: true },
+		});
+	}
+
+	findReceiverById(id: number): Promise<Receiver> {
+		return this.receiverRepository.findOne({
+			where: { id },
 		});
 	}
 }

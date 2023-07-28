@@ -1,13 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { Order } from './entity/order.entity';
+import { Order, OrderStatus } from './entity/order.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { OrderItem } from './entity/order-item.entity';
+import { OrderItem, OrderItemStatus } from './entity/order-item.entity';
 import { PreviewOrderDto } from './dto/preview-order.dto';
 import { CouponService } from '../coupon/coupon.service';
 import { UserService } from '../user/services/user.service';
 import { Coupon, CouponScope } from '../coupon/entity/coupon.entity';
 import { ProductService } from '../product/product.service';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { format } from 'date-fns';
 
 @Injectable()
 export class OrderService {
@@ -19,8 +21,40 @@ export class OrderService {
 		private readonly productService: ProductService,
 	) {}
 
-	async createOrder(order: Order) {
-		return this.orderRepository.save(order);
+	async createOrder(userId: number, createOrderDto: CreateOrderDto) {
+		const { products, receiverId, remark, generalCouponId } = createOrderDto;
+		const order = this.orderRepository.create();
+		order.id = format(new Date(), 'yyyyMMddHHmmssSSS');
+		order.remark = remark;
+		order.status = OrderStatus.UNPAID;
+		const user = await this.userService.findOne(userId);
+		const receiver = await this.userService.findReceiverById(receiverId);
+		const generalCoupon = await this.couponService.findOne(generalCouponId);
+		await this.orderRepository.save(order);
+		const qb = this.orderRepository.createQueryBuilder('order');
+		await qb.relation('user').of(order).add(user);
+		await qb.relation('receiver').of(order).add(receiver);
+		await qb.relation('generalCoupon').of(order).add(generalCoupon);
+		const orderItems = [];
+		for (let i = 0; i < products.length; i++) {
+			const orderItem = this.orderItemRepository.create();
+			orderItem.quantity = products[i].count;
+			orderItem.discountedPrice = products[i].basePrice - products[i].discount;
+			orderItem.status = OrderItemStatus.NOT_DELIVERED;
+			await this.orderItemRepository.save(orderItem);
+			const qb = this.orderItemRepository.createQueryBuilder('orderItem');
+			await qb.relation('items').of(order).add(orderItems);
+			const product = await this.productService.findOne(products[i].id);
+			const coupon = await this.couponService.findOne(products[i].couponId);
+			await qb.relation('product').of(orderItem).add(product);
+			if (products[i].sku) {
+				const sku = await this.productService.getSkuById(products[i].sku.id);
+				await qb.relation('sku').of(orderItem).add(sku);
+			}
+			await qb.relation('coupon').of(orderItem).add(coupon);
+			orderItems.push(orderItem);
+		}
+		await qb.execute();
 	}
 
 	// 生成预览订单

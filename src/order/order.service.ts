@@ -10,6 +10,9 @@ import { Coupon, CouponScope } from '../coupon/entity/coupon.entity';
 import { ProductService } from '../product/product.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { format } from 'date-fns';
+import { SearchOrderDto } from './dto/search-order.dto';
+import { conditionUtils, pagingFormat } from '../utils/db.helper';
+import { formatPageProps } from '../utils/common';
 
 @Injectable()
 export class OrderService {
@@ -20,6 +23,38 @@ export class OrderService {
 		private readonly userService: UserService,
 		private readonly productService: ProductService,
 	) {}
+
+	// 查询订单列表
+	async findAll(searchOrderDto: SearchOrderDto) {
+		const { orderNo, status, startDate, endDate, username, pageSize, sortBy, sortOrder, current, paymentMethod } =
+			searchOrderDto;
+		const { take, skip } = formatPageProps(current, pageSize);
+		const queryBuilder = this.orderRepository
+			.createQueryBuilder('order')
+			.leftJoinAndSelect('order.receiver', 'receiver')
+			.leftJoinAndSelect('order.user', 'user');
+
+		const queryObj = {
+			'order.paymentMethod': { value: paymentMethod },
+			'order.orderNo': { value: orderNo },
+			'order.status': { value: status },
+			'user.username': { value: username, isLike: true },
+		};
+		if (startDate && endDate) {
+			queryBuilder.andWhere(`order.createdAt BETWEEN :startDate AND :endDate`, {
+				startDate,
+				endDate,
+			});
+		}
+
+		const queryResult = await conditionUtils(queryBuilder, queryObj)
+			.take(take)
+			.skip(skip)
+			.orderBy(`order.${sortBy || 'createdAt'}`, sortOrder || 'DESC')
+			.getManyAndCount();
+
+		return pagingFormat(queryResult, current, pageSize);
+	}
 
 	// 查询订单
 	async findOne(id: string) {
@@ -51,7 +86,7 @@ export class OrderService {
 			throw new Error('Total price not match');
 		}
 		const order = this.orderRepository.create();
-		order.id = format(new Date(), 'yyyyMMddHHmmssSSS');
+		order.orderNo = format(new Date(), 'yyyyMMddHHmmssSSS');
 		order.remark = remark;
 		order.totalPrice = totalPrice;
 		order.status = OrderStatus.UNPAID;
@@ -87,7 +122,7 @@ export class OrderService {
 		}
 		await qb.relation('items').of(order).add(orderItems);
 		await qb.execute();
-		return order.id;
+		return order.orderNo;
 	}
 
 	// 生成预览订单

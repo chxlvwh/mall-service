@@ -3,11 +3,11 @@ import {
 	CreateDateColumn,
 	DeleteDateColumn,
 	Entity,
-	JoinTable,
 	ManyToMany,
 	ManyToOne,
 	OneToMany,
 	PrimaryColumn,
+	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from 'typeorm';
 import { OrderItem } from './order-item.entity';
@@ -24,22 +24,24 @@ export enum OrderSource {}
 
 export enum OrderStatus {
 	'UNPAID' = 'UNPAID',
-	'PAYMENT_PENDING' = 'PAYMENT_PENDING',
-	'PAID' = 'PAID',
-	'SELLER_DELIVERED' = 'SELLER_DELIVERED',
-	'TRANSACTION_SUCCESSFUL' = 'TRANSACTION_SUCCESSFUL',
-	'TRANSACTION_CLOSED' = 'TRANSACTION_CLOSED',
-	'REFUNDING' = 'REFUNDING',
+	'DELIVERING' = 'DELIVERING',
+	'DELIVERED' = 'DELIVERED',
+	'COMPLETED' = 'COMPLETED',
+	'CLOSED' = 'CLOSED',
 }
 
 @Entity()
 export class Order {
-	@PrimaryColumn()
+	@PrimaryGeneratedColumn()
 	id: string;
 
+	// 订单号
+	@Column({ name: 'order_no' })
+	orderNo: string;
+
 	// 支付方式 1: 微信支付 2: 支付宝支付
-	@Column({ nullable: true })
-	payment_method: string;
+	@Column({ nullable: true, name: 'payment_method' })
+	paymentMethod: string;
 
 	// 订单来源
 	@Column({ nullable: true })

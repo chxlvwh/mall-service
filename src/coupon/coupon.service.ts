@@ -12,7 +12,7 @@ import { UserService } from '../user/services/user.service';
 import { SearchCouponDetailDto } from './dto/search-coupon-detail.dto';
 import { ProductService } from '../product/product.service';
 import { ProductCategoryService } from '../product-category/product-category.service';
-import { compareAsc, compareDesc } from 'date-fns';
+import { compareDesc } from 'date-fns';
 
 @Injectable()
 export class CouponService {

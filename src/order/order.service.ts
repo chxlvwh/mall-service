@@ -110,7 +110,7 @@ export class OrderService {
 				if (consumedCoupons.includes(coupon.id)) {
 					return;
 				}
-				if (coupon.threshold * 100 <= basePrice) {
+				if (coupon.threshold <= basePrice) {
 					if (coupon.value > maxDiscount) {
 						maxDiscount = coupon.value;
 						maxCoupon = coupon;
@@ -136,21 +136,21 @@ export class OrderService {
 		}
 
 		const totalPriceWithoutGeneralCoupon = result.products.reduce((acc, cur, idx) => {
-			return acc + cur.basePrice * products[idx].count - cur.discount * 100;
+			return acc + cur.basePrice * products[idx].count - cur.discount;
 		}, 0);
 
 		let maxDiscount = 0;
 		let maxCoupon = null;
 		generalCoupons.forEach((couponItem) => {
 			const coupon = couponItem.coupon;
-			if (coupon.threshold * 100 <= totalPriceWithoutGeneralCoupon) {
+			if (coupon.threshold <= totalPriceWithoutGeneralCoupon) {
 				if (coupon.value > maxDiscount) {
 					maxDiscount = coupon.value;
 					maxCoupon = coupon;
 				}
 			}
 		});
-		result.totalPrice = totalPriceWithoutGeneralCoupon - maxDiscount * 100;
+		result.totalPrice = totalPriceWithoutGeneralCoupon - maxDiscount;
 		result.generalCoupon = maxCoupon && {
 			...maxCoupon,
 			categories: undefined,

@@ -71,7 +71,7 @@ export class OrderService {
 	}
 
 	// 生成订单
-	async createOrder(userId: number, createOrderDto: CreateOrderDto) {
+	async createOrder(userId: number, createOrderDto: CreateOrderDto, orderSource: string) {
 		const { products, receiverId, remark, generalCouponId, totalPrice } = createOrderDto;
 		const previewOrder = await this.previewOrder(userId, {
 			products: products.map((p) => {
@@ -90,6 +90,7 @@ export class OrderService {
 		order.remark = remark;
 		order.totalPrice = totalPrice;
 		order.status = OrderStatus.UNPAID;
+		order.orderSource = orderSource;
 		const user = await this.userService.findOne(userId);
 		const receiver = await this.userService.findReceiverById(receiverId);
 		const generalCoupon = await this.couponService.findOne(generalCouponId);

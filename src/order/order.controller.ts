@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { PreviewOrderDto } from './dto/preview-order.dto';
 import { OrderService } from './order.service';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -22,6 +22,15 @@ export class OrderController {
 
 	@Post('')
 	async createOrder(@Body() createOrderDto: CreateOrderDto, @Req() request) {
-		return await this.orderService.createOrder(Number(request.user.userId), createOrderDto);
+		const userAgent = request.headers['user-agent'];
+		let orderSource = '';
+		if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/i.test(userAgent)) {
+			//移动端
+			orderSource = 'Mobile';
+		} else {
+			//pc端
+			orderSource = 'PC';
+		}
+		return await this.orderService.createOrder(Number(request.user.userId), createOrderDto, orderSource);
 	}
 }

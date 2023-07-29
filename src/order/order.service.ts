@@ -26,8 +26,19 @@ export class OrderService {
 
 	// 查询订单列表
 	async findAll(searchOrderDto: SearchOrderDto) {
-		const { orderNo, status, startDate, endDate, username, pageSize, sortBy, sortOrder, current, paymentMethod } =
-			searchOrderDto;
+		const {
+			orderNo,
+			status,
+			startDate,
+			endDate,
+			username,
+			pageSize,
+			sortBy,
+			sortOrder,
+			current,
+			paymentMethod,
+			orderSource,
+		} = searchOrderDto;
 		const { take, skip } = formatPageProps(current, pageSize);
 		const queryBuilder = this.orderRepository
 			.createQueryBuilder('order')
@@ -35,6 +46,7 @@ export class OrderService {
 			.leftJoinAndSelect('order.user', 'user');
 
 		const queryObj = {
+			'order.orderSource': { value: orderSource },
 			'order.paymentMethod': { value: paymentMethod },
 			'order.orderNo': { value: orderNo },
 			'order.status': { value: status },

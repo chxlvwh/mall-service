@@ -27,6 +27,10 @@ export class SearchOrderDto {
 	@Allow()
 	username: string;
 
+	@ApiPropertyOptional({ description: '订单来源' })
+	@IsOptional()
+	orderSource?: string;
+
 	@ApiPropertyOptional({ description: '第几页' })
 	@IsOptional()
 	current: number;

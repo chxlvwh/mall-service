@@ -9,6 +9,7 @@ import {
 	ManyToMany,
 	JoinTable,
 	DeleteDateColumn,
+	ManyToOne,
 } from 'typeorm';
 
 import { Brand } from '../../brand/brand.entity';
@@ -82,8 +83,7 @@ export class Product {
 	@DeleteDateColumn({ name: 'deleted_at' })
 	deletedAt: Date;
 
-	@ManyToMany(() => Brand, (brand) => brand.products)
-	@JoinTable({ name: 'brand_product' })
+	@ManyToOne(() => Brand, (brand) => brand.products)
 	brand: Brand;
 
 	@ManyToMany(() => ProductCategory, (productCategory) => productCategory.products)

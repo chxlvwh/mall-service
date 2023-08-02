@@ -32,11 +32,11 @@ export enum OrderStatus {
 
 @Entity()
 export class Order {
-	@PrimaryGeneratedColumn()
-	id: string;
+	// @PrimaryGeneratedColumn()
+	// id: number;
 
 	// 订单号
-	@Column({ name: 'order_no' })
+	@PrimaryColumn({ name: 'order_no' })
 	orderNo: string;
 
 	// 支付方式 1: 微信支付 2: 支付宝支付
@@ -60,8 +60,32 @@ export class Order {
 	@Column({ name: 'payment_time', nullable: true })
 	paymentTime: Date;
 
-	// @Column()
-	// transactTime: Date;
+	// 发货单流水号
+	@Column({ name: 'delivery_no', nullable: true })
+	deliveryNo: string;
+
+	// 物流单号
+	@Column({ name: 'logistics_no', nullable: true })
+	logisticsNo: string;
+
+	// 物流公司
+	@Column({ name: 'logistics_company', nullable: true })
+	logisticsCompany: string;
+
+	@Column({ name: 'delivery_time', nullable: true })
+	deliveryTime: Date;
+
+	// 确认收货时间
+	@Column({ name: 'receive_time', nullable: true })
+	receiveTime: Date;
+
+	// 自动确认收货时间
+	@Column({ name: 'auto_receive_time', nullable: true })
+	autoReceiveTime: Date;
+
+	// 评价时间
+	@Column({ name: 'comment_time', nullable: true })
+	commentTime: Date;
 
 	@UpdateDateColumn({ name: 'last_modified_at' })
 	lastModifiedAt: Date;

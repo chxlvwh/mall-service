@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, Param, ParseIntPipe, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { PreviewOrderDto } from './dto/preview-order.dto';
 import { OrderService } from './order.service';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -13,6 +13,11 @@ export class OrderController {
 	@Get('')
 	async findAll(@Query() searchOrderDto: SearchOrderDto) {
 		return await this.orderService.findAll(searchOrderDto);
+	}
+
+	@Get(':orderNo')
+	async findOne(@Param('orderNo', ParseIntPipe) orderNo: string) {
+		return await this.orderService.findOne(orderNo);
 	}
 
 	@Post('preview')

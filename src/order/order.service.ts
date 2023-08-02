@@ -69,12 +69,12 @@ export class OrderService {
 	}
 
 	// 查询订单
-	async findOne(id: string) {
+	async findOne(orderNo: string) {
 		return await this.orderRepository.findOne({
-			where: { id },
+			where: { orderNo },
 			relations: {
 				items: {
-					product: true,
+					product: { brand: true },
 					sku: true,
 					coupon: true,
 				},
@@ -105,13 +105,15 @@ export class OrderService {
 		order.orderSource = orderSource;
 		const user = await this.userService.findOne(userId);
 		const receiver = await this.userService.findReceiverById(receiverId);
-		const generalCoupon = await this.couponService.findOne(generalCouponId);
 		await this.orderRepository.save(order);
 
 		const qb = this.orderRepository.createQueryBuilder('order');
 		await qb.relation('user').of(order).set(user);
 		await qb.relation('receiver').of(order).set(receiver);
-		await qb.relation('generalCoupon').of(order).add(generalCoupon);
+		if (generalCouponId) {
+			const generalCoupon = await this.couponService.findOne(generalCouponId);
+			await qb.relation('generalCoupon').of(order).add(generalCoupon);
+		}
 
 		const orderItems = [];
 		for (let i = 0; i < products.length; i++) {
@@ -123,13 +125,15 @@ export class OrderService {
 
 			const qb = this.orderItemRepository.createQueryBuilder('orderItem');
 			const product = await this.productService.findOne(products[i].id);
-			const coupon = await this.couponService.findOne(products[i].couponId);
 			await qb.relation('product').of(orderItem).set(product);
 			if (products[i].sku) {
 				const sku = await this.productService.getSkuById(products[i].sku.id);
 				await qb.relation('sku').of(orderItem).set(sku);
 			}
-			await qb.relation('coupon').of(orderItem).add(coupon);
+			if (products[i].couponId) {
+				const coupon = await this.couponService.findOne(products[i].couponId);
+				await qb.relation('coupon').of(orderItem).add(coupon);
+			}
 			orderItems.push(orderItem);
 			await qb.execute();
 		}

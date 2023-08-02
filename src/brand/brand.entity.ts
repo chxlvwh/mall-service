@@ -3,6 +3,7 @@ import {
 	CreateDateColumn,
 	Entity,
 	ManyToMany,
+	ManyToOne,
 	OneToMany,
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
@@ -20,8 +21,8 @@ export class Brand {
 	@Column({ nullable: true })
 	desc: string;
 
-	@ManyToMany(() => Product, (product) => product.brand)
-	products: any[];
+	@OneToMany(() => Product, (product) => product.brand)
+	products: Product[];
 
 	@CreateDateColumn({ name: 'created_at' })
 	createdAt: string;

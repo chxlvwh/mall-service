@@ -67,7 +67,6 @@ export class ProductService {
 			relations: { brand: true, productCategory: true, skus: true },
 		});
 
-		result.brand = result.brand[0] || {};
 		result.productCategory = result.productCategory[0] || {};
 
 		return result;
@@ -84,7 +83,6 @@ export class ProductService {
 			return {
 				...result,
 				productCategory: result.productCategory[0] || {},
-				brand: result.brand[0] || {},
 			};
 		}
 	}
@@ -104,28 +102,45 @@ export class ProductService {
 		if (!productCategory) {
 			throw new Error('Product category not found');
 		}
-		const newProduct = { ...product, ...body, skus: null };
-
-		// 删除不再使用的sku
-		const oldSkus = await this.skuRepository.find({ where: { product: { id } } });
-		if (oldSkus.length) {
-			for (let i = 0; i < oldSkus.length; i++) {
-				await this.skuRepository.remove(oldSkus[i]);
-			}
-		}
-		await this.productRepository.save(newProduct);
 
 		// 保存sku
 		if (skus.length) {
 			for (let i = 0; i < skus.length; i++) {
-				const sku = this.skuRepository.create(skus[i]);
-				sku.product = product;
-				await this.skuRepository.save(sku);
+				if (!skus[i].id && skus[i].id !== 0) {
+					const sku = this.skuRepository.create(skus[i]);
+					sku.product = product;
+					skus[i] = await this.skuRepository.save(sku);
+				} else {
+					// 删除不再使用的sku
+					const oldSkus = await this.skuRepository.find({ where: { product: { id } } });
+					if (oldSkus.length) {
+						for (let j = 0; j < oldSkus.length; j++) {
+							const sku = oldSkus.find((it) => it.id === skus[i].id);
+							// 找不到当前sku，说明已经被删除
+							if (!sku) {
+								await this.skuRepository.delete(oldSkus[j].id);
+								// 找到当前sku，更新
+							} else {
+								const updatedSku = this.skuRepository.create(skus[i]);
+								updatedSku.product = product;
+								await this.skuRepository.save(updatedSku);
+								break;
+							}
+						}
+					} else {
+						// 如果没有sku，直接添加
+						const sku = this.skuRepository.create(skus[i]);
+						sku.product = product;
+						await this.skuRepository.save(sku);
+					}
+				}
 			}
 		}
+		const newProduct = { ...product, ...body, skus };
+		await this.productRepository.save(newProduct);
 
 		const qb = this.productRepository.createQueryBuilder('product');
-		await qb.relation('brand').of(product).addAndRemove([brand], product.brand);
+		await qb.relation('brand').of(product).set(brand);
 		await qb.relation('productCategory').of(product).addAndRemove([productCategory], product.productCategory);
 		await qb.execute();
 		return true;
@@ -172,7 +187,6 @@ export class ProductService {
 			.getManyAndCount();
 		const elements = queryResult[0];
 		elements.forEach((product) => {
-			product.brand = product.brand[0] || {};
 			product.productCategory = product.productCategory[0] || {};
 		});
 		return pagingFormat(queryResult, current, pageSize);

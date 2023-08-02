@@ -185,6 +185,9 @@ export class CouponService {
 
 	// 获取优惠券详情
 	async findOne(couponId: number, searchCouponDetailDto?: SearchCouponDetailDto) {
+		if (!couponId) {
+			throw new Error('Coupon id is required');
+		}
 		let coupon;
 		if (searchCouponDetailDto && searchCouponDetailDto.withCouponItems) {
 			coupon = await this.couponRepository.findOne({

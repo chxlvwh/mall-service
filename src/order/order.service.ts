@@ -82,6 +82,20 @@ export class OrderService {
 		});
 	}
 
+	// 根据userId查询订单
+	async findOrderByUserId(orderNo: string, userId: number) {
+		return await this.orderRepository.findOne({
+			where: { user: { id: userId }, orderNo },
+			relations: {
+				items: {
+					product: { brand: true },
+					sku: true,
+					coupon: true,
+				},
+			},
+		});
+	}
+
 	// 生成订单
 	async createOrder(userId: number, createOrderDto: CreateOrderDto, orderSource: string) {
 		const { products, receiverId, remark, generalCouponId, totalPrice } = createOrderDto;

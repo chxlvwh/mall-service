@@ -6,19 +6,14 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { SearchOrderDto } from './dto/search-order.dto';
 import { AdminGuard } from '../guards/admin.guard';
 
-@UseGuards(JwtGuard, AdminGuard)
-@Controller('order')
-export class OrderController {
+@UseGuards(JwtGuard)
+@Controller('public/order')
+export class PublicOrderController {
 	constructor(private readonly orderService: OrderService) {}
 
-	@Get('')
-	async findAll(@Query() searchOrderDto: SearchOrderDto) {
-		return await this.orderService.findAll(searchOrderDto);
-	}
-
 	@Get(':orderNo')
-	async findOne(@Param('orderNo', ParseIntPipe) orderNo: string) {
-		return await this.orderService.findOne(orderNo);
+	async findOne(@Param('orderNo', ParseIntPipe) orderNo: string, @Req() request) {
+		return await this.orderService.findOrderByUserId(orderNo, Number(request.user.userId));
 	}
 
 	@Post('preview')

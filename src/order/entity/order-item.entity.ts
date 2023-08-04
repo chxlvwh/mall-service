@@ -21,12 +21,18 @@ export class OrderItem {
 	@Column()
 	quantity: number;
 
-	@Column()
-	discountedPrice: number;
-
 	// 0: 未发货 1: 已发货 2: 已收货
 	@Column()
 	status: string;
+
+	@Column({ name: 'total_price' })
+	totalPrice: number;
+
+	@Column({ name: 'discounted_total_price' })
+	discountedTotalPrice: number;
+
+	@Column()
+	basePrice: number;
 
 	@ManyToMany(() => Coupon, (coupon) => coupon.orderItem)
 	coupon: Coupon;

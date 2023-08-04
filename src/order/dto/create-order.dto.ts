@@ -16,6 +16,10 @@ export class CreateOrderDto {
 			sku: Sku;
 			// 商品原价
 			basePrice: number;
+			// 当前商品总价
+			totalPrice: number;
+			// 优惠后总价
+			discountedTotalPrice: number;
 			// 优惠金额
 			discount: number;
 			// 优惠券

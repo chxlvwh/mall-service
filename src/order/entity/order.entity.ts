@@ -23,20 +23,21 @@ export enum PaymentMethod {
 export enum OrderSource {}
 
 export enum OrderStatus {
-	// 待付款
+	/** 待付款 */
 	'UNPAID' = 'UNPAID',
-	// 待发货
+	/** 待发货 */
 	'DELIVERING' = 'DELIVERING',
-	// 已发货
+	/** 待收货 */
 	'DELIVERED' = 'DELIVERED',
-	// 待评价
+	/** 待评价 */
 	'COMMENTING' = 'COMMENTING',
-	// 已完成
+	/** 已完成 */
 	'COMPLETED' = 'COMPLETED',
-	// 退款中
+	/** 退款中 */
 	'REFUNDING' = 'REFUNDING',
-	// 已退款
+	/** 已退款 */
 	'REFUNDED' = 'REFUNDED',
+	/** 已关闭 */
 	'CLOSED' = 'CLOSED',
 }
 

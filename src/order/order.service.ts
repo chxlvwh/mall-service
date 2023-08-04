@@ -24,6 +24,40 @@ export class OrderService {
 		private readonly productService: ProductService,
 	) {}
 
+	// 查询用户订单列表
+	async findAllByUserId(userId: number, status: string) {
+		const queryBuilder = this.orderRepository
+			.createQueryBuilder('order')
+			.leftJoinAndSelect('order.receiver', 'receiver')
+			.leftJoinAndSelect('order.user', 'user')
+			.leftJoinAndSelect('order.items', 'items')
+			.leftJoinAndSelect('items.product', 'product')
+			.leftJoinAndSelect('items.sku', 'sku')
+			.where('order.user = :userId', { userId })
+			.orderBy('order.createdAt', 'DESC');
+		switch (status) {
+			// 待付款
+			case '1':
+				queryBuilder.andWhere('order.status = :status', { status: OrderStatus.UNPAID });
+				break;
+			// 待发货
+			case '2':
+				queryBuilder.andWhere('order.status = :status', { status: OrderStatus.DELIVERING });
+				break;
+			// 待收货
+			case '3':
+				queryBuilder.andWhere('order.status = :status', { status: OrderStatus.DELIVERED });
+				break;
+			// 待评价
+			case '4':
+				queryBuilder.andWhere('order.status = :status', { status: OrderStatus.COMMENTING });
+		}
+
+		const queryResult = await queryBuilder.getManyAndCount();
+
+		return pagingFormat(queryResult, 1, 10);
+	}
+
 	// 查询订单列表
 	async findAll(searchOrderDto: SearchOrderDto) {
 		const {
@@ -133,7 +167,10 @@ export class OrderService {
 		for (let i = 0; i < products.length; i++) {
 			const orderItem = this.orderItemRepository.create();
 			orderItem.quantity = products[i].count;
-			orderItem.discountedPrice = products[i].basePrice - products[i].discount;
+			orderItem.totalPrice = products[i].totalPrice;
+			orderItem.discountedTotalPrice = products[i].discountedTotalPrice;
+			orderItem.basePrice = products[i].basePrice;
+			// orderItem.totalPrice = products[i].totalPrice;
 			orderItem.status = OrderItemStatus.NOT_DELIVERED;
 			await this.orderItemRepository.save(orderItem);
 
@@ -238,12 +275,12 @@ export class OrderService {
 			const coupons = productWithCoupons[products[i].id] || [];
 			let maxDiscount = 0;
 			let maxCoupon = null;
-			const basePrice = salePrice * products[i].count;
+			const totalPriceWithoutCoupon = salePrice * products[i].count;
 			coupons.forEach((coupon) => {
 				if (consumedCoupons.includes(coupon.id)) {
 					return;
 				}
-				if (coupon.threshold <= basePrice) {
+				if (coupon.threshold <= totalPriceWithoutCoupon) {
 					if (coupon.value > maxDiscount) {
 						maxDiscount = coupon.value;
 						maxCoupon = coupon;
@@ -263,13 +300,15 @@ export class OrderService {
 					categories: undefined,
 				},
 				discount: maxDiscount,
-				basePrice,
+				totalPrice: totalPriceWithoutCoupon,
+				discountedTotalPrice: totalPriceWithoutCoupon - maxDiscount,
+				basePrice: salePrice,
 				cover: product.coverUrls && product.coverUrls[0],
 			});
 		}
 
-		const totalPriceWithoutGeneralCoupon = result.products.reduce((acc, cur, idx) => {
-			return acc + cur.basePrice * products[idx].count - cur.discount;
+		const totalPriceWithoutGeneralCoupon = result.products.reduce((acc, cur) => {
+			return acc + cur.discountedTotalPrice;
 		}, 0);
 
 		let maxDiscount = 0;

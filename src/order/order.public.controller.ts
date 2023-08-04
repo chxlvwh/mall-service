@@ -11,6 +11,11 @@ import { AdminGuard } from '../guards/admin.guard';
 export class PublicOrderController {
 	constructor(private readonly orderService: OrderService) {}
 
+	@Get('')
+	async findAll(@Query() { status }: { status: string }, @Req() request) {
+		return await this.orderService.findAllByUserId(Number(request.user.userId), status);
+	}
+
 	@Get(':orderNo')
 	async findOne(@Param('orderNo', ParseIntPipe) orderNo: string, @Req() request) {
 		return await this.orderService.findOrderByUserId(orderNo, Number(request.user.userId));

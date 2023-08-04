@@ -23,10 +23,20 @@ export enum PaymentMethod {
 export enum OrderSource {}
 
 export enum OrderStatus {
+	// 待付款
 	'UNPAID' = 'UNPAID',
+	// 待发货
 	'DELIVERING' = 'DELIVERING',
+	// 已发货
 	'DELIVERED' = 'DELIVERED',
+	// 待评价
+	'COMMENTING' = 'COMMENTING',
+	// 已完成
 	'COMPLETED' = 'COMPLETED',
+	// 退款中
+	'REFUNDING' = 'REFUNDING',
+	// 已退款
+	'REFUNDED' = 'REFUNDED',
 	'CLOSED' = 'CLOSED',
 }
 
@@ -47,7 +57,6 @@ export class Order {
 	@Column({ nullable: true })
 	orderSource: string;
 
-	// 支付状态 1: 未支付 2: 付款确认中 3: 已付款 4: 卖家已发货 5: 交易成功 6: 交易关闭 7: 退款中
 	@Column()
 	status: string;
 

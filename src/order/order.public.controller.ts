@@ -1,4 +1,17 @@
-import { Body, Controller, Get, Header, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Header,
+	Param,
+	ParseIntPipe,
+	Post,
+	Put,
+	Query,
+	Req,
+	UseGuards,
+} from '@nestjs/common';
 import { PreviewOrderDto } from './dto/preview-order.dto';
 import { OrderService } from './order.service';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -42,5 +55,11 @@ export class PublicOrderController {
 	@Put(':orderNo/cancel')
 	async cancelOrder(@Param('orderNo') orderNo: string) {
 		return await this.orderService.cancelOrder(orderNo);
+	}
+
+	/** 删除订单 */
+	@Delete(':orderNo')
+	async deleteOrder(@Param('orderNo') orderNo: string) {
+		return await this.orderService.deleteOrder(orderNo);
 	}
 }

@@ -387,4 +387,18 @@ export class OrderService {
 		await this.orderRepository.save(order);
 		return order;
 	}
+
+	/** 删除订单 */
+	async deleteOrder(orderNo: string) {
+		const order = await this.orderRepository.findOne({ where: { orderNo } });
+		if (!order) {
+			throw new Error('Order not found');
+		}
+		// 交易成功，交易关闭，退款成功的订单才能删除
+		if (![OrderStatus.COMPLETED, OrderStatus.CLOSED, OrderStatus.REFUNDED].includes(order.status)) {
+			throw new Error('订单状态不正确');
+		}
+		await this.orderRepository.softDelete(orderNo);
+		return true;
+	}
 }

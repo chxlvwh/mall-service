@@ -58,8 +58,8 @@ export class Order {
 	@Column({ nullable: true, name: 'order_source' })
 	orderSource: string;
 
-	@Column()
-	status: string;
+	@Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.UNPAID })
+	status: OrderStatus;
 
 	@Column({ nullable: true })
 	remark: string;

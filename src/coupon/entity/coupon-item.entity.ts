@@ -1,6 +1,17 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+	Column,
+	Entity,
+	JoinColumn,
+	JoinTable,
+	ManyToMany,
+	ManyToOne,
+	OneToOne,
+	PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from '../../user/entity/user.entity';
 import { Coupon } from './coupon.entity';
+import { Order } from '../../order/entity/order.entity';
+import { OrderItem } from '../../order/entity/order-item.entity';
 
 /**
  * 已领取优惠券
@@ -36,4 +47,10 @@ export class CouponItem {
 	@ManyToOne(() => Coupon, (coupon) => coupon.couponItems)
 	@JoinColumn({ name: 'coupon_id' })
 	coupon: Coupon;
+
+	@OneToOne(() => Order, (order) => order.generalCouponItem)
+	order: Order;
+
+	@OneToOne(() => OrderItem, (orderItem) => orderItem.couponItem)
+	orderItem: OrderItem;
 }

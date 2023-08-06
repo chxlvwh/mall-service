@@ -1,8 +1,8 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Order } from './order.entity';
 import { Product } from '../../product/entity/product.entity';
-import { Coupon } from '../../coupon/entity/coupon.entity';
 import { Sku } from '../../product/entity/sku.entity';
+import { CouponItem } from '../../coupon/entity/coupon-item.entity';
 
 export enum OrderItemStatus {
 	/** 未发货 */
@@ -31,18 +31,22 @@ export class OrderItem {
 	@Column({ name: 'discounted_total_price' })
 	discountedTotalPrice: number;
 
-	@Column()
+	@Column({ name: 'base_price' })
 	basePrice: number;
 
-	@ManyToMany(() => Coupon, (coupon) => coupon.orderItem)
-	coupon: Coupon;
-
 	@ManyToOne(() => Order, (order) => order.items)
+	@JoinColumn({ name: 'order_no' })
 	order: Order;
 
 	@ManyToOne(() => Product, (product) => product.orderItem)
+	@JoinColumn({ name: 'product_id' })
 	product: Product;
 
 	@ManyToOne(() => Sku, (sku) => sku.orderItem)
+	@JoinColumn({ name: 'sku_id' })
 	sku: Sku;
+
+	@OneToOne(() => CouponItem, (couponItem) => couponItem.orderItem)
+	@JoinColumn({ name: 'coupon_item_id' })
+	couponItem: CouponItem;
 }

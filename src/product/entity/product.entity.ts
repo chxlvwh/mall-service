@@ -10,6 +10,7 @@ import {
 	JoinTable,
 	DeleteDateColumn,
 	ManyToOne,
+	JoinColumn,
 } from 'typeorm';
 
 import { Brand } from '../../brand/brand.entity';
@@ -102,6 +103,7 @@ export class Product {
 	skus: Sku[];
 
 	@OneToMany(() => OrderItem, (orderItem) => orderItem.product)
+	@JoinColumn({ name: 'order_item_id' })
 	orderItem: OrderItem[];
 
 	// 关联优惠券

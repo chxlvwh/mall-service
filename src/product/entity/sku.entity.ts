@@ -38,6 +38,7 @@ export class Sku {
 	product: Product;
 
 	@OneToMany(() => OrderItem, (orderItem) => orderItem.sku)
+	@JoinColumn({ name: 'order_item_id' })
 	orderItem: OrderItem;
 
 	@DeleteDateColumn({ name: 'deleted_at' })

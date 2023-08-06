@@ -143,6 +143,16 @@ export class CouponService {
 		return await this.couponRepository.findOne({ where: { id }, withDeleted: true });
 	}
 
+	/** findCouponItemById */
+	async findCouponItemById(id: number) {
+		return await this.couponItemRepository.findOne({ where: { id }, withDeleted: true });
+	}
+
+	/** 保存优惠券项 */
+	async updateCouponItem(couponItem: CouponItem) {
+		return await this.couponItemRepository.save(couponItem);
+	}
+
 	// 领取优惠券
 	async receiveCoupon(userId: number, couponId: number) {
 		const coupon = await this.couponRepository.findOne({
@@ -153,7 +163,7 @@ export class CouponService {
 			throw new ConflictException('已被抢光了~');
 		}
 		const userReceivedCoupons = coupon.couponItems.filter((item) => item.user[0].id === userId);
-		if (userReceivedCoupons.length >= coupon.quantityPerUser) {
+		if (userReceivedCoupons.length >= coupon.quantityPerUser && coupon.quantityPerUser !== 0) {
 			throw new ConflictException('已经领取过了~');
 		}
 		const user = await this.userService.findOne(userId);
@@ -184,7 +194,7 @@ export class CouponService {
 	}
 
 	// 获取优惠券详情
-	async findOne(couponId: number, searchCouponDetailDto?: SearchCouponDetailDto) {
+	async findOne(couponId: number, searchCouponDetailDto?: SearchCouponDetailDto): Promise<Coupon> {
 		if (!couponId) {
 			throw new Error('Coupon id is required');
 		}

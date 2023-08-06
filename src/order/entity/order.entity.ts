@@ -3,17 +3,17 @@ import {
 	CreateDateColumn,
 	DeleteDateColumn,
 	Entity,
-	ManyToMany,
+	JoinColumn,
 	ManyToOne,
 	OneToMany,
+	OneToOne,
 	PrimaryColumn,
-	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from 'typeorm';
 import { OrderItem } from './order-item.entity';
 import { User } from '../../user/entity/user.entity';
 import { Receiver } from '../../user/entity/receiver.entity';
-import { Coupon } from '../../coupon/entity/coupon.entity';
+import { CouponItem } from '../../coupon/entity/coupon-item.entity';
 
 export enum PaymentMethod {
 	'WECHAT' = 'WECHAT',
@@ -55,7 +55,7 @@ export class Order {
 	paymentMethod: string;
 
 	// 订单来源
-	@Column({ nullable: true })
+	@Column({ nullable: true, name: 'order_source' })
 	orderSource: string;
 
 	@Column()
@@ -110,12 +110,15 @@ export class Order {
 	@OneToMany(() => OrderItem, (orderItem) => orderItem.order, { eager: true })
 	items: OrderItem[];
 
-	@ManyToOne(() => User, (user) => user.orders, { eager: true })
+	@ManyToOne(() => User, (user) => user.orders)
+	@JoinColumn({ name: 'user_id' })
 	user: User;
 
-	@ManyToOne(() => Receiver, (receiver) => receiver.orders, { eager: true })
+	@ManyToOne(() => Receiver, (receiver) => receiver.orders)
+	@JoinColumn({ name: 'receiver_id' })
 	receiver: Receiver;
 
-	@ManyToMany(() => Coupon, (coupon) => coupon.orders, { eager: true })
-	generalCoupon: Coupon;
+	@OneToOne(() => CouponItem, (couponItem) => couponItem.order)
+	@JoinColumn({ name: 'general_coupon_item_id' })
+	generalCouponItem: CouponItem;
 }

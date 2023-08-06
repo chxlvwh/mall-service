@@ -12,8 +12,6 @@ import {
 import { CouponItem } from './coupon-item.entity';
 import { Product } from '../../product/entity/product.entity';
 import { ProductCategory } from '../../product-category/product-category.entity';
-import { OrderItem } from '../../order/entity/order-item.entity';
-import { Order } from '../../order/entity/order.entity';
 
 export enum CouponType {
 	/** 打折 */
@@ -112,20 +110,4 @@ export class Coupon {
 
 	@DeleteDateColumn({ name: 'deleted_at' })
 	deletedAt: Date;
-
-	@ManyToMany(() => OrderItem, (orderItem) => orderItem.coupon)
-	@JoinTable({
-		name: 'coupon_order_item',
-		joinColumn: { name: 'coupon_id' },
-		inverseJoinColumn: { name: 'order_item_id' },
-	})
-	orderItem: OrderItem;
-
-	@ManyToMany(() => Order, (order) => order.generalCoupon)
-	@JoinTable({
-		name: 'coupon_order',
-		joinColumn: { name: 'coupon_id' },
-		inverseJoinColumn: { name: 'order_id' },
-	})
-	orders: Order[];
 }

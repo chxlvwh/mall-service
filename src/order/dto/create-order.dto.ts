@@ -8,28 +8,34 @@ export class CreateOrderDto {
 	@IsNotEmpty({ message: '订单项不能为空' })
 	products: [
 		{
-			// 商品id
+			/**商品id */
 			id: number;
-			// 商品数量
+			/**商品数量 */
 			count: number;
-			// sku id
+			/**商品sku */
 			sku: Sku;
-			// 商品原价
+			/**商品skuId */
 			basePrice: number;
-			// 当前商品总价
+			/**当前商品总价	 */
 			totalPrice: number;
-			// 优惠后总价
+			/**当前商品优惠后总价 */
 			discountedTotalPrice: number;
-			// 优惠金额
+			/**当前商品优惠金额 */
 			discount: number;
-			// 优惠券
+			/**当前商品优惠券 */
 			couponId?: number;
+			/**当前商品优惠券项 */
+			couponItemId?: number;
 		},
 	];
 
 	// 优惠券
 	@Allow()
 	generalCouponId?: number;
+
+	// 优惠券项
+	@Allow()
+	generalCouponItemId?: number;
 
 	// 收货地址
 	@IsNotEmpty({ message: '收货地址不能为空' })

@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Order, OrderStatus } from './entity/order.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderItem, OrderItemStatus } from './entity/order-item.entity';
 import { PreviewOrderDto } from './dto/preview-order.dto';
 import { CouponService } from '../coupon/coupon.service';
 import { UserService } from '../user/services/user.service';
-import { Coupon, CouponScope } from '../coupon/entity/coupon.entity';
+import { CouponScope } from '../coupon/entity/coupon.entity';
 import { ProductService } from '../product/product.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { format } from 'date-fns';
 import { SearchOrderDto } from './dto/search-order.dto';
 import { conditionUtils, pagingFormat } from '../utils/db.helper';
 import { formatPageProps } from '../utils/common';
+import { CouponItem } from '../coupon/entity/coupon-item.entity';
 
 @Injectable()
 export class OrderService {
@@ -22,6 +23,7 @@ export class OrderService {
 		private readonly couponService: CouponService,
 		private readonly userService: UserService,
 		private readonly productService: ProductService,
+		private readonly dataSource: DataSource,
 	) {}
 
 	// 查询用户订单列表
@@ -107,10 +109,11 @@ export class OrderService {
 		return await this.orderRepository.findOne({
 			where: { orderNo },
 			relations: {
+				generalCouponItem: { coupon: true },
 				items: {
 					product: { brand: true },
 					sku: true,
-					coupon: true,
+					couponItem: { coupon: true },
 				},
 			},
 		});
@@ -119,12 +122,13 @@ export class OrderService {
 	// 根据userId查询订单
 	async findOrderByUserId(orderNo: string, userId: number) {
 		return await this.orderRepository.findOne({
-			where: { user: { id: userId }, orderNo },
+			where: { orderNo, user: { id: userId } },
 			relations: {
+				generalCouponItem: { coupon: true },
 				items: {
 					product: { brand: true },
 					sku: true,
-					coupon: true,
+					couponItem: { coupon: true },
 				},
 			},
 		});
@@ -132,7 +136,7 @@ export class OrderService {
 
 	// 生成订单
 	async createOrder(userId: number, createOrderDto: CreateOrderDto, orderSource: string) {
-		const { products, receiverId, remark, generalCouponId, totalPrice } = createOrderDto;
+		const { products, receiverId, remark, generalCouponId, totalPrice, generalCouponItemId } = createOrderDto;
 		const previewOrder = await this.previewOrder(userId, {
 			products: products.map((p) => {
 				return {
@@ -158,9 +162,14 @@ export class OrderService {
 		const qb = this.orderRepository.createQueryBuilder('order');
 		await qb.relation('user').of(order).set(user);
 		await qb.relation('receiver').of(order).set(receiver);
-		if (generalCouponId) {
-			const generalCoupon = await this.couponService.findOne(generalCouponId);
-			await qb.relation('generalCoupon').of(order).add(generalCoupon);
+		// 将优惠券设置为已使用
+		if (generalCouponItemId) {
+			const generalCouponItem = await this.couponService.findCouponItemById(generalCouponItemId);
+			generalCouponItem.isUsed = true;
+			generalCouponItem.usedDate = new Date();
+			order.generalCouponItem = generalCouponItem;
+			await this.couponService.updateCouponItem(generalCouponItem);
+			await qb.relation('generalCouponItem').of(order).set(generalCouponItem);
 		}
 
 		const orderItems = [];
@@ -174,19 +183,28 @@ export class OrderService {
 			orderItem.status = OrderItemStatus.NOT_DELIVERED;
 			await this.orderItemRepository.save(orderItem);
 
-			const qb = this.orderItemRepository.createQueryBuilder('orderItem');
+			const qb1 = this.orderItemRepository.createQueryBuilder('orderItem');
 			const product = await this.productService.findOne(products[i].id);
-			await qb.relation('product').of(orderItem).set(product);
+			await qb1.relation('product').of(orderItem).set(product);
 			if (products[i].sku) {
 				const sku = await this.productService.getSkuById(products[i].sku.id);
-				await qb.relation('sku').of(orderItem).set(sku);
+				await qb1.relation('sku').of(orderItem).set(sku);
 			}
-			if (products[i].couponId) {
-				const coupon = await this.couponService.findOne(products[i].couponId);
-				await qb.relation('coupon').of(orderItem).add(coupon);
+			if (products[i].couponItemId) {
+				const couponItem = await this.couponService.findCouponItemById(products[i].couponItemId);
+				couponItem.isUsed = true;
+				couponItem.usedDate = new Date();
+				await this.couponService.updateCouponItem(couponItem);
+				await qb1.relation('couponItem').of(orderItem).set(couponItem);
+			}
+			if (products[i].couponItemId) {
+				const couponItem = await this.couponService.findCouponItemById(products[i].couponItemId);
+				couponItem.isUsed = true;
+				couponItem.usedDate = new Date();
+				await this.couponService.updateCouponItem(couponItem);
 			}
 			orderItems.push(orderItem);
-			await qb.execute();
+			await qb1.execute();
 		}
 		await qb.relation('items').of(order).add(orderItems);
 		await qb.execute();
@@ -196,31 +214,31 @@ export class OrderService {
 	// 生成预览订单
 	async previewOrder(userId: number, { products }: PreviewOrderDto) {
 		const productIds = products.map((product) => product.id);
-		const productWithCoupons: { [key: string]: Coupon[] } = {};
+		const productWithCoupons: { [key: string]: CouponItem[] } = {};
 		// 查询用户所有可用的优惠券
 		const userCouponItems = await this.userService.findCouponItems(userId);
 		console.log('[userCouponItems:] ', userCouponItems);
 		// 找出所有的全场券
-		const generalCoupons = userCouponItems.filter((item) => item.coupon.scope === CouponScope.ALL);
+		const generalCouponItems = userCouponItems.filter((item) => item.coupon.scope === CouponScope.ALL);
 		// 找出所有的商品券
-		const productCoupons = userCouponItems.filter((item) => item.coupon.scope === CouponScope.PRODUCT);
+		const productCouponItems = userCouponItems.filter((item) => item.coupon.scope === CouponScope.PRODUCT);
 		// 找出所有的分类券
-		const categoryCoupons = userCouponItems.filter((item) => item.coupon.scope === CouponScope.CATEGORY);
+		const categoryCouponItems = userCouponItems.filter((item) => item.coupon.scope === CouponScope.CATEGORY);
 
-		const setCoupon = (id: number, coupon: Coupon) => {
+		const setCoupon = (id: number, couponItem: CouponItem) => {
 			if (!productWithCoupons[id]) {
 				productWithCoupons[id] = [];
 			}
-			productWithCoupons[id].push(coupon);
+			productWithCoupons[id].push(couponItem);
 		};
 
 		// 找出商品优惠券对应的商品
-		for (let i = 0; i < productCoupons.length; i++) {
-			const coupon = await this.couponService.findOne(productCoupons[i].coupon.id);
+		for (let i = 0; i < productCouponItems.length; i++) {
+			const coupon = await this.couponService.findOne(productCouponItems[i].coupon.id);
 			const pIds = coupon.products.map((product) => product.id);
 			productIds.forEach((id) => {
 				if (pIds.includes(id)) {
-					setCoupon(id, coupon);
+					setCoupon(id, productCouponItems[i]);
 				}
 			});
 		}
@@ -232,23 +250,23 @@ export class OrderService {
 			const productCategory = product.productCategory;
 
 			// 找出分类优惠券对应的分类
-			for (let j = 0; j < categoryCoupons.length; j++) {
-				const coupon = await this.couponService.findOne(categoryCoupons[j].coupon.id);
+			for (let j = 0; j < categoryCouponItems.length; j++) {
+				const coupon = await this.couponService.findOne(categoryCouponItems[j].coupon.id);
 				const categories = coupon.categories;
 				categories.forEach((category) => {
 					if (category.id === productCategory.id) {
-						setCoupon(product.id, coupon);
+						setCoupon(product.id, categoryCouponItems[j]);
 					} else if (category.parent && !productCategory.parent) {
 						if (category.parent.id === productCategory.id) {
-							setCoupon(product.id, coupon);
+							setCoupon(product.id, categoryCouponItems[j]);
 						}
 					} else if (!category.parent && productCategory.parent) {
 						if (category.id === productCategory.id) {
-							setCoupon(product.id, coupon);
+							setCoupon(product.id, categoryCouponItems[j]);
 						}
 					} else if (category.parent && productCategory.parent) {
 						if (category.parent.id === productCategory.parent.id) {
-							setCoupon(product.id, coupon);
+							setCoupon(product.id, categoryCouponItems[j]);
 						}
 					}
 				});
@@ -259,6 +277,7 @@ export class OrderService {
 			products: [],
 			totalPrice: 0,
 			generalCoupon: null,
+			generalCouponItem: null,
 		};
 
 		const consumedCoupons: number[] = [];
@@ -272,18 +291,20 @@ export class OrderService {
 				const product = await this.productService.findOne(products[i].id);
 				salePrice = product && product.salePrice;
 			}
-			const coupons = productWithCoupons[products[i].id] || [];
+			const couponItems = productWithCoupons[products[i].id] || [];
 			let maxDiscount = 0;
 			let maxCoupon = null;
+			let maxCouponItem = null;
 			const totalPriceWithoutCoupon = salePrice * products[i].count;
-			coupons.forEach((coupon) => {
-				if (consumedCoupons.includes(coupon.id)) {
+			couponItems.forEach((couponItem) => {
+				if (consumedCoupons.includes(couponItem.coupon.id)) {
 					return;
 				}
-				if (coupon.threshold <= totalPriceWithoutCoupon) {
-					if (coupon.value > maxDiscount) {
-						maxDiscount = coupon.value;
-						maxCoupon = coupon;
+				if (couponItem.coupon.threshold <= totalPriceWithoutCoupon) {
+					if (couponItem.coupon.value > maxDiscount) {
+						maxDiscount = couponItem.coupon.value;
+						maxCoupon = couponItem.coupon;
+						maxCouponItem = couponItem;
 					}
 				}
 			});
@@ -299,6 +320,7 @@ export class OrderService {
 					...maxCoupon,
 					categories: undefined,
 				},
+				couponItem: { ...maxCouponItem, coupon: undefined },
 				discount: maxDiscount,
 				totalPrice: totalPriceWithoutCoupon,
 				discountedTotalPrice: totalPriceWithoutCoupon - maxDiscount,
@@ -313,12 +335,14 @@ export class OrderService {
 
 		let maxDiscount = 0;
 		let maxCoupon = null;
-		generalCoupons.forEach((couponItem) => {
+		let maxCouponItem = null;
+		generalCouponItems.forEach((couponItem) => {
 			const coupon = couponItem.coupon;
 			if (coupon.threshold <= totalPriceWithoutGeneralCoupon) {
 				if (coupon.value > maxDiscount) {
 					maxDiscount = coupon.value;
 					maxCoupon = coupon;
+					maxCouponItem = couponItem;
 				}
 			}
 		});
@@ -327,6 +351,7 @@ export class OrderService {
 			...maxCoupon,
 			categories: undefined,
 		};
+		result.generalCouponItem = { ...maxCouponItem, coupon: undefined };
 
 		return result;
 	}

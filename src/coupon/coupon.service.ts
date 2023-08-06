@@ -162,7 +162,7 @@ export class CouponService {
 		if (coupon.couponItems.length >= coupon.quantity) {
 			throw new ConflictException('已被抢光了~');
 		}
-		const userReceivedCoupons = coupon.couponItems.filter((item) => item.user[0].id === userId);
+		const userReceivedCoupons = coupon.couponItems.filter((item) => item.user.id === userId);
 		if (userReceivedCoupons.length >= coupon.quantityPerUser && coupon.quantityPerUser !== 0) {
 			throw new ConflictException('已经领取过了~');
 		}
@@ -178,7 +178,7 @@ export class CouponService {
 		const savedCoupon = await this.couponItemRepository.save(couponItem);
 		// 保存多对多关联表
 		const qb = this.couponItemRepository.createQueryBuilder('couponItem');
-		await qb.relation('user').of(couponItem).add(user);
+		await qb.relation('user').of(couponItem).set(user);
 		await qb.execute();
 
 		return await this.couponItemRepository.findOne({ where: { id: savedCoupon.id } });

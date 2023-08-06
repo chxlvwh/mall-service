@@ -56,6 +56,6 @@ export class User {
 	@OneToMany(() => Receiver, (receiver) => receiver.user)
 	receivers: Receiver[];
 
-	@ManyToMany(() => CouponItem, (couponItem) => couponItem.user)
+	@OneToMany(() => CouponItem, (couponItem) => couponItem.user)
 	couponItems: CouponItem[];
 }

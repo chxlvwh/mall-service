@@ -359,8 +359,16 @@ export class OrderService {
 	}
 
 	/** 取消订单 */
-	async cancelOrder(orderNo: string) {
-		const order = await this.orderRepository.findOne({ where: { orderNo } });
+	async cancelOrder(orderNo: string, userId: number) {
+		let order: Order;
+		if (userId) {
+			order = await this.orderRepository.findOne({ where: { orderNo, user: { id: userId } } });
+			if (!order) {
+				throw new Error('Order not found');
+			}
+		} else {
+			order = await this.orderRepository.findOne({ where: { orderNo } });
+		}
 		if (!order) {
 			throw new Error('Order not found');
 		}

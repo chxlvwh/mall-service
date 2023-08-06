@@ -36,12 +36,8 @@ export class CouponItem {
 	@Column({ name: 'is_used', default: false })
 	isUsed: boolean;
 
-	@ManyToMany(() => User, (user) => user.couponItems)
-	@JoinTable({
-		name: 'user_coupon_item',
-		joinColumn: { name: 'coupon_item_id' },
-		inverseJoinColumn: { name: 'user_id' },
-	})
+	@ManyToOne(() => User, (user) => user.couponItems)
+	@JoinColumn({ name: 'user_id' })
 	user: User;
 
 	@ManyToOne(() => Coupon, (coupon) => coupon.couponItems)

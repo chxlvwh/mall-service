@@ -103,19 +103,22 @@ export class UserService {
 	}
 
 	async findCouponItems(id: number) {
-		const qb = this.userRepository
-			.createQueryBuilder('user')
-			.where('user.id = :id', { id })
-			.leftJoinAndSelect('user.couponItems', 'couponItems')
-			.leftJoinAndSelect('couponItems.coupon', 'coupon')
-			.andWhere('couponItems.isUsed = :isUsed', { isUsed: false })
-			.andWhere('coupon.status = :status1 OR coupon.status = :status2', {
-				status1: 'ONGOING',
-				status2: 'NOT_STARTED',
-			})
-			.andWhere('coupon.startDate <= :now AND coupon.endDate >= :now', { now: new Date() });
-		const user = await qb.getOne();
-		return user.couponItems;
+		const user = await this.userRepository.findOne({
+			where: { id },
+			relations: { couponItems: { coupon: true } },
+		});
+		const couponItems = user.couponItems;
+		const validCouponItems = couponItems.filter((couponItem) => {
+			const coupon = couponItem.coupon;
+			if (!coupon) return false;
+			return (
+				!couponItem.isUsed &&
+				(coupon.status === 'ONGOING' || coupon.status === 'NOT_STARTED') &&
+				coupon.startDate <= new Date() &&
+				coupon.endDate >= new Date()
+			);
+		});
+		return validCouponItems;
 	}
 
 	async findValidCouponItems(id: number) {

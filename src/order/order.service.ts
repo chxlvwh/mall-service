@@ -110,6 +110,7 @@ export class OrderService {
 			where: { orderNo },
 			relations: {
 				generalCouponItem: { coupon: true },
+				receiver: true,
 				items: {
 					product: { brand: true },
 					sku: true,
@@ -125,6 +126,7 @@ export class OrderService {
 			where: { orderNo, user: { id: userId } },
 			relations: {
 				generalCouponItem: { coupon: true },
+				receiver: true,
 				items: {
 					product: { brand: true },
 					sku: true,
@@ -354,5 +356,35 @@ export class OrderService {
 		result.generalCouponItem = { ...maxCouponItem, coupon: undefined };
 
 		return result;
+	}
+
+	/** 取消订单 */
+	async cancelOrder(orderNo: string) {
+		const order = await this.orderRepository.findOne({ where: { orderNo } });
+		if (!order) {
+			throw new Error('Order not found');
+		}
+		if (order.status === OrderStatus.CLOSED) {
+			throw new Error('订单已关闭');
+		}
+		if (order.status !== OrderStatus.UNPAID) {
+			throw new Error('订单状态不正确');
+		}
+		if (order.generalCouponItem) {
+			order.generalCouponItem.isUsed = false;
+			order.generalCouponItem.usedDate = null;
+			await this.couponService.updateCouponItem(order.generalCouponItem);
+		}
+		const orderItems = order.items;
+		for (let i = 0; i < orderItems.length; i++) {
+			if (orderItems[i].couponItem) {
+				orderItems[i].couponItem.isUsed = false;
+				orderItems[i].couponItem.usedDate = null;
+				await this.couponService.updateCouponItem(orderItems[i].couponItem);
+			}
+		}
+		order.status = OrderStatus.CLOSED;
+		await this.orderRepository.save(order);
+		return order;
 	}
 }

@@ -213,10 +213,12 @@ export class OrderService {
 				sku.stock -= products[i].count;
 				await this.productService.saveSku(sku);
 				product.stock -= products[i].count;
+				product.sales += products[i].count;
 				await this.productRepository.save(product);
 				await qb1.relation('sku').of(orderItem).set(sku);
 			} else {
 				product.stock -= products[i].count;
+				product.sales += products[i].count;
 				await this.productRepository.save(product);
 				await qb1.relation('product').of(orderItem).set(product);
 			}

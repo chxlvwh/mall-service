@@ -21,6 +21,7 @@ import { OrderModule } from './order/order.module';
 import { PromotionModule } from './promotion/promotion.module';
 import { SalesEventModule } from './sales-event/sales-event.module';
 import { CouponModule } from './coupon/coupon.module';
+import { RefundModule } from './refund/refund.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -67,6 +68,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		PromotionModule,
 		SalesEventModule,
 		CouponModule,
+		RefundModule,
 	],
 	/**
 	 * 跟app.useGlobalInterceptors()的区别是，用provider的方式可以注入依赖

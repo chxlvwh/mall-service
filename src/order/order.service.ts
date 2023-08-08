@@ -15,6 +15,7 @@ import { conditionUtils, pagingFormat } from '../utils/db.helper';
 import { formatPageProps } from '../utils/common';
 import { CouponItem } from '../coupon/entity/coupon-item.entity';
 import { Product } from '../product/entity/product.entity';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Injectable()
 export class OrderService {
@@ -446,9 +447,20 @@ export class OrderService {
 		return this.cancelOrder(order);
 	}
 
-	/** 删除订单 */
-	async deleteOrder(orderNo: string) {
+	async deleteSelfOrder(orderNo: string, userId: number) {
+		const order = await this.orderRepository.findOne({
+			where: { orderNo, user: { id: userId } },
+		});
+		return await this.deleteOrder(order);
+	}
+
+	async adminDeleteOrder(orderNo: string) {
 		const order = await this.orderRepository.findOne({ where: { orderNo } });
+		return await this.deleteOrder(order);
+	}
+
+	/** 删除订单 */
+	async deleteOrder(order: Order) {
 		if (!order) {
 			throw new Error('Order not found');
 		}
@@ -456,7 +468,22 @@ export class OrderService {
 		if (![OrderStatus.COMPLETED, OrderStatus.CLOSED, OrderStatus.REFUNDED].includes(order.status)) {
 			throw new Error('订单状态不正确');
 		}
-		await this.orderRepository.softDelete(orderNo);
+		await this.orderRepository.softRemove(order);
+		return true;
+	}
+
+	/** 更新订单 */
+	async updateOrder(orderNo: string, updateOrderDto: UpdateOrderDto) {
+		const order = await this.orderRepository.findOne({ where: { orderNo } });
+		if (!order) {
+			throw new Error('Order not found');
+		}
+		const { remark, deliveryNo, logisticsCompany, logisticsNo } = updateOrderDto;
+		order.remark = remark;
+		order.deliveryNo = deliveryNo;
+		order.logisticsCompany = logisticsCompany;
+		order.logisticsNo = logisticsNo;
+		await this.orderRepository.save(order);
 		return true;
 	}
 }

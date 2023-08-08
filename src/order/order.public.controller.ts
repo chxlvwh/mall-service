@@ -59,7 +59,7 @@ export class PublicOrderController {
 
 	/** 删除订单 */
 	@Delete(':orderNo')
-	async deleteOrder(@Param('orderNo') orderNo: string) {
-		return await this.orderService.deleteOrder(orderNo);
+	async deleteOrder(@Param('orderNo') orderNo: string, @Req() request) {
+		return await this.orderService.deleteSelfOrder(orderNo, Number(request.user.userId));
 	}
 }

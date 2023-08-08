@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { PreviewOrderDto } from './dto/preview-order.dto';
 import { OrderService } from './order.service';
 import { JwtGuard } from '../guards/jwt.guard';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { SearchOrderDto } from './dto/search-order.dto';
 import { AdminGuard } from '../guards/admin.guard';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
 @UseGuards(JwtGuard, AdminGuard)
 @Controller('order')
@@ -44,5 +45,17 @@ export class OrderController {
 	@Put(':orderNo/cancel')
 	async cancelOrder(@Param('orderNo') orderNo: string) {
 		return await this.orderService.adminCancelOrder(orderNo);
+	}
+
+	/** 更新订单 */
+	@Put(':orderNo')
+	async updateOrder(@Param('orderNo') orderNo: string, @Body() updateOrderDto: UpdateOrderDto) {
+		return await this.orderService.updateOrder(orderNo, updateOrderDto);
+	}
+
+	/** 删除订单 */
+	@Delete(':orderNo')
+	async deleteOrder(@Param('orderNo') orderNo: string) {
+		return await this.orderService.adminDeleteOrder(orderNo);
 	}
 }

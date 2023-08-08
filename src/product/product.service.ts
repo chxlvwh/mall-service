@@ -202,4 +202,9 @@ export class ProductService {
 	async getSkuById(id: number) {
 		return await this.skuRepository.findOne({ where: { id } });
 	}
+
+	/** 保存sku */
+	async saveSku(sku: Sku) {
+		return await this.skuRepository.save(sku);
+	}
 }

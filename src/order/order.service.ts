@@ -14,12 +14,14 @@ import { SearchOrderDto } from './dto/search-order.dto';
 import { conditionUtils, pagingFormat } from '../utils/db.helper';
 import { formatPageProps } from '../utils/common';
 import { CouponItem } from '../coupon/entity/coupon-item.entity';
+import { Product } from '../product/entity/product.entity';
 
 @Injectable()
 export class OrderService {
 	constructor(
 		@InjectRepository(Order) private readonly orderRepository: Repository<Order>,
 		@InjectRepository(OrderItem) private readonly orderItemRepository: Repository<OrderItem>,
+		@InjectRepository(Product) private readonly productRepository: Repository<Product>,
 		private readonly couponService: CouponService,
 		private readonly userService: UserService,
 		private readonly productService: ProductService,
@@ -136,21 +138,39 @@ export class OrderService {
 		});
 	}
 
+	// 校验产品库存
+	async checkProductStock(products: PreviewOrderDto['products']) {
+		for (let i = 0; i < products.length; i++) {
+			if (!products[i].skuId) {
+				const product = await this.productService.findOne(products[i].id);
+				if (product.stock < products[i].count) {
+					throw new Error('库存不足');
+				}
+			}
+			const sku = await this.productService.getSkuById(products[i].skuId);
+			if (sku.stock < products[i].count) {
+				throw new Error('库存不足');
+			}
+		}
+	}
+
 	// 生成订单
 	async createOrder(userId: number, createOrderDto: CreateOrderDto, orderSource: string) {
 		const { products, receiverId, remark, generalCouponId, totalPrice, generalCouponItemId } = createOrderDto;
+		const previewOrderProducts = products.map((p) => {
+			return {
+				id: p.id,
+				skuId: p.sku && p.sku.id,
+				count: p.count,
+			};
+		}) as PreviewOrderDto['products'];
 		const previewOrder = await this.previewOrder(userId, {
-			products: products.map((p) => {
-				return {
-					id: p.id,
-					skuId: p.sku && p.sku.id,
-					count: p.count,
-				};
-			}) as PreviewOrderDto['products'],
+			products: previewOrderProducts,
 		});
 		if (previewOrder.totalPrice !== totalPrice) {
 			throw new Error('Total price not match');
 		}
+		await this.checkProductStock(previewOrderProducts);
 		const order = this.orderRepository.create();
 		order.orderNo = format(new Date(), 'yyyyMMddHHmmssSSS');
 		order.remark = remark;
@@ -190,7 +210,15 @@ export class OrderService {
 			await qb1.relation('product').of(orderItem).set(product);
 			if (products[i].sku) {
 				const sku = await this.productService.getSkuById(products[i].sku.id);
+				sku.stock -= products[i].count;
+				await this.productService.saveSku(sku);
+				product.stock -= products[i].count;
+				await this.productRepository.save(product);
 				await qb1.relation('sku').of(orderItem).set(sku);
+			} else {
+				product.stock -= products[i].count;
+				await this.productRepository.save(product);
+				await qb1.relation('product').of(orderItem).set(product);
 			}
 			if (products[i].couponItemId) {
 				const couponItem = await this.couponService.findCouponItemById(products[i].couponItemId);
@@ -215,6 +243,7 @@ export class OrderService {
 
 	// 生成预览订单
 	async previewOrder(userId: number, { products }: PreviewOrderDto) {
+		await this.checkProductStock(products);
 		const productIds = products.map((product) => product.id);
 		const productWithCoupons: { [key: string]: CouponItem[] } = {};
 		// 查询用户所有可用的优惠券

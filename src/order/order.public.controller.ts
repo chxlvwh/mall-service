@@ -54,7 +54,7 @@ export class PublicOrderController {
 	/** 取消订单 */
 	@Put(':orderNo/cancel')
 	async cancelOrder(@Param('orderNo') orderNo: string, @Req() request) {
-		return await this.orderService.cancelOrder(orderNo, Number(request.user.userId));
+		return await this.orderService.cancelSelfOrder(orderNo, Number(request.user.userId));
 	}
 
 	/** 删除订单 */

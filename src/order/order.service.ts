@@ -358,17 +358,7 @@ export class OrderService {
 		return result;
 	}
 
-	/** 取消订单 */
-	async cancelOrder(orderNo: string, userId: number) {
-		let order: Order;
-		if (userId) {
-			order = await this.orderRepository.findOne({ where: { orderNo, user: { id: userId } } });
-			if (!order) {
-				throw new Error('Order not found');
-			}
-		} else {
-			order = await this.orderRepository.findOne({ where: { orderNo } });
-		}
+	async cancelOrder(order: Order) {
 		if (!order) {
 			throw new Error('Order not found');
 		}
@@ -393,7 +383,19 @@ export class OrderService {
 		}
 		order.status = OrderStatus.CLOSED;
 		await this.orderRepository.save(order);
-		return order;
+		return true;
+	}
+
+	/** 取消自己的订单 */
+	async cancelSelfOrder(orderNo: string, userId: number) {
+		const order = await this.orderRepository.findOne({ where: { orderNo, user: { id: userId } } });
+		return this.cancelOrder(order);
+	}
+
+	/** 取消订单 */
+	async adminCancelOrder(orderNo: string) {
+		const order = await this.orderRepository.findOne({ where: { orderNo } });
+		return this.cancelOrder(order);
 	}
 
 	/** 删除订单 */

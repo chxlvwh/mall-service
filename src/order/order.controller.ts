@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { PreviewOrderDto } from './dto/preview-order.dto';
 import { OrderService } from './order.service';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -38,5 +38,11 @@ export class OrderController {
 			orderSource = 'PC';
 		}
 		return await this.orderService.createOrder(Number(request.user.userId), createOrderDto, orderSource);
+	}
+
+	/** 取消订单 */
+	@Put(':orderNo/cancel')
+	async cancelOrder(@Param('orderNo') orderNo: string) {
+		return await this.orderService.adminCancelOrder(orderNo);
 	}
 }

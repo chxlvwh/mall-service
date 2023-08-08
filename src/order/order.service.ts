@@ -208,18 +208,15 @@ export class OrderService {
 			const qb1 = this.orderItemRepository.createQueryBuilder('orderItem');
 			const product = await this.productService.findOne(products[i].id);
 			await qb1.relation('product').of(orderItem).set(product);
+			product.stock -= products[i].count;
+			product.sales += products[i].count;
+			await this.productRepository.save(product);
 			if (products[i].sku) {
 				const sku = await this.productService.getSkuById(products[i].sku.id);
 				sku.stock -= products[i].count;
 				await this.productService.saveSku(sku);
-				product.stock -= products[i].count;
-				product.sales += products[i].count;
-				await this.productRepository.save(product);
 				await qb1.relation('sku').of(orderItem).set(sku);
 			} else {
-				product.stock -= products[i].count;
-				product.sales += products[i].count;
-				await this.productRepository.save(product);
 				await qb1.relation('product').of(orderItem).set(product);
 			}
 			if (products[i].couponItemId) {
@@ -399,6 +396,7 @@ export class OrderService {
 		if (order.status !== OrderStatus.UNPAID) {
 			throw new Error('订单状态不正确');
 		}
+		// 将优惠券设置为未使用
 		if (order.generalCouponItem) {
 			order.generalCouponItem.isUsed = false;
 			order.generalCouponItem.usedDate = null;
@@ -412,6 +410,19 @@ export class OrderService {
 				await this.couponService.updateCouponItem(orderItems[i].couponItem);
 			}
 		}
+		// 将库存加回去
+		for (let i = 0; i < orderItems.length; i++) {
+			const orderItem = orderItems[i];
+			const product = await this.productService.findOne(orderItem.product.id);
+			product.stock += orderItem.quantity;
+			product.sales -= orderItem.quantity;
+			await this.productRepository.save(product);
+			if (orderItem.sku) {
+				const sku = await this.productService.getSkuById(orderItem.sku.id);
+				sku.stock += orderItem.quantity;
+				await this.productService.saveSku(sku);
+			}
+		}
 		order.status = OrderStatus.CLOSED;
 		await this.orderRepository.save(order);
 		return true;
@@ -419,13 +430,19 @@ export class OrderService {
 
 	/** 取消自己的订单 */
 	async cancelSelfOrder(orderNo: string, userId: number) {
-		const order = await this.orderRepository.findOne({ where: { orderNo, user: { id: userId } } });
+		const order = await this.orderRepository.findOne({
+			where: { orderNo, user: { id: userId } },
+			relations: { items: { product: true, sku: true } },
+		});
 		return this.cancelOrder(order);
 	}
 
 	/** 取消订单 */
 	async adminCancelOrder(orderNo: string) {
-		const order = await this.orderRepository.findOne({ where: { orderNo } });
+		const order = await this.orderRepository.findOne({
+			where: { orderNo },
+			relations: { items: { product: true, sku: true } },
+		});
 		return this.cancelOrder(order);
 	}
 

@@ -42,5 +42,6 @@ export class CreateOrderDto {
 	receiverId: number;
 
 	// 备注
+	@Allow()
 	remark: string;
 }

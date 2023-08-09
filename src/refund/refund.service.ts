@@ -20,7 +20,7 @@ export class RefundService {
 
 	/** 获取退款原因列表 */
 	async getRefundReasonList() {
-		return await this.refundReasonRepository.find({ order: { id: 'DESC' } });
+		return await this.refundReasonRepository.find({ order: { sort: 'ASC' } });
 	}
 
 	/** 根据id获取退款原因 */

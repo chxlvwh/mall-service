@@ -486,4 +486,20 @@ export class OrderService {
 		await this.orderRepository.save(order);
 		return true;
 	}
+
+	/** 支付订单 */
+	async payOrder(orderNo: string, userId: number) {
+		const order = await this.orderRepository.findOne({
+			where: { orderNo, user: { id: userId } },
+		});
+		if (!order) {
+			throw new Error('Order not found');
+		}
+		if (order.status !== OrderStatus.UNPAID) {
+			throw new Error('订单状态不正确');
+		}
+		order.status = OrderStatus.DELIVERING;
+		await this.orderRepository.save(order);
+		return true;
+	}
 }

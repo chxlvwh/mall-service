@@ -62,4 +62,10 @@ export class PublicOrderController {
 	async deleteOrder(@Param('orderNo') orderNo: string, @Req() request) {
 		return await this.orderService.deleteSelfOrder(orderNo, Number(request.user.userId));
 	}
+
+	/** 支付订单 */
+	@Put(':orderNo/pay')
+	async payOrder(@Param('orderNo') orderNo: string, @Req() request) {
+		return await this.orderService.payOrder(orderNo, Number(request.user.userId));
+	}
 }

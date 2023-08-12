@@ -31,5 +31,6 @@ export class OrderSettingService {
 			orderSetting.value = value;
 			await this.orderSettingRepository.save(orderSetting);
 		}
+		return true;
 	}
 }

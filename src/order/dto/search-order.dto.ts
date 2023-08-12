@@ -46,4 +46,8 @@ export class SearchOrderDto {
 	@ApiPropertyOptional({ description: '排序方式 ASC：正序，DESC：逆序' })
 	@IsOptional()
 	sortOrder?: 'ASC' | 'DESC';
+
+	@ApiPropertyOptional({ description: '是否返回物流信息' })
+	@IsOptional()
+	withLogistic?: boolean;
 }

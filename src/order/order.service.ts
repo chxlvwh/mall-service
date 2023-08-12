@@ -80,12 +80,17 @@ export class OrderService {
 			current,
 			paymentMethod,
 			orderSource,
+			withLogistic,
 		} = searchOrderDto;
 		const { take, skip } = formatPageProps(current, pageSize);
 		const queryBuilder = this.orderRepository
 			.createQueryBuilder('order')
 			.leftJoinAndSelect('order.receiver', 'receiver')
 			.leftJoinAndSelect('order.user', 'user');
+
+		if (withLogistic) {
+			queryBuilder.leftJoinAndSelect('order.logistic', 'logistic');
+		}
 
 		const queryObj = {
 			'order.orderSource': { value: orderSource },
@@ -528,6 +533,29 @@ export class OrderService {
 		order.deliveryTime = new Date();
 		order.logisticNo = deliveryDto.logisticNo;
 		order.logistic = logistic;
+		await this.orderRepository.save(order);
+		return true;
+	}
+
+	/** 修改发货信息 */
+	async updateDeliveryInfo(orderNo: string, deliveryDto: DeliveryDto) {
+		const order = await this.orderRepository.findOne({
+			where: { orderNo },
+		});
+		const logistic = await this.logisticRepository.findOne({
+			where: { id: deliveryDto.logisticCompanyId },
+		});
+		if (!order) {
+			throw new Error('Order not found');
+		}
+		if (!logistic) {
+			throw new Error('物流公司不存在');
+		}
+		if (order.status !== OrderStatus.DELIVERED) {
+			throw new Error('订单状态不正确');
+		}
+		order.logistic = logistic;
+		order.logisticNo = deliveryDto.logisticNo;
 		await this.orderRepository.save(order);
 		return true;
 	}

@@ -6,6 +6,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { SearchOrderDto } from './dto/search-order.dto';
 import { AdminGuard } from '../guards/admin.guard';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { DeliveryDto } from '../order-setting/dto/delivery.dto';
 
 @UseGuards(JwtGuard, AdminGuard)
 @Controller('order')
@@ -67,7 +68,13 @@ export class OrderController {
 
 	/** 发货 */
 	@Put(':orderNo/deliver')
-	async deliverOrder(@Param('orderNo') orderNo: string, @Body() deliverOrderDto) {
-		return await this.orderService.deliverOrder(orderNo, deliverOrderDto);
+	async deliverOrder(@Param('orderNo') orderNo: string, @Body() DeliveryDto) {
+		return await this.orderService.deliverOrder(orderNo, DeliveryDto);
+	}
+
+	/** updateDeliveryInfo */
+	@Put(':orderNo/updateDeliveryInfo')
+	async updateDeliveryInfo(@Param('orderNo') orderNo: string, @Body() DeliveryDto) {
+		return await this.orderService.updateDeliveryInfo(orderNo, DeliveryDto);
 	}
 }

@@ -17,6 +17,12 @@ export class OrderController {
 		return await this.orderService.findAll(searchOrderDto);
 	}
 
+	/** 快递列表 */
+	@Get('logistic')
+	async getLogisticList() {
+		return await this.orderService.getLogisticList();
+	}
+
 	@Get(':orderNo')
 	async findOne(@Param('orderNo', ParseIntPipe) orderNo: string) {
 		return await this.orderService.findOne(orderNo);
@@ -57,5 +63,11 @@ export class OrderController {
 	@Delete(':orderNo')
 	async deleteOrder(@Param('orderNo') orderNo: string) {
 		return await this.orderService.adminDeleteOrder(orderNo);
+	}
+
+	/** 发货 */
+	@Put(':orderNo/deliver')
+	async deliverOrder(@Param('orderNo') orderNo: string, @Body() deliverOrderDto) {
+		return await this.orderService.deliverOrder(orderNo, deliverOrderDto);
 	}
 }

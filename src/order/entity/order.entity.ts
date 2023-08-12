@@ -14,6 +14,7 @@ import { OrderItem } from './order-item.entity';
 import { User } from '../../user/entity/user.entity';
 import { Receiver } from '../../user/entity/receiver.entity';
 import { CouponItem } from '../../coupon/entity/coupon-item.entity';
+import { Logistic } from './logistic.entity';
 
 export enum PaymentMethod {
 	'WECHAT' = 'WECHAT',
@@ -52,7 +53,7 @@ export class Order {
 
 	// 支付方式 1: 微信支付 2: 支付宝支付
 	@Column({ nullable: true, name: 'payment_method' })
-	paymentMethod: string;
+	paymentMethod: number;
 
 	// 订单来源
 	@Column({ nullable: true, name: 'order_source' })
@@ -70,17 +71,13 @@ export class Order {
 	@Column({ name: 'payment_time', nullable: true })
 	paymentTime: Date;
 
-	// 发货单流水号
-	@Column({ name: 'delivery_no', nullable: true })
-	deliveryNo: string;
+	/** 物流 */
+	@ManyToOne(() => Logistic, (logistic) => logistic.orders)
+	logistic: Logistic;
 
 	// 物流单号
 	@Column({ name: 'logistics_no', nullable: true })
-	logisticsNo: string;
-
-	// 物流公司
-	@Column({ name: 'logistics_company', nullable: true })
-	logisticsCompany: string;
+	logisticNo: string;
 
 	@Column({ name: 'delivery_time', nullable: true })
 	deliveryTime: Date;

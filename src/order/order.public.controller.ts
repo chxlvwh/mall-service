@@ -65,7 +65,7 @@ export class PublicOrderController {
 
 	/** 支付订单 */
 	@Put(':orderNo/pay')
-	async payOrder(@Param('orderNo') orderNo: string, @Req() request) {
-		return await this.orderService.payOrder(orderNo, Number(request.user.userId));
+	async payOrder(@Param('orderNo') orderNo: string, @Body('payType', ParseIntPipe) payType: number, @Req() request) {
+		return await this.orderService.payOrder(orderNo, Number(request.user.userId), payType);
 	}
 }

@@ -8,9 +8,10 @@ import { CouponModule } from '../coupon/coupon.module';
 import { ProductModule } from '../product/product.module';
 import { PublicOrderController } from './order.public.controller';
 import { Product } from '../product/entity/product.entity';
+import { Logistic } from './entity/logistic.entity';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Order, OrderItem, Product]), CouponModule, ProductModule],
+	imports: [TypeOrmModule.forFeature([Order, OrderItem, Product, Logistic]), CouponModule, ProductModule],
 	providers: [OrderService],
 	controllers: [OrderController, PublicOrderController],
 	exports: [OrderService],

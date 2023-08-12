@@ -16,6 +16,8 @@ import { formatPageProps } from '../utils/common';
 import { CouponItem } from '../coupon/entity/coupon-item.entity';
 import { Product } from '../product/entity/product.entity';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { DeliveryDto } from '../order-setting/dto/delivery.dto';
+import { Logistic } from './entity/logistic.entity';
 
 @Injectable()
 export class OrderService {
@@ -23,6 +25,7 @@ export class OrderService {
 		@InjectRepository(Order) private readonly orderRepository: Repository<Order>,
 		@InjectRepository(OrderItem) private readonly orderItemRepository: Repository<OrderItem>,
 		@InjectRepository(Product) private readonly productRepository: Repository<Product>,
+		@InjectRepository(Logistic) private readonly logisticRepository: Repository<Logistic>,
 		private readonly couponService: CouponService,
 		private readonly userService: UserService,
 		private readonly productService: ProductService,
@@ -119,6 +122,8 @@ export class OrderService {
 					sku: true,
 					couponItem: { coupon: true },
 				},
+				logistic: true,
+				user: true,
 			},
 		});
 	}
@@ -478,17 +483,14 @@ export class OrderService {
 		if (!order) {
 			throw new Error('Order not found');
 		}
-		const { remark, deliveryNo, logisticsCompany, logisticsNo } = updateOrderDto;
+		const { remark } = updateOrderDto;
 		order.remark = remark;
-		order.deliveryNo = deliveryNo;
-		order.logisticsCompany = logisticsCompany;
-		order.logisticsNo = logisticsNo;
 		await this.orderRepository.save(order);
 		return true;
 	}
 
 	/** 支付订单 */
-	async payOrder(orderNo: string, userId: number) {
+	async payOrder(orderNo: string, userId: number, payType: number) {
 		const order = await this.orderRepository.findOne({
 			where: { orderNo, user: { id: userId } },
 		});
@@ -499,7 +501,39 @@ export class OrderService {
 			throw new Error('订单状态不正确');
 		}
 		order.status = OrderStatus.DELIVERING;
+		order.paymentMethod = payType;
+		order.paymentTime = new Date();
 		await this.orderRepository.save(order);
 		return true;
+	}
+
+	/** 订单发货 */
+	async deliverOrder(orderNo: string, deliveryDto: DeliveryDto) {
+		const order = await this.orderRepository.findOne({
+			where: { orderNo },
+		});
+		const logistic = await this.logisticRepository.findOne({
+			where: { id: deliveryDto.logisticCompanyId },
+		});
+		if (!order) {
+			throw new Error('Order not found');
+		}
+		if (!logistic) {
+			throw new Error('物流公司不存在');
+		}
+		if (order.status !== OrderStatus.DELIVERING) {
+			throw new Error('订单状态不正确');
+		}
+		order.status = OrderStatus.DELIVERED;
+		order.deliveryTime = new Date();
+		order.logisticNo = deliveryDto.logisticNo;
+		order.logistic = logistic;
+		await this.orderRepository.save(order);
+		return true;
+	}
+
+	/** 快递列表 */
+	async getLogisticList() {
+		return await this.logisticRepository.find();
 	}
 }

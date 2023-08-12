@@ -24,13 +24,4 @@ export class UpdateOrderDto {
 
 	@IsOptional()
 	orderSource?: string;
-
-	@IsOptional()
-	deliveryNo?: string;
-
-	@IsOptional()
-	logisticsCompany?: string;
-
-	@IsOptional()
-	logisticsNo?: string;
 }

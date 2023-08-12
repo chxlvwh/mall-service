@@ -19,6 +19,7 @@ import { Sku } from './sku.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderItem } from '../../order/entity/order-item.entity';
 import { Coupon } from '../../coupon/entity/coupon.entity';
+import { Comment } from '../../comment/comment.entity';
 
 export enum ProductStatus {
 	OFF_SHELF = 0,
@@ -74,6 +75,9 @@ export class Product {
 
 	@Column({ nullable: true })
 	sales: number;
+
+	@OneToMany(() => Comment, (comment) => comment.product)
+	comments: Comment[];
 
 	@ApiProperty({ description: 'id: 属性id, name:属性名，value:属性值' })
 	@Column({ type: 'json', nullable: true })

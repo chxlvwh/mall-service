@@ -15,6 +15,7 @@ import { User } from '../../user/entity/user.entity';
 import { Receiver } from '../../user/entity/receiver.entity';
 import { CouponItem } from '../../coupon/entity/coupon-item.entity';
 import { Logistic } from './logistic.entity';
+import { Comment } from '../../comment/comment.entity';
 
 export enum PaymentMethod {
 	'WECHAT' = 'WECHAT',
@@ -93,6 +94,10 @@ export class Order {
 	// 评价时间
 	@Column({ name: 'comment_time', nullable: true })
 	commentTime: Date;
+
+	/** 评价内容 */
+	@OneToMany(() => Comment, (comment) => comment.order)
+	comments: Comment[];
 
 	@UpdateDateColumn({ name: 'last_modified_at' })
 	lastModifiedAt: Date;

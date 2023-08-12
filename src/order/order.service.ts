@@ -18,6 +18,8 @@ import { Product } from '../product/entity/product.entity';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { DeliveryDto } from '../order-setting/dto/delivery.dto';
 import { Logistic } from './entity/logistic.entity';
+import { CommentDto } from './dto/comment.dto';
+import { Comment } from '../comment/comment.entity';
 
 @Injectable()
 export class OrderService {
@@ -26,11 +28,22 @@ export class OrderService {
 		@InjectRepository(OrderItem) private readonly orderItemRepository: Repository<OrderItem>,
 		@InjectRepository(Product) private readonly productRepository: Repository<Product>,
 		@InjectRepository(Logistic) private readonly logisticRepository: Repository<Logistic>,
+		@InjectRepository(Comment) private readonly commentRepository: Repository<Comment>,
 		private readonly couponService: CouponService,
 		private readonly userService: UserService,
 		private readonly productService: ProductService,
 		private readonly dataSource: DataSource,
 	) {}
+
+	async validOrder(orderNo: string, userId: number) {
+		const order = await this.orderRepository.findOne({
+			where: { orderNo, user: { id: userId } },
+		});
+		if (!order) {
+			throw new Error('Order not found');
+		}
+		return order;
+	}
 
 	// 查询用户订单列表
 	async findAllByUserId(userId: number, status: string) {
@@ -41,6 +54,7 @@ export class OrderService {
 			.leftJoinAndSelect('order.items', 'items')
 			.leftJoinAndSelect('items.product', 'product')
 			.leftJoinAndSelect('items.sku', 'sku')
+			.leftJoinAndSelect('order.logistic', 'logistic')
 			.where('order.user = :userId', { userId })
 			.orderBy('order.createdAt', 'DESC');
 		switch (status) {
@@ -563,5 +577,62 @@ export class OrderService {
 	/** 快递列表 */
 	async getLogisticList() {
 		return await this.logisticRepository.find();
+	}
+
+	/** 确认收货 */
+	async confirmOrder(orderNo: string, userId: number) {
+		const order = await this.validOrder(orderNo, userId);
+
+		if (order.status !== OrderStatus.DELIVERED) {
+			throw new Error('订单状态不正确');
+		}
+		order.status = OrderStatus.COMMENTING;
+		order.receiveTime = new Date();
+		await this.orderRepository.save(order);
+		return true;
+	}
+
+	/** 评价订单 */
+	async commentOrder(orderNo: string, userId: number, commentDto: CommentDto) {
+		const order = await this.validOrder(orderNo, userId);
+		if (order.status !== OrderStatus.COMMENTING) {
+			throw new Error('订单状态不正确');
+		}
+
+		const { products } = commentDto;
+		const isValid = products.every((product) => !!product.id && !!product.content);
+		if (!isValid) {
+			throw new Error('Invalid product');
+		}
+		const comments: Comment[] = [];
+		for (let i = 0; i < products.length; i++) {
+			const { id: productId, content } = products[i];
+			const { items } = await this.orderRepository.findOne({
+				where: { orderNo, user: { id: userId } },
+				relations: { items: { product: true } },
+			});
+			const orderItem = items.find((item) => item.product.id === productId);
+			if (!orderItem) {
+				throw new Error('Product not found in this order');
+			}
+			/** 保存评论 */
+			const comment = this.commentRepository.create();
+			comment.content = content;
+			comment.product = orderItem.product;
+			comment.user = order.user;
+			comment.order = order;
+			comments.push(comment);
+			await this.commentRepository.save(comment);
+			/** 保存产品评论 */
+			const qbProduct = this.productRepository.createQueryBuilder('product');
+			await qbProduct.relation('comments').of(orderItem.product).add(comment);
+			await qbProduct.execute();
+		}
+		/** 保存订单 */
+		order.status = OrderStatus.COMPLETED;
+		order.commentTime = new Date();
+		order.comments = comments;
+		await this.orderRepository.save(order);
+		return true;
 	}
 }

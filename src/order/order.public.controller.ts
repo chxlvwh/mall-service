@@ -16,6 +16,7 @@ import { PreviewOrderDto } from './dto/preview-order.dto';
 import { OrderService } from './order.service';
 import { JwtGuard } from '../guards/jwt.guard';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { CommentDto } from './dto/comment.dto';
 
 @UseGuards(JwtGuard)
 @Controller('public/order')
@@ -67,5 +68,17 @@ export class PublicOrderController {
 	@Put(':orderNo/pay')
 	async payOrder(@Param('orderNo') orderNo: string, @Body('payType', ParseIntPipe) payType: number, @Req() request) {
 		return await this.orderService.payOrder(orderNo, Number(request.user.userId), payType);
+	}
+
+	/** 确认收货 */
+	@Put(':orderNo/confirm')
+	async confirmOrder(@Param('orderNo') orderNo: string, @Req() request) {
+		return await this.orderService.confirmOrder(orderNo, Number(request.user.userId));
+	}
+
+	/** 评价订单 */
+	@Put(':orderNo/comment')
+	async commentOrder(@Param('orderNo') orderNo: string, @Req() request, @Body() commentDto: CommentDto) {
+		return await this.orderService.commentOrder(orderNo, Number(request.user.userId), commentDto);
 	}
 }

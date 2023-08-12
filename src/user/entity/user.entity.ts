@@ -18,6 +18,7 @@ import { Exclude } from 'class-transformer';
 import { Order } from '../../order/entity/order.entity';
 import { Receiver } from './receiver.entity';
 import { CouponItem } from '../../coupon/entity/coupon-item.entity';
+import { Comment } from '../../comment/comment.entity';
 
 @Entity()
 export class User {
@@ -37,6 +38,9 @@ export class User {
 	@ManyToMany(() => Roles, (roles) => roles.users)
 	@JoinTable({ name: 'users_roles' })
 	roles: Roles[];
+
+	@OneToMany(() => Comment, (comment) => comment.user)
+	comments: Comment[];
 
 	@OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
 	profile: Profile;

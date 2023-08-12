@@ -9,9 +9,16 @@ import { ProductModule } from '../product/product.module';
 import { PublicOrderController } from './order.public.controller';
 import { Product } from '../product/entity/product.entity';
 import { Logistic } from './entity/logistic.entity';
+import { Comment } from '../comment/comment.entity';
+import { CommentModule } from '../comment/comment.module';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Order, OrderItem, Product, Logistic]), CouponModule, ProductModule],
+	imports: [
+		TypeOrmModule.forFeature([Order, OrderItem, Product, Logistic, Comment]),
+		CouponModule,
+		ProductModule,
+		CommentModule,
+	],
 	providers: [OrderService],
 	controllers: [OrderController, PublicOrderController],
 	exports: [OrderService],

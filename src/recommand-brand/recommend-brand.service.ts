@@ -36,7 +36,10 @@ export class RecommendBrandService {
 		if (!brandIds || !brandIds.length) {
 			throw new Error('brandIds can not be empty');
 		}
-		for (let i = 0; i < brandIds.length; i++) {
+		const relatedBrands = await this.getByBrandIds(brandIds);
+		const relatedBrandIds = relatedBrands.map((item) => item.brand.id);
+		const newBrandIds = brandIds.filter((item) => !relatedBrandIds.includes(item));
+		for (let i = 0; i < newBrandIds.length; i++) {
 			const recommendBrand = new RecommendBrand();
 			const brand = await this.brandRepository.findOne({ where: { id: brandIds[i] } });
 			if (!brand) {

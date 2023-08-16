@@ -1,14 +1,15 @@
 import {
 	Column,
 	CreateDateColumn,
+	DeleteDateColumn,
 	Entity,
-	ManyToMany,
-	ManyToOne,
 	OneToMany,
+	OneToOne,
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from 'typeorm';
 import { Product } from '../product/entity/product.entity';
+import { RecommendBrand } from '../recommand-brand/recommend-brand.entity';
 
 @Entity()
 export class Brand {
@@ -25,8 +26,14 @@ export class Brand {
 	products: Product[];
 
 	@CreateDateColumn({ name: 'created_at' })
-	createdAt: string;
+	createdAt: Date;
 
 	@UpdateDateColumn({ name: 'last_modified_at' })
-	lastModifiedAt: string;
+	lastModifiedAt: Date;
+
+	@DeleteDateColumn({ name: 'deleted_at' })
+	deletedAt: Date;
+
+	@OneToOne(() => RecommendBrand, (recommendBrand) => recommendBrand.brand)
+	recommendBrand: RecommendBrand;
 }

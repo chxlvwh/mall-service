@@ -9,7 +9,7 @@ import {
 	UpdateDateColumn,
 } from 'typeorm';
 import { Product } from '../product/entity/product.entity';
-import { RecommendBrand } from '../recommand-brand/recommend-brand.entity';
+import { RecommendBrand } from '../recommend-brand/recommend-brand.entity';
 
 @Entity()
 export class Brand {

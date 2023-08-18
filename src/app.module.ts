@@ -18,14 +18,13 @@ import { ProductModule } from './product/product.module';
 import { ProductAttributeModule } from './product-attribute/product-attribute.module';
 import { UploadModule } from './upload/upload.module';
 import { OrderModule } from './order/order.module';
-import { PromotionModule } from './promotion/promotion.module';
-import { SalesEventModule } from './sales-event/sales-event.module';
 import { CouponModule } from './coupon/coupon.module';
 import { RefundModule } from './refund/refund.module';
 import { TaskModule } from './task/task.module';
 import { OrderSettingModule } from './order-setting/order-setting.module';
 import { CommentModule } from './comment/comment.module';
-import { RecommendBrandModule } from './recommand-brand/recommend-brand.module';
+import { RecommendBrandModule } from './recommend-brand/recommend-brand.module';
+import { RecommandNewModule } from './recommend-new/recommend-new.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -69,14 +68,13 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		ProductAttributeModule,
 		UploadModule,
 		OrderModule,
-		PromotionModule,
-		SalesEventModule,
 		CouponModule,
 		RefundModule,
 		TaskModule,
 		OrderSettingModule,
 		CommentModule,
 		RecommendBrandModule,
+		RecommandNewModule,
 	],
 	/**
 	 * 跟app.useGlobalInterceptors()的区别是，用provider的方式可以注入依赖

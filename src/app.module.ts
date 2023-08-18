@@ -25,6 +25,8 @@ import { OrderSettingModule } from './order-setting/order-setting.module';
 import { CommentModule } from './comment/comment.module';
 import { RecommendBrandModule } from './recommend-brand/recommend-brand.module';
 import { RecommendNewModule } from './recommend-new/recommend-new.module';
+import { RecommendPopularService } from './recommend-popular/recommend-popular.service';
+import { RecommendPopularModule } from './recommend-popular/recommend-popular.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -75,6 +77,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		CommentModule,
 		RecommendBrandModule,
 		RecommendNewModule,
+		RecommendPopularModule,
 	],
 	/**
 	 * 跟app.useGlobalInterceptors()的区别是，用provider的方式可以注入依赖

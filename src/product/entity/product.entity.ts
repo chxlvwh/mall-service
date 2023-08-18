@@ -11,6 +11,7 @@ import {
 	DeleteDateColumn,
 	ManyToOne,
 	JoinColumn,
+	OneToOne,
 } from 'typeorm';
 
 import { Brand } from '../../brand/brand.entity';
@@ -20,6 +21,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { OrderItem } from '../../order/entity/order-item.entity';
 import { Coupon } from '../../coupon/entity/coupon.entity';
 import { Comment } from '../../comment/comment.entity';
+import { RecommendNew } from '../../recommend-new/recommend-new.entity';
 
 export enum ProductStatus {
 	OFF_SHELF = 0,
@@ -113,4 +115,7 @@ export class Product {
 	// 关联优惠券
 	@ManyToMany(() => Coupon, (coupon) => coupon.products)
 	coupons: Coupon[];
+
+	@OneToOne(() => RecommendNew, (recommendNew) => recommendNew.product)
+	recommendNew: RecommendNew;
 }

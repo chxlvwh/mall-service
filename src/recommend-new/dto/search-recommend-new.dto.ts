@@ -1,10 +1,10 @@
 import { IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-export class SearchRecommendBrandDto {
-	@ApiPropertyOptional({ description: '品牌名称' })
+export class SearchRecommendNewDto {
+	@ApiPropertyOptional({ description: '商品名称' })
 	@IsOptional()
-	brandName: string;
+	productName: string;
 
 	@ApiPropertyOptional({ description: '是否推荐' })
 	@IsOptional()

@@ -27,6 +27,7 @@ import { RecommendBrandModule } from './recommend-brand/recommend-brand.module';
 import { RecommendNewModule } from './recommend-new/recommend-new.module';
 import { RecommendPopularService } from './recommend-popular/recommend-popular.service';
 import { RecommendPopularModule } from './recommend-popular/recommend-popular.module';
+import { SeckillModule } from './seckill/seckill.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
@@ -78,6 +79,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 		RecommendBrandModule,
 		RecommendNewModule,
 		RecommendPopularModule,
+		SeckillModule,
 	],
 	/**
 	 * 跟app.useGlobalInterceptors()的区别是，用provider的方式可以注入依赖

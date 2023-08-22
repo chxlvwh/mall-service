@@ -6,10 +6,10 @@ export class CreatePeriodDto {
 	name: string;
 
 	@IsNotEmpty()
-	startTime: Date;
+	startTime: string;
 
 	@IsNotEmpty()
-	endTime: Date;
+	endTime: string;
 
 	@IsOptional()
 	enable: boolean;

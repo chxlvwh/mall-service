@@ -2,7 +2,7 @@ import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class UpdateSeckillDto {
 	@IsNotEmpty()
-	name: string;
+	title: string;
 
 	@IsNotEmpty()
 	startDate: Date;
@@ -11,5 +11,5 @@ export class UpdateSeckillDto {
 	endDate: Date;
 
 	@IsOptional()
-	switch?: number;
+	isOnline?: number;
 }

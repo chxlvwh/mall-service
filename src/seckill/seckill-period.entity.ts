@@ -1,4 +1,13 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+	Column,
+	DeleteDateColumn,
+	Entity,
+	JoinColumn,
+	JoinTable,
+	ManyToMany,
+	ManyToOne,
+	PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Product } from '../product/entity/product.entity';
 import { Seckill } from './seckill.entity';
 
@@ -13,11 +22,11 @@ export class SeckillPeriod {
 
 	/** 每日开始时间 */
 	@Column({ name: 'start_time' })
-	startTime: Date;
+	startTime: string;
 
 	/** 每日结束时间 */
 	@Column({ name: 'end_time' })
-	endTime: Date;
+	endTime: string;
 
 	/** 是否启用 */
 	@Column({ default: true })
@@ -32,5 +41,9 @@ export class SeckillPeriod {
 	products: Product[];
 
 	@ManyToOne(() => Seckill, (seckill) => seckill.seckillPeriods)
+	@JoinColumn()
 	seckill: Seckill;
+
+	@DeleteDateColumn()
+	deletedAt: Date;
 }

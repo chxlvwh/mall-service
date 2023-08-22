@@ -36,7 +36,7 @@ export class Seckill {
 
 	/** 1: 上线，2： 下线 */
 	@Column({ default: 0 })
-	switch: number;
+	isOnline: number;
 
 	@CreateDateColumn({ name: 'created_at' })
 	createdAt: Date;

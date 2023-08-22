@@ -16,13 +16,13 @@ export class OrderSetting {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@Column({ enum: OrderSettingKey })
+	@Column({ type: 'enum', enum: OrderSettingKey })
 	key: OrderSettingKey;
 
 	@Column()
 	value: number;
 
-	@Column({ enum: unitEnum })
+	@Column({ type: 'enum', enum: unitEnum })
 	unit: unitEnum;
 
 	@Column()

@@ -17,7 +17,7 @@ export class SeckillController {
 		return await this.seckillService.createPeriod(id, body);
 	}
 
-	@Post(':id/period/:periodId')
+	@Put(':id/period/:periodId')
 	async updatePeriod(
 		@Param('id', ParseIntPipe) id: number,
 		@Param('periodId', ParseIntPipe) periodId: number,

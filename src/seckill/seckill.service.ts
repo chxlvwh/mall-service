@@ -39,7 +39,10 @@ export class SeckillService {
 	}
 
 	async findById(id: number) {
-		return await this.seckillRepository.findOne({ where: { id }, relations: ['seckillPeriods'] });
+		return await this.seckillRepository.findOne({
+			where: { id },
+			relations: { seckillPeriods: { products: true } },
+		});
 	}
 
 	async getSeckillById(id: number) {
@@ -103,31 +106,44 @@ export class SeckillService {
 			relations: ['seckillPeriods'],
 		});
 		const { seckillPeriods } = seckill;
-		if (new Date(body.startTime).getTime() >= new Date(body.endTime).getTime()) {
-			throw new BadRequestException('开始时间应该小于结束时间');
-		}
-		for (let i = 0; i < seckillPeriods.length; i++) {
-			const period = seckillPeriods[i];
-			if (
-				!(
-					new Date(period.endTime).getTime() < new Date(body.startTime).getTime() ||
-					new Date(period.startTime).getTime() > new Date(body.endTime).getTime()
-				)
-			) {
-				throw new BadRequestException('时间跟已有时间重叠');
-			}
-		}
+		this.validatePeriod(body, seckillPeriods);
 		const seckillPeriod = this.seckillPeriodRepository.create(body);
 		seckillPeriods.concat(seckillPeriod);
 		seckill.seckillPeriods = seckillPeriods.concat(seckillPeriod);
 		await this.seckillRepository.save(seckill);
 	}
 
+	validatePeriod(body, seckillPeriods, id?: number) {
+		if (new Date(body.startTime).getTime() >= new Date(body.endTime).getTime()) {
+			throw new BadRequestException('开始时间应该小于结束时间');
+		}
+		for (let i = 0; i < seckillPeriods.length; i++) {
+			const period = seckillPeriods[i];
+			if (
+				(id ? seckillPeriods[i].id !== id : true) &&
+				!(
+					new Date(format(new Date(), 'yyyy-MM-dd') + ' ' + period.endTime).getTime() <=
+						new Date(format(new Date(), 'yyyy-MM-dd') + ' ' + body.startTime).getTime() ||
+					new Date(format(new Date(), 'yyyy-MM-dd') + ' ' + period.startTime).getTime() >=
+						new Date(format(new Date(), 'yyyy-MM-dd') + ' ' + body.endTime).getTime()
+				)
+			) {
+				throw new BadRequestException('时间跟已有时间重叠');
+			}
+		}
+	}
+
 	async updatePeriod(seckillId: number, id: number, body: CreatePeriodDto) {
+		const seckill = await this.seckillRepository.findOne({
+			where: { id: seckillId },
+			relations: ['seckillPeriods'],
+		});
+		const { seckillPeriods } = seckill;
 		const seckillPeriod = await this.seckillPeriodRepository.findOneBy({ id, seckill: { id: seckillId } });
 		if (!seckillPeriod) {
 			throw new NotFoundException('时间段不存在');
 		}
+		this.validatePeriod(body, seckillPeriods, id);
 		const newBody = Object.assign(seckillPeriod, body);
 		return await this.seckillPeriodRepository.save(newBody);
 	}

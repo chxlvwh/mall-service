@@ -205,4 +205,16 @@ export class SeckillService {
 		await this.periodProductRepository.delete(deletePeriodProductId);
 		return await this.seckillPeriodRepository.save(period);
 	}
+
+	/** 更新关联商品 */
+	async updatePeriodProduct(id: number, periodId: number, updatePeriodProductId: number, body) {
+		const periodProduct = await this.periodProductRepository.findOne({
+			where: { id: updatePeriodProductId, seckillPeriod: { id: periodId, seckill: { id } } },
+		});
+		if (!periodProduct) {
+			throw new NotFoundException('商品不存在');
+		}
+		const newBody = Object.assign(periodProduct, body);
+		return await this.periodProductRepository.save(newBody);
+	}
 }

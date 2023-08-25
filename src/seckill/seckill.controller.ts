@@ -6,6 +6,7 @@ import { SearchSeckillDto } from './dto/search-seckill.dto';
 import { CreateSeckillDto } from './dto/create-seckill.dto';
 import { UpdateSeckillDto } from './dto/update-seckill.dto';
 import { CreatePeriodDto } from './dto/create-period.dto';
+import { CreatePeriodProductDto } from './dto/create-period-product';
 
 @Controller('seckill')
 @UseGuards(JwtGuard, AdminGuard)
@@ -77,5 +78,15 @@ export class SeckillController {
 		@Param('periodProductId', ParseIntPipe) periodProductId: number,
 	) {
 		return await this.seckillService.deletePeriodProduct(id, periodId, periodProductId);
+	}
+
+	@Put(':id/period/:periodId/periodProduct/:periodProductId')
+	async updatePeriodProduct(
+		@Param('id', ParseIntPipe) id: number,
+		@Param('periodId', ParseIntPipe) periodId: number,
+		@Param('periodProductId', ParseIntPipe) periodProductId: number,
+		@Body() body: CreatePeriodProductDto,
+	) {
+		return await this.seckillService.updatePeriodProduct(id, periodId, periodProductId, body);
 	}
 }

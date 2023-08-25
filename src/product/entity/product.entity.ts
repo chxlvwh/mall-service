@@ -22,7 +22,8 @@ import { OrderItem } from '../../order/entity/order-item.entity';
 import { Coupon } from '../../coupon/entity/coupon.entity';
 import { Comment } from '../../comment/comment.entity';
 import { RecommendNew } from '../../recommend-new/recommend-new.entity';
-import { SeckillPeriod } from '../../seckill/seckill-period.entity';
+import { SeckillPeriod } from '../../seckill/entity/seckill-period.entity';
+import { PeriodProduct } from '../../seckill/entity/period-product.entity';
 
 export enum ProductStatus {
 	OFF_SHELF = 0,
@@ -120,6 +121,6 @@ export class Product {
 	@OneToOne(() => RecommendNew, (recommendNew) => recommendNew.product)
 	recommendNew: RecommendNew;
 
-	@ManyToMany(() => SeckillPeriod, (seckillPeriod) => seckillPeriod.products)
-	seckillPeriod: SeckillPeriod;
+	@OneToMany(() => PeriodProduct, (periodProduct) => periodProduct.product)
+	periodProduct: PeriodProduct[];
 }

@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Seckill } from './seckill.entity';
+import { Seckill } from './entity/seckill.entity';
 import { Repository } from 'typeorm';
-import { SeckillPeriod } from './seckill-period.entity';
+import { SeckillPeriod } from './entity/seckill-period.entity';
 import { SearchSeckillDto } from './dto/search-seckill.dto';
 import { formatPageProps } from '../utils/common';
 import { conditionUtils, pagingFormat } from '../utils/db.helper';
@@ -10,6 +10,8 @@ import { CreateSeckillDto } from './dto/create-seckill.dto';
 import { UpdateSeckillDto } from './dto/update-seckill.dto';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { format } from 'date-fns';
+import { Product } from '../product/entity/product.entity';
+import { PeriodProduct } from './entity/period-product.entity';
 
 @Injectable()
 export class SeckillService {
@@ -18,6 +20,10 @@ export class SeckillService {
 		private readonly seckillRepository: Repository<Seckill>,
 		@InjectRepository(SeckillPeriod)
 		private readonly seckillPeriodRepository: Repository<SeckillPeriod>,
+		@InjectRepository(PeriodProduct)
+		private readonly periodProductRepository: Repository<PeriodProduct>,
+		@InjectRepository(Product)
+		private readonly productRepository: Repository<Product>,
 	) {}
 
 	async findAll(query: SearchSeckillDto) {
@@ -41,7 +47,7 @@ export class SeckillService {
 	async findById(id: number) {
 		return await this.seckillRepository.findOne({
 			where: { id },
-			relations: { seckillPeriods: { products: true } },
+			relations: { seckillPeriods: { periodProducts: true } },
 		});
 	}
 
@@ -154,5 +160,49 @@ export class SeckillService {
 			throw new NotFoundException('时间段不存在');
 		}
 		return await this.seckillPeriodRepository.delete(id);
+	}
+
+	/** 添加商品 */
+	async addPeriodProducts(id: number, periodId: number, productIds: number[]) {
+		const period = await this.seckillPeriodRepository.findOne({
+			where: { id: periodId, seckill: { id } },
+			relations: { periodProducts: { product: true } },
+		});
+		const relatedProductIds = period.periodProducts.map((it) => it.product && it.product.id);
+		const newProductIds = productIds.filter((it) => !relatedProductIds.includes(it));
+		const addedPeriodProducts = [];
+		for (let i = 0; i < newProductIds.length; i++) {
+			const product = await this.productRepository.findOne({ where: { id: newProductIds[i] } });
+			addedPeriodProducts.push(
+				await this.periodProductRepository.save({
+					product,
+					price: product.salePrice,
+					sort: 0,
+				}),
+			);
+		}
+		period.periodProducts = period.periodProducts.concat(addedPeriodProducts);
+		return await this.seckillPeriodRepository.save(period);
+	}
+
+	/** 获取商品 */
+	async getPeriodProducts(id: number, periodId: number) {
+		const { periodProducts } = await this.seckillPeriodRepository.findOne({
+			where: { id: periodId, seckill: { id } },
+			relations: { periodProducts: { product: true } },
+		});
+
+		return periodProducts;
+	}
+
+	/** 删除关联商品 */
+	async deletePeriodProduct(id: number, periodId: number, deletePeriodProductId: number) {
+		const period = await this.seckillPeriodRepository.findOne({
+			where: { id: periodId, seckill: { id } },
+			relations: { periodProducts: { product: true } },
+		});
+		period.periodProducts = period.periodProducts.filter((it) => it.id !== deletePeriodProductId);
+		await this.periodProductRepository.delete(deletePeriodProductId);
+		return await this.seckillPeriodRepository.save(period);
 	}
 }

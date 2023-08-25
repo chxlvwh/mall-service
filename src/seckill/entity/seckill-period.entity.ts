@@ -6,10 +6,13 @@ import {
 	JoinTable,
 	ManyToMany,
 	ManyToOne,
+	OneToMany,
+	OneToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Product } from '../product/entity/product.entity';
+import { Product } from '../../product/entity/product.entity';
 import { Seckill } from './seckill.entity';
+import { PeriodProduct } from './period-product.entity';
 
 @Entity()
 export class SeckillPeriod {
@@ -32,13 +35,9 @@ export class SeckillPeriod {
 	@Column({ default: true })
 	enable: boolean;
 
-	@ManyToMany(() => Product, (product) => product.seckillPeriod)
-	@JoinTable({
-		name: 'seckill_period_product',
-		joinColumn: { name: 'product_id' },
-		inverseJoinColumn: { name: 'seckill_period_id' },
-	})
-	products: Product[];
+	@OneToMany(() => PeriodProduct, (periodProduct) => periodProduct.seckillPeriod)
+	@JoinColumn({ name: 'period_product_id' })
+	periodProducts: PeriodProduct[];
 
 	@ManyToOne(() => Seckill, (seckill) => seckill.seckillPeriods)
 	@JoinColumn()

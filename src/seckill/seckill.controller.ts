@@ -55,4 +55,27 @@ export class SeckillController {
 	async delete(@Param('id', ParseIntPipe) id: number) {
 		return await this.seckillService.remove(id);
 	}
+
+	@Put(':id/period/:periodId/periodProducts')
+	async addPeriodProducts(
+		@Param('id', ParseIntPipe) id: number,
+		@Param('periodId', ParseIntPipe) periodId: number,
+		@Body('productIds') productIds: number[],
+	) {
+		return await this.seckillService.addPeriodProducts(id, periodId, productIds);
+	}
+
+	@Get(':id/period/:periodId/periodProducts')
+	async getPeriodProducts(@Param('id', ParseIntPipe) id: number, @Param('periodId', ParseIntPipe) periodId: number) {
+		return await this.seckillService.getPeriodProducts(id, periodId);
+	}
+
+	@Delete(':id/period/:periodId/periodProduct/:periodProductId')
+	async deletePeriodProduct(
+		@Param('id', ParseIntPipe) id: number,
+		@Param('periodId', ParseIntPipe) periodId: number,
+		@Param('periodProductId', ParseIntPipe) periodProductId: number,
+	) {
+		return await this.seckillService.deletePeriodProduct(id, periodId, periodProductId);
+	}
 }

@@ -42,7 +42,7 @@ export class RecommendPopularService {
 		const newProductIds = productIds.filter((item) => !relatedProductIds.includes(item));
 		for (let i = 0; i < newProductIds.length; i++) {
 			const recommendPopular = new RecommendPopular();
-			const product = await this.productRepository.findOne({ where: { id: productIds[i] } });
+			const product = await this.productRepository.findOne({ where: { id: newProductIds[i] } });
 			if (!product) {
 				throw new Error('product not found');
 			}

@@ -3,7 +3,7 @@ version: '3.1'
 
 services:
 
-  db:
+  mysql:
     image: mysql
     # 这里一定要把port暴露出来才能从docker外部（本地）连接！！
     ports:
@@ -18,10 +18,21 @@ services:
       MYSQL_USER: lenny
       MYSQL_PASSWORD: gTUNtfGXpYi3IJtd07rh6dI3sIcm2lCV
     volumes:
-      - /home/mysql/db:/var/lib/mysql
+      - ./mysql/data:/var/lib/mysql
 
   adminer:
     image: adminer
     restart: always
     ports:
       - "12005:8080"
+
+  server:
+    container_name: nestjs-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "13000:13000"
+    restart: on-failure
+    depends_on:
+      - mysql

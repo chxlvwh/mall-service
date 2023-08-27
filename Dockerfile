@@ -14,7 +14,7 @@ RUN npm install --registry=https://registry.npm.taobao.org
 RUN npm run build
 
 # 启动命令
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start:prod"]
 
 # 暴露目录与端口
 VOLUME ["/app/logs"]
